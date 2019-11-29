@@ -1,0 +1,180 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{unipi}[2019/10/07 Package for UNIPI documents]
+
+\RequirePackage[english]{babel}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[autostyle=true]{csquotes}
+\RequirePackage{microtype}
+% TODO: add options for margins setup
+\RequirePackage[a4paper,top=3.2cm,bottom=3.2cm,right=3.6cm,left=4cm]{geometry}
+\RequirePackage{etoolbox}
+\RequirePackage{suffix}
+\RequirePackage{minibox}
+\RequirePackage{pdflscape}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{titlesec}
+% TODO: add option to enable/disable caption formatting
+\RequirePackage[font=small,labelfont=bf]{caption}
+\RequirePackage{amsmath}
+\RequirePackage{array}
+\RequirePackage{makecell}
+\RequirePackage{listings}
+\RequirePackage[english]{varioref}
+% TODO: control biblatex options with this package options
+\RequirePackage[hyperref=true,
+	url=false,
+	isbn=false,
+	backref=true,
+	citestyle=verbose-ibid,
+	giveninits=true,
+	bibstyle=authortitle,
+	sorting=nty]{biblatex}
+\RequirePackage[hidelinks]{hyperref}
+
+% TODO: add options to specify other paths
+\def\input@path{{./chapters/}}
+\graphicspath{{./img/}}
+\lstset{inputpath=./listings/}
+\addbibresource{bibliography.bib}
+
+\def\@academicyear{}
+\def\@author{}
+\def\@authors{}
+\def\@class{}
+\def\@course{}
+\def\@subtitle{}
+\def\@title{}
+
+\def\academicyear#1{\gdef\@academicyear{#1}}
+\def\authors#1{\gdef\@authors{#1}}
+\def\class#1{\gdef\@class{#1}}
+\def\course#1{\gdef\@course{#1}}
+\def\subtitle#1{\gdef\@subtitle{#1}}
+
+\renewcommand{\author}[1]{\def\@author{#1}}
+\renewcommand{\title}[1]{\def\@title{#1}}
+
+\newcommand{\createtablerow}[1]{#1\\}
+
+% TODO: move to a LaTeX class
+\renewcommand{\maketitle}{%
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.7\textwidth]{img/marchio_unipi_pant541}\\
+			\vspace{0.5cm}
+			\ifx\@class\@empty \else
+			{\LARGE\@class\\}
+			\fi
+			\vspace{1cm}
+			\ifx\@course\@empty \else
+			{\Large\@course\\}
+			\fi
+			\vfill
+			\ifx\@title\@empty \else
+			{\huge\expandafter\MakeUppercase\expandafter{\@title}\\}
+			\fi
+			\vspace{0.5cm}
+			\ifx\@subtitle\@empty \else
+			{\Large\@subtitle\\}
+			\fi
+			\vspace{0.5cm}
+			\rule{\linewidth}{0.2mm}\\[0.4cm]
+			\hfill
+			\begin{minipage}{0.4\textwidth}\raggedleft
+				\ifx\@authors\@empty{%
+					\ifx\@author\@empty \else{%
+						\textit{STUDENT:}\\
+						\@author
+					}\fi
+				}\else{%
+					\textit{STUDENTS:}\\
+					\begin{tabular}[t]{r}
+						\expandafter\forcsvlist\expandafter\createtablerow\expandafter{\@authors}
+					\end{tabular}\par%
+				}\fi
+			\end{minipage}
+			\vfill
+			\ifx\@academicyear\@empty \else
+			{\large Academic Year \@academicyear}
+			\fi
+		\end{center}
+	\end{titlepage}
+}
+
+\AtBeginEnvironment{verbatim}{\microtypesetup{activate=false}}
+
+\definecolor{gray75}{gray}{0.75}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeorange}{rgb}{0.95,0.45,0.1}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblack}{rgb}{0.0,0.0,0.0}
+\definecolor{bgcolor}{rgb}{0.95,0.95,0.92}
+
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hspace{20pt}\textcolor{gray75}{|}\hspace{20pt}}{0pt}{\Huge\bfseries}
+
+\newcommand\code{\texttt}
+\newcommand\standout{\textbf}
+\newcommand\specialname{\textsc}
+\newcommand\idest[1]{(i.e.\ #1)}
+\WithSuffix\newcommand\idest*[1]{i.e.\ #1}
+\newcommand\exgratia[1]{(e.g.\ #1)}
+\WithSuffix\newcommand\exgratia*[1]{e.g.\ #1}
+
+\renewcommand\theadalign{bl}
+\renewcommand\theadfont{\bfseries}
+\renewcommand{\cellalign}{l}
+
+\newcommand\theacademicyear{\@academicyear}
+\newcommand\theauthor{\@author}
+\newcommand\theauthors{\@authors}
+\newcommand\theclass{\@class}
+\newcommand\thecourse{\@course}
+\newcommand\thesubtitle{\@subtitle}
+\newcommand\thetitle{\@title}
+
+\lstdefinestyle{javacode}{%
+	backgroundcolor=\color{bgcolor},
+	commentstyle=\color{codegreen},
+	keywordstyle=\bfseries\color{codeorange},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstdefinestyle{xmlcode}{%
+	backgroundcolor=\color{bgcolor},
+	commentstyle=\color{codegray},
+	keywordstyle=\color{codeblack},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codeblack},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=javacode}
+
+\endinput
