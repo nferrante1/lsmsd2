@@ -1,40 +1,57 @@
 \chapter{Specifications}
 
-The application object of this task is an Automatic Trading Alert application.
+The application developed for this workgroup task is a tool for
+\standout{automated testing of financial trading strategies}.
 
-The application is intended to provide to the users useful Alerts for the
-stocks they are interested in, from different markets. Furthermore the
-application will provide the capability to offer Analytics on the Historical
-behaviour of the Stocks.
+The application allows the user to define a strategy and the test it with the
+historical price action data of various markets. The user can then visualize
+statistics on the performance of the strategy.
 
-The users after they are registered and logged in the application can browse a
-list of available markets and stocks and choose which one they are interested
-in marking them as favourites.
+The \standout{User}, when logged-in, can write a new trading strategy using the
+Java programming language: the user must create a Java class implementing a
+method that receives in input the price action of the asset (the method is
+called once for every trading day\footnote{A trading day is a time span for
+which the price action, during that time span, is aggregated into four values:
+highest, lowest, opening (the price at the start of the day) and closing (the
+price at the end of the day) prices.}, giving in input the highest, lowest,
+opening and closing price for that day, and it must respond each time with a
+buy/sell/do-nothing decision). Then, through the application, the user selects a
+market, the amount to invest and the time interval of the trading day. Then, the
+application will apply the defined strategy to all the historical data available
+for that market.  After that, the application shows:
 
-The application will track the stocks trend and will provide the user with
-personalized advertisement.
+\begin{itemize}
+	\item The net profit or loss;
+	\item The gross profit \idest{the sum of the profits from all winning
+		trades} and the gross lost;
+	\item The total number of trades concluded by the strategy;
+	\item The average amount of money involved in trades;
+	\item The average duration of a trade (in terms of trading days);
+	\item The percent of winning (profitable) and losing trades;
+	\item The maximum number of consecutive losing trades;
+	\item The maximum drawback \idest{the maximum loss from consecutive
+		losing trades};
+	\item A graph of the evolution of the invested amount during time.
+\end{itemize}
 
-The application will allow the user to display the stocks in different sort
-order (Top Gainers, Top Loosers, Large Cap etc\ldots) and to plot the trend of
-relevant indexes on graphs so that he/she can easily have a rough snapshot of
-the state of the market at a glance.
+For the development of strategies, the application provides a library for easily
+compute common statistics over market data \exgratia{moving averages, standard
+deviations, common indicators like the Relative Strength Index, Moving Average
+Convergence/Divergence, Bollinger Bands margins, etc\ldots}.
 
-The application will also provide a realtime newsfeed for the users, so that
-they can easily know interesting news on economic and finance.
+The application will allow the user to display assets in different sort order
+(top gainers, top losers, largest volume, etc\ldots).
 
-The user can set a threshold above or below which a certain index of his choice
-should or should not be and it will receive a notification in the application
-so that he can be aware of that.
+The \standout{Administrator} can:
 
-The user can analyze the history of a stock and compare the stock with others
-performing statistics to extract useful information.
-
-The user can search for stocks with particular characteristics.
-
-The update coming from the market will be.
-
-The application will also have an Administrator: The administrator can
-add/remove/update source for the newsfeed. The administrator can
-add/remove/update markets. The administrator can add/remove/update users. The
-administrator can add/update/remove data on stocks and markets via csv/json/xml
-files.
+\begin{itemize}
+	\item Add/remove users;
+	\item Enable/disable data sources;
+	\item Delete old or no-more-relevant data;
+	\item Change various parameters for each data source \exgratia{API keys,
+		data granularity, markets};
+	\item Regenerate the data, re-downloading it from configured data
+		sources;
+	\item Enable/disable the download in streaming of new data;
+	\item Enable/disable markets for selection by users.
+\end{itemize}
