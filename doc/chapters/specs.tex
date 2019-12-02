@@ -7,31 +7,50 @@ The application allows the user to define a strategy and the test it with the
 historical price action data of various markets. The user can then visualize
 statistics on the performance of the strategy.
 
+The application is compound by three components:
+\begin{enumerate*}[label=(\roman*)]
+	\item The scraper, which can be active or not, that uses online
+		exchanges API to download market data and save it in a document
+		database in a common structure, even if data comes from multiple
+		sources;
+	\item The server, which accepts requests from the client and runs the
+		strategies over the data saved in the database, then it responds
+		with the results;
+	\item The client, \idest*{the front-end application used by the users to
+		submit strategies to the server and get back the results}.
+\end{enumerate*}
+
 The \standout{User}, when logged-in, can write a new trading strategy using the
 Java programming language: the user must create a Java class implementing a
 method that receives in input the price action of the asset (the method is
-called once for every trading day\footnote{A trading day is a time span for
-which the price action, during that time span, is aggregated into four values:
-highest, lowest, opening (the price at the start of the day) and closing (the
-price at the end of the day) prices.}, giving in input the highest, lowest,
+called once for every \emph{trading day}\footnote{A trading day is a time span
+for which the price action, during that time span, is aggregated into four
+values: highest, lowest, opening (the price at the start of the day) and closing
+(the price at the end of the day) prices.}, giving in input the highest, lowest,
 opening and closing price for that day, and it must respond each time with a
-buy/sell/do-nothing decision). Then, through the application, the user selects a
-market, the amount to invest and the time interval of the trading day. Then, the
-application will apply the defined strategy to all the historical data available
-for that market.  After that, the application shows:
-
+buy/sell/do-nothing decision\footnote{More specifically, the strategy can open
+multiple trades with different amounts and then close it at some time in the
+future. A trade can be a long (buy) trade or a short (sell) trade. The close
+operation, consist of making the inverse of the opening operation with the same
+amount.}). Then, through the application, the user selects a market, the amount
+to invest, the time interval of the trading day and others configurable
+parameters for the selected strategy. After that, the application will apply the
+defined strategy to all the historical data available for that market. At the
+end, the application shows:
 \begin{itemize}
 	\item The net profit or loss;
 	\item The gross profit \idest{the sum of the profits from all winning
 		trades} and the gross lost;
+	\item The Buy and Hold return (for comparison purpose);
 	\item The total number of trades concluded by the strategy;
+	\item The remaining open trades at the end of evaluation;
 	\item The average amount of money involved in trades;
 	\item The average duration of a trade (in terms of trading days);
 	\item The percent of winning (profitable) and losing trades;
 	\item The maximum number of consecutive losing trades;
-	\item The maximum drawback \idest{the maximum loss from consecutive
-		losing trades};
-	\item A graph of the evolution of the invested amount during time.
+	\item A graph of the evolution of the invested amount during time;
+	\item The maximum drawback \idest{the maximum distance between a peak
+		and the subsequent lowest trough in the graph above}.
 \end{itemize}
 
 For the development of strategies, the application provides a library for easily
@@ -43,7 +62,6 @@ The application allows the user to display assets in different sort order (top
 gainers, top losers, largest volume, \etc).
 
 The \standout{Administrator} can:
-
 \begin{itemize}
 	\item Add/remove users;
 	\item Enable/disable data sources;
@@ -53,5 +71,10 @@ The \standout{Administrator} can:
 	\item Regenerate the data, re-downloading it from configured data
 		sources;
 	\item Enable/disable the download in streaming of new data;
-	\item Enable/disable markets for selection by users.
+	\item Enable/disable markets for selection by users;
+	\item Set a rate-limit over the ability of users to test their
+		strategies.
 \end{itemize}
+
+There's only one administrator. The administrator is created when the
+application is run for the first time.
