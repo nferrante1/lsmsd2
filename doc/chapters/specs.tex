@@ -7,22 +7,6 @@ The application allows the user to define a strategy and the test it with the
 historical price action data of various markets. The user can then visualize
 statistics on the performance of the strategy.
 
-% TODO: move the following out of this chapter. This chapter should only talk
-% about the application purpose while this paragraph is about the system
-% architecture.
-The application is compound by three components:
-\begin{enumerate*}[label=(\roman*)]
-	\item The scraper, which can be active or not, that uses online
-		exchanges API to download market data and save it in a document
-		database in a common structure, even if data comes from multiple
-		sources;
-	\item The server, which accepts requests from the client and runs the
-		strategies over the data saved in the database, then it responds
-		with the results;
-	\item The client, \idest*{the front-end application used by the users to
-		submit strategies to the server and get back the results}.
-\end{enumerate*}
-
 The \standout{User}, when logged-in, can write a new trading strategy using the
 Java programming language: the user must create a Java class implementing a
 method that receives in input the price action of the asset (the method is
