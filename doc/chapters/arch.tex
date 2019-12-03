@@ -1,7 +1,7 @@
 \chapter{Architecture}\label{ch:arch}
 
 \begin{figure}[p]
-	%\includegraphics[width=\textwidth]{arch}
+	\includegraphics[width=\textwidth]{arch}
 	\caption{Application architecture.}
 	\label{fig:arch}
 \end{figure}
@@ -11,8 +11,11 @@ Figure~\ref{fig:arch} shows the application's architecture.
 \section{Third-party softwares}\label{sec:thirdparty}
 
 The following frameworks and libraries are used:
-\begin{itemize}
-	\item \textellipsis
-\end{itemize}
+\begin{description}
+	\item[MongoDB Java Driver v3.11.2] \textit{(Server-side)} for handling
+		MongoDB server;
+	\item[XChart v3.6.0] \textit{(Client-side)} for chart generation;
+	\item[Gson v2.8.6] \textit{(Both-side)} for JSON (de)serialization.
+\end{description}
 
 All dependencies are handled with Maven.
