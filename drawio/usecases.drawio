@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2019-12-03T11:17:54.982Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="3xcfZ21Ho-GrwYHQQbky" version="12.3.5" type="github" pages="1">
+<mxfile host="www.draw.io" modified="2019-12-03T11:36:19.475Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="D8k8WrV_OfXZoJuYr5jz" version="12.3.5" type="github" pages="1">
   <diagram id="g2huZKvPOVLJGIqaVy3Y" name="Page-1">
     <mxGraphModel dx="1414" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -166,9 +166,6 @@
         <mxCell id="EwDZt3mQwsxTDe9n9NLY-75" value="Add Strategy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="200" y="726.5" width="140" height="70" as="geometry"/>
         </mxCell>
-        <mxCell id="g7BCYsUabOK7AczemtMm-4" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;" edge="1" parent="1" source="EwDZt3mQwsxTDe9n9NLY-76" target="EwDZt3mQwsxTDe9n9NLY-80">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
         <mxCell id="EwDZt3mQwsxTDe9n9NLY-76" value="View Strategy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="470" y="710" width="140" height="70" as="geometry"/>
         </mxCell>
@@ -193,7 +190,10 @@
         <mxCell id="g7BCYsUabOK7AczemtMm-6" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;" edge="1" parent="1" source="EwDZt3mQwsxTDe9n9NLY-80" target="EwDZt3mQwsxTDe9n9NLY-84">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="EwDZt3mQwsxTDe9n9NLY-80" value="Run Strategy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="g7BCYsUabOK7AczemtMm-8" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;startArrow=none;startFill=0;" edge="1" parent="1" source="EwDZt3mQwsxTDe9n9NLY-80" target="EwDZt3mQwsxTDe9n9NLY-76">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="EwDZt3mQwsxTDe9n9NLY-80" value="Run Strategy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="360" y="850" width="140" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="g7BCYsUabOK7AczemtMm-7" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;dashed=1;" edge="1" parent="1" source="EwDZt3mQwsxTDe9n9NLY-82" target="EwDZt3mQwsxTDe9n9NLY-76">
