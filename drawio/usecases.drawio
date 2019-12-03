@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2019-12-03T11:16:55.021Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="-EKRq3s9fcD2ngAZuL5f" version="12.3.5" type="github" pages="1">
+<mxfile host="www.draw.io" modified="2019-12-03T11:17:54.982Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="3xcfZ21Ho-GrwYHQQbky" version="12.3.5" type="github" pages="1">
   <diagram id="g2huZKvPOVLJGIqaVy3Y" name="Page-1">
     <mxGraphModel dx="1414" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -175,7 +175,7 @@
         <mxCell id="EwDZt3mQwsxTDe9n9NLY-104" value="&lt;div&gt;&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&lt;/div&gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" source="EwDZt3mQwsxTDe9n9NLY-77" target="EwDZt3mQwsxTDe9n9NLY-78" edge="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="EwDZt3mQwsxTDe9n9NLY-77" value="Browse Strategy" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+        <mxCell id="EwDZt3mQwsxTDe9n9NLY-77" value="Browse Strategies" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry y="935" width="140" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="EwDZt3mQwsxTDe9n9NLY-105" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" source="EwDZt3mQwsxTDe9n9NLY-78" target="EwDZt3mQwsxTDe9n9NLY-76" edge="1">
