@@ -10,11 +10,12 @@ Main actors:
 
 \begin{itemize}
 	\item Privileges: The application must handle users with different privileges
-	\item Strategy Development: The user must be able to develop a strategy writing a Java Class, the application will provide a Library with utility functions that can be used during the development of the Strategy
-	\item Multiple Markets: The application must provide the user multiple Markets among which he can choose to apply the strategy.
+	\item Strategy Development: The user must be able to develop a strategy, the application will provide a Library with utility functions that can be used during the development of the Strategy
+	\item Strategy Sharing: The user must be able to share their strategies and to retrieve strategy developed from other users.
+	\item Multiple Markets: The application must provide the user multiple Markets among which he/she can choose in order to apply the strategy.
 	\item Report: After the simulation of the Strategy is over the application must provide to the user a Report in which he can find several statistics on the behaviour of the Strategy. The report must be persistently stored by the application, so that a user can retrieve these reports every time he/she need.
 	\item Data Providers: The application must have the capability to retrieve new data in different manners: manually from the administrator, or directly from other services thanks to API or Scraping.
-	\item Administration functionalities: The application must have functionalities for administrators. An administrator must be able to add/remove/delete data from the database, enable and disable data sources etc. \footnote{Other examples of administration functionalities can be seen in \ref{ch:specs}}
+	\item Administration functionalities: The application must have functionalities for administrators. An administrator must be able to add/remove/delete data from the application, enable and disable data sources, limit the submission rate of a user, enable/disable data streaming from data sources. \footnote{Other examples of administration functionalities can be seen in \ref{ch:specs}}
 \end{itemize}
 
 \section{Non-functional requirements}\label{sec:nonfunctionalrequirements}
