@@ -1,0 +1,18 @@
+\section{Non-functional requirements}\label{sec:nonfunctionalrequirements}
+
+\begin{description}
+	\item[Availability] The application must be always available, users need
+		to connect from every location at any time.
+	\item[Failure Tolerance] The application must handle failures in the
+		network, preferring the availability over the consistency.  In
+		fact the application core business is to simulate trading
+		strategies on a large period of time, so even if some recent
+		data is not consistently updated at any time it's preferable to
+		keep serving the users instead of shutting down the service. 
+	\item[Concurrency] The application must handle multiple clients
+		concurrently connected.
+	\item[Persistency] Data must be persistently stored by the application.
+	\item[Security] The application must ensures that the user is logged in
+		to use the service and that he/she has the right privileges to
+		run the requested action.
+\end{description}

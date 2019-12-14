@@ -23,6 +23,7 @@
 \RequirePackage{makecell}
 \RequirePackage[inline]{enumitem}
 \RequirePackage{listings}
+\RequirePackage{nameref}
 \RequirePackage[english]{varioref}
 % TODO: control biblatex options with this package options
 \RequirePackage[hyperref=true,
@@ -126,6 +127,10 @@
 \newcommand\exgratia[1]{(e.g.\ #1)}
 \WithSuffix\newcommand\exgratia*[1]{e.g.\ #1}
 \newcommand\etc{etc\textellipsis}
+
+\newcommand\chref[1]{Chapter~\ref{#1}\space\enquote{\nameref{#1}}}
+\newcommand\secref[1]{Section~\ref{#1}\space\enquote{\nameref{#1}}}
+\newcommand\figref[1]{Figure~\ref{#1}}
 
 \renewcommand\theadalign{bl}
 \renewcommand\theadfont{\bfseries}
