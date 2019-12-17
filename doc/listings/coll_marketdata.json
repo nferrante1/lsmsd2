@@ -2,7 +2,7 @@
 	"_id": ObjectId(...),
 	"marketname": "coinbase:BTCUSD",
 	"month": "2019-01",
-	"data": 	[
+	"data": [
 			{
 				"t": 123456789,
 				"o": 1234.56,

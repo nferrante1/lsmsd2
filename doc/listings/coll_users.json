@@ -1,6 +1,5 @@
-{
-	"_id": ObjectId(...),
-	"username": "UserName",
+[{
+	"_id": "UserName",
 	"password": "passwordHash",
 	"is_admin": true,
 	"auth_tokens": 	[
@@ -12,11 +11,8 @@
 			]
 
 },
-
-
 {
-	"_id": ObjectId(...),
-	"username": "UserName",
+	"_id": "UserName2",
 	"password": "passwordHash",
 	"auth_tokens": 	[
 				{
@@ -25,4 +21,4 @@
 				},
 				...
 	
-}
+}]

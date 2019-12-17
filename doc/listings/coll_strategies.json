@@ -1,6 +1,5 @@
 {
-	"_id": ObjectId(...),
-	"file_hash": "abcdef123456",
+	"_id": "abcdef123456",
 	"file_path": "path/to/file.java",
 	"runs":	[
 			{
@@ -18,7 +17,7 @@
 										"amount": 0.63,
 										"gain": -0.80
 									},
-									...								}
+									...
 								 ],
 							"hodl_return": -0.23
 						}
