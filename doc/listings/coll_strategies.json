@@ -1,0 +1,27 @@
+{
+	"_id": ObjectId(...),
+	"file_hash": "abcdef123456",
+	"file_path": "path/to/file.java",
+	"runs":	[
+			{
+				"timestamp": 123456789,
+				"run_config":	{
+							"market": "CoinbaseBTCUSD",
+							"granularity": 5,
+							...
+						},
+				"report":	{
+							"trades":[
+									{
+										"entry_time": 123456789,
+										"exit_time": 123456789,
+										"amount": 0.63,
+										"gain": -0.80
+									},
+									...								}
+								 ],
+							"hodl_return": -0.23
+						}
+			}
+		]
+}

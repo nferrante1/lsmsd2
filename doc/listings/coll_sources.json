@@ -1,0 +1,39 @@
+{
+	"_id" :ObjectId(...),
+	"name":"Coinbase",
+	"enabled": true,
+	"api_key": "abcdefgh123456",
+	"markets":[
+			{
+				"_id": ObjectId(...),
+				"name": "BTCUSD",
+				"granularity": 5,
+				"enabled": true
+			},
+			{
+				"_id": ObjectId(...),
+				"name": "BTCUSD",
+				"granularity": 5
+			}
+		]
+
+},
+{
+	"_id":ObjectId(...),
+	"name":"Coinbase",
+	"api_key": "abcdefgh123456",
+	"markets":[
+			{
+				"_id": ObjectId(...),
+				"name": "BTCUSD",
+				"granularity": 5
+			},
+			{
+				"_id": ObjectId(...),
+				"name": "BTCUSD",
+				"granularity": 5,
+				"enabled": true
+			}
+		]
+
+}

@@ -1,0 +1,28 @@
+{
+	_id: ObjectId(...),
+	username: "UserName",
+	password: "passwordHash",
+	is_admin: true,
+	auth_tokens: 	[
+				{
+					token: "token",
+					expire_time: 123456789
+				},
+				...
+			]
+
+},
+
+
+{
+	_id: ObjectId(...),
+	username: "UserName",
+	password: "passwordHash",
+	auth_tokens: 	[
+				{
+					token: "token",
+					expire_time: 123456789
+				},
+				...
+	
+}
