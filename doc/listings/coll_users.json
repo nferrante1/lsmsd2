@@ -2,23 +2,18 @@
 	"_id": "UserName",
 	"password": "passwordHash",
 	"is_admin": true,
-	"auth_tokens": 	[
-				{
-					"token": "token",
-					"expire_time": 123456789
-				},
-				...
-			]
+	"auth_tokens": 	{
+				"token": "token",
+				"expire_time": 123456789
+			}
 
 },
 {
 	"_id": "UserName2",
 	"password": "passwordHash",
-	"auth_tokens": 	[
-				{
-					"token": "token",
-					"expire_time": 123456789
-				},
-				...
+	"auth_tokens": 	{
+				"token": "token",
+				"expire_time": 123456789
+			}
 	
 }]
