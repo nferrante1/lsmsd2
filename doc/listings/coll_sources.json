@@ -1,5 +1,5 @@
 [{
-	"_id" :"coinbase",
+	"_id" :"COINBASE",
 	"enabled": true,
 	"streaming": true,
 	"api_key": "abcdefgh123456",
@@ -17,7 +17,7 @@
 
 },
 {
-	"_id":"binance",
+	"_id":"BINANCE",
 	"api_key": "abcdefgh123456",
 	"markets":[
 			{

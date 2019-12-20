@@ -5,7 +5,7 @@
 			{
 				"timestamp": 123456789,
 				"run_config":	{
-							"market": "CoinbaseBTCUSD",
+							"market": "COINBASE:BTCUSD",
 							"granularity": 5,
 							...
 						},

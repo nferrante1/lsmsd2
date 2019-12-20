@@ -1,6 +1,6 @@
 {
 	"_id": ObjectId(...),
-	"marketname": "coinbase:BTCUSD",
+	"marketname": "COINBASE:BTCUSD",
 	"month": "2019-01",
 	"data": [
 			{
