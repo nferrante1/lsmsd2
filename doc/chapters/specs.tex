@@ -7,19 +7,15 @@ The application allows the user to define a strategy and to test it with the
 historical price action data of various markets. The user can then visualize
 statistics on the performance of the strategy.
 
-The \standout{User}, when logged-in, can write a new trading strategy %using the
-%Java programming language: the user must create a Java class implementing a
-%method that receives in input the price action of the asset (the method is
-The strategy will evaluate every \emph{trading day}
-%called once for every \emph{trading day}
-\footnote{A trading day is a time span
-for which the price action, during that time span, is aggregated into four
-values: highest, lowest, opening (the price at the start of the day) and closing
-(the price at the end of the day) prices.}, having as input the highest, lowest,
-opening and closing price for that day, and it must respond each time with a
-buy/sell/do-nothing decision\footnote{More specifically, the strategy can open
-multiple trades with different amounts and then close it at some time in the
-future. A trade can be a long (buy) trade or a short (sell) trade. The close
+The \standout{User}, when logged-in, can write a new trading strategy. The
+strategy will execute for every \emph{trading day}\footnote{A trading day is a
+time span for which the price action, during that time span, is aggregated into
+four values: highest, lowest, opening (the price at the start of the day) and
+closing (the price at the end of the day) prices.}, having as input the highest,
+lowest, opening and closing price for that day, and it must respond each time
+with a buy/sell/do-nothing decision\footnote{More specifically, the strategy can
+open multiple trades with different amounts and then close it at some time in
+the future. A trade can be a long (buy) trade or a short (sell) trade. The close
 operation, consist of making the inverse of the opening operation with the same
 amount.}). Then, through the application, the user selects a market, the amount
 to invest, the time interval of the trading day and others configurable

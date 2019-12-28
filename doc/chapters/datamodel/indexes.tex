@@ -1,0 +1,18 @@
+\section{Indexes}\label{sec:indexes}
+
+To ensure better performance of our application the following indexes are
+defined:
+\begin{description}
+	\item[users: \{"auth\_tokens"."auth\_token":1\}] this index is useful
+		when a request is performed by an user, the application must
+		check if the provided auth\_token is present in the database.
+	\item[marketdata: \{"market\_name":1,"month":1\}] this index is useful
+		when the strategy is run. The application must retrieve the data
+		in chronological order.
+	\item[strategies:\{"run"."run\_config":1\}] this index can speed up the
+		retrieval of the execution of a given "\code{run\_config}", in
+		order to give to the user an immediate response, instead to run
+		from scratch a strategy.
+	\item[strategies:\{"runs"."report"."net\_profit":1\}] this index is used
+		to order the strategies on their performances.
+\end{description}

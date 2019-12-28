@@ -1,0 +1,14 @@
+\section{Aggregations}\label{sec:aggregations}
+
+Our application need the use of at least two Aggregation Pipelines. We designed
+the following:
+\begin{itemize}
+	\item To obtain a larger granularity on the data present in a given
+		market, when we apply a strategy, we can aggregate the
+		\code{"data"} fields.
+	\item To obtain the number of winning and losing trades we can aggregate
+		the data present in the \code{"trades"} field of the report.
+	\item Further aggregations can be found in the library functions,
+		mentioned in \chref{ch:specs}, provided to the user to develop
+		his/her strategy.
+\end{itemize}

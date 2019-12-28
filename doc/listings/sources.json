@@ -1,0 +1,28 @@
+[{
+	"_id": "COINBASE",
+	"enabled": true,
+	"streaming": false,
+	"api_key": "f5b9666b767dc73ea04b24e4179865510b21f1f8c75f2b6b1cc959df1cb7d193",
+	"markets": [{
+		"_id": "BTCUSD",
+		"granularity": 5,
+		"enabled": false
+	},
+	{
+		"_id": "BTCEUR",
+		"granularity": 15
+	}]
+},
+{
+	"_id": "BINANCE",
+	"api_key": "6161f31947f85e83750ea1782f42e2f5648eae055a7353f074a5b43bde41ba63",
+	"markets": [{
+		"_id": "BTCUSD",
+		"granularity": 5
+	},
+	{
+		"_id": "BTCEUR",
+		"granularity": 30,
+		"enabled": true
+	}]
+}]

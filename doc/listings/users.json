@@ -1,0 +1,23 @@
+[{
+	"_id": "admin",
+	"password": "bc90f3e4f1968719e4d9040d6eba59cc5039fa599c1a00808332c5ebadb55ddc",
+	"is_admin": true,
+	"auth_tokens": [{
+		"token": "9946a12d386d64d6c7323b2a7f6d62e24845f49fb096f4788eb66576967b9ab3",
+		"expire_time": 1577561023
+	}]
+
+},
+{
+	"_id": "username",
+	"password": "65e81d8538fadb5a07ff80350cad88b0de4b400cdb21840a97f2de8041be3874",
+	"auth_tokens": [{
+		"token": "b89c299678fbad005a145ed5e583a0bacb152fe6895355d8a57a27571ba150d3",
+		"expire_time": 1577561139
+	},
+	{
+		"token": "b6a1bb2f86cca2cca5e3099676987a8390f85731fe7e46ccd5978280e7249e4d",
+		"expire_time": 1577566125
+	}]
+
+}]
