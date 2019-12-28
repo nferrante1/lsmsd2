@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2019-12-28T17:44:18.262Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" etag="8shMCikWViVy6pG-E1fu" version="12.4.7" type="github">
+<mxfile host="www.draw.io" modified="2019-12-28T17:45:04.845Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" etag="V92ofOGlfWkm8PQkZPcQ" version="12.4.7" type="github">
   <diagram id="ZFlR_fbY1ho0T1hjvWoV" name="Page-1">
     <mxGraphModel dx="1414" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -139,7 +139,7 @@
         <mxCell id="tRXYT1jrLdf8LJ3v0zDW-5" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;dashed=1;" parent="1YYGA7Be7UyKaOiCirhx-1" source="tRXYT1jrLdf8LJ3v0zDW-6" target="tRXYT1jrLdf8LJ3v0zDW-13" edge="1">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="tRXYT1jrLdf8LJ3v0zDW-6" value="Enable/Disable Data Streaming" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1YYGA7Be7UyKaOiCirhx-1" vertex="1">
+        <mxCell id="tRXYT1jrLdf8LJ3v0zDW-6" value="Enable/Disable Data Download" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1YYGA7Be7UyKaOiCirhx-1" vertex="1">
           <mxGeometry x="730" y="970" width="140" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="tRXYT1jrLdf8LJ3v0zDW-9" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1YYGA7Be7UyKaOiCirhx-1" source="tRXYT1jrLdf8LJ3v0zDW-10" target="tRXYT1jrLdf8LJ3v0zDW-13" edge="1">
