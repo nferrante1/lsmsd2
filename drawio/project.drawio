@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2020-01-24T09:22:51.953Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36" etag="f513kqR4oYwB2YRSdveX" version="12.5.6" type="github" pages="3">
+<mxfile host="www.draw.io" modified="2020-01-24T09:23:50.897Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36" etag="5gBmlgC8qogZyfBe4I9X" version="12.5.6" type="github" pages="3">
   <diagram id="RQB2dSzsRxf4fnJa0b_b" name="Client">
     <mxGraphModel dx="1648" dy="2281" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -287,9 +287,6 @@
       <root>
         <mxCell id="Oky3xiUg_0sPJ1ObaN60-0"/>
         <mxCell id="Oky3xiUg_0sPJ1ObaN60-1" parent="Oky3xiUg_0sPJ1ObaN60-0"/>
-        <mxCell id="UtP2tbvaZXEuHfnfKNPc-0" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="Oky3xiUg_0sPJ1ObaN60-1">
-          <mxGeometry x="200" y="220" width="120" height="80" as="geometry"/>
-        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
