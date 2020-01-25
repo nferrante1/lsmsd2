@@ -3,6 +3,8 @@ package scraper.sources;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -14,10 +16,12 @@ import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import scraper.db.Bar;
 
-public class CoinbaseBarConverter implements Converter<ResponseBody,Bar>{
+public class CoinbaseBarConverter implements Converter<ResponseBody,List<Bar>>{
 
 	@Override
-	public Bar convert(ResponseBody value) throws IOException {
+	public List<Bar> convert(ResponseBody value) throws IOException {
+		//Per provare creo una lista con un solo elemento
+		
 		Gson gson = new Gson(); 
 		JsonReader jsonReader = gson.newJsonReader(value.charStream());
 		
@@ -34,8 +38,9 @@ public class CoinbaseBarConverter implements Converter<ResponseBody,Bar>{
 		double v = jarr_bar.get(5).getAsDouble();
 		
 		Bar bar= new Bar(t,o,h,l,c,v);
+		List<Bar> lb= new ArrayList<Bar>();
+		lb.add(bar);
 		
-		return bar;
-	}
+		return lb;}
 	
 }

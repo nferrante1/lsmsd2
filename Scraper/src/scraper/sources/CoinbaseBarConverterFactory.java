@@ -1,14 +1,13 @@
 package scraper.sources;
 import java.lang.annotation.Annotation;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
-import okhttp3.RequestBody;
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
+import scraper.db.Bar;
 
 
 public final class CoinbaseBarConverterFactory extends Converter.Factory {
@@ -18,16 +17,9 @@ public final class CoinbaseBarConverterFactory extends Converter.Factory {
 	  }
 	
 	@Override
-	  public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
+	  public Converter<ResponseBody, List<Bar>> responseBodyConverter(Type type, Annotation[] annotations,
 	      Retrofit retrofit) {
-	    TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-	    return new CoinbaseBarBodyConverter<>(gson, adapter);
+	    return new CoinbaseBarConverter();
 	  }
 
-	  @Override
-	  public Converter<?, RequestBody> requestBodyConverter(Type type,
-	      Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
-	    TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
-	    return new CoinbaseBarRequestBodyConverter<>(gson, adapter);
-	  }
 }

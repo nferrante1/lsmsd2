@@ -14,7 +14,7 @@ public class CoinbaseMarket {
 	
 	public Market toMarket() {
 		
-		return new Market(base_currency + "-" +quote_currency);
+		return new Market(id);
 		
 	}
 

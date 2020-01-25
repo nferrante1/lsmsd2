@@ -41,8 +41,9 @@ public class Coinbase implements DataSource {
 
 	@Override
 	public ArrayList<Bar> getBars() {
-		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(GsonConverterFactory.create()).build();
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(CoinbaseBarConverterFactory.create()).build();
 		CoinbaseInterface api = retrofit.create(CoinbaseInterface.class);
+		// Aggiungere chiamata api
 		return null;
 	}
 

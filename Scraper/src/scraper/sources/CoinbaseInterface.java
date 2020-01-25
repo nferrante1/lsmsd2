@@ -18,6 +18,6 @@ public interface CoinbaseInterface {
 	@GET("products")
 	Call<List<CoinbaseMarket>> listMarkets();
 	@GET("products/{market}/candles")
-	Call<Bar> getBars(@Path("market") String id, @QueryMap Map<String, String> options);
+	Call<List<Bar>> getBars(@Path("market") String id, @QueryMap Map<String, String> options);
 	
 }
