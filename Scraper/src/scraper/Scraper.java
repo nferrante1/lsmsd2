@@ -2,9 +2,9 @@ package scraper;
 
 import java.util.ArrayList;
 
+import scraper.db.Market;
 import scraper.sources.Coinbase;
 import scraper.sources.DataSource;
-import scraper.sources.Market;
 
 public class Scraper {
 

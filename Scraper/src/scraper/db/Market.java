@@ -1,4 +1,4 @@
-package scraper.sources;
+package scraper.db;
 
 public class Market {
 	

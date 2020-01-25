@@ -8,6 +8,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import scraper.db.Bar;
+import scraper.db.Market;
 
 public class Coinbase implements DataSource {
 
@@ -37,10 +39,11 @@ public class Coinbase implements DataSource {
 		return markets;
 	}
 
-	//@Override
-/*	public ArrayList<Bar> getBars() {
-		// TODO Auto-generated method stub
+	@Override
+	public ArrayList<Bar> getBars() {
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(GsonConverterFactory.create()).build();
+		CoinbaseInterface api = retrofit.create(CoinbaseInterface.class);
 		return null;
-	}*/
+	}
 
 }

@@ -1,5 +1,7 @@
 package scraper.sources;
 
+import scraper.db.Market;
+
 public class CoinbaseMarket {
 	
 	public String id;
