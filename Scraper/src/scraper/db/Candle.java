@@ -22,6 +22,16 @@ public class Candle
 		
 	}
 	
+	public Candle(Instant time, double open, double high, double low, double close, double volume)
+	{
+		this.time = time;
+		this.open = open;
+		this.high = high;
+		this.low = low;
+		this.close = close;
+		this.volume = volume;
+	}
+	
 	void setMarket(Market market)
 	{
 		this.market = market;

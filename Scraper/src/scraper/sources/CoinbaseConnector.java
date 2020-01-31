@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,14 +50,20 @@ public class CoinbaseConnector implements SourceConnector {
 	}
 
 	@Override
-	public ArrayList<Candle> getBars(String id, Map<String,String> options) {
+	public ArrayList<Candle> getBars(String id, long start, int granularity) {
 		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(CoinbaseCandleConverterFactory.create()).build();
 		CoinbaseInterface api = retrofit.create(CoinbaseInterface.class);
-		Call<List<Candle>> call = api.getBars(id, options);
+		Map<String, Long> options = new HashMap<String, Long>();
+		options.put("start", start);
+		options.put("end", 1580471100L);
+		//options.put("end", Instant.now().toEpochMilli() / 1000);
+		options.put("granularity", 300L);
+		Call<ArrayList<Candle>> call = api.getBars(id, options);
 		ArrayList<Candle> lb = new ArrayList<Candle>();
 		try {
-			Response<List<Candle>> res;
+			Response<ArrayList<Candle>> res;
 			res = call.execute();
+			System.out.println(res.errorBody().string());
 			lb = (ArrayList<Candle>) res.body();
 			
 		} catch (IOException e) {

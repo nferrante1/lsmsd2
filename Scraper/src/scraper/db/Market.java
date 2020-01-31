@@ -20,6 +20,11 @@ public class Market
 		
 	}
 	
+	public Market(String id)
+	{
+		this.id = id;
+	}
+	
 	void setSource(DataSource source)
 	{
 		this.source = source;

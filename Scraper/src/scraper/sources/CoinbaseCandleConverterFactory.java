@@ -2,6 +2,7 @@ package scraper.sources;
 import java.lang.annotation.Annotation;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -17,7 +18,7 @@ public final class CoinbaseCandleConverterFactory extends Converter.Factory {
 	  }
 	
 	@Override
-	  public Converter<ResponseBody, List<Candle>> responseBodyConverter(Type type, Annotation[] annotations,
+	  public Converter<ResponseBody, ArrayList<Candle>> responseBodyConverter(Type type, Annotation[] annotations,
 	      Retrofit retrofit) {
 	    return new CoinbaseCandleConverter();
 	  }
