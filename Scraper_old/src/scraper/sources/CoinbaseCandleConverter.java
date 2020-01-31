@@ -37,7 +37,7 @@ public class CoinbaseCandleConverter implements Converter<ResponseBody, ArrayLis
 			double l = jarr_candle.get(3).getAsDouble();
 			double c = jarr_candle.get(4).getAsDouble();
 			double v = jarr_candle.get(5).getAsDouble();
-			System.out.println(i + ": " + t);
+			//System.out.println(i + ": " + t);
 			Candle candle = new Candle(t, o ,h ,l ,c ,v);
 			lb.add(candle);
 		}
