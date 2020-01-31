@@ -1,6 +1,6 @@
-<mxfile host="www.draw.io" modified="2020-01-31T10:19:40.541Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0" etag="3-y0lBPEKgw5boLf7Qem" version="12.6.2" type="github" pages="4">
+<mxfile host="www.draw.io" modified="2020-01-31T10:43:03.099Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0" etag="OtCz-vRxTCYP2CrUcVqx" version="12.6.2" type="github" pages="4">
   <diagram id="RQB2dSzsRxf4fnJa0b_b" name="Client">
-    <mxGraphModel dx="936" dy="1701" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="868" dy="1633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -595,7 +595,7 @@
           </mxGraphModel>
       </diagram>
   <diagram id="IKqJbWdVZk0kOYIN4q3u" name="Scraper">
-    <mxGraphModel dx="2241" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1695" dy="464" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="Oky3xiUg_0sPJ1ObaN60-0"/>
         <mxCell id="Oky3xiUg_0sPJ1ObaN60-1" parent="Oky3xiUg_0sPJ1ObaN60-0"/>
@@ -891,25 +891,28 @@
           <mxGeometry y="190" width="280" height="26" as="geometry"/>
         </mxCell>
         <mxCell id="oXJIRUg5IWU0B8Irutq--0" value="MarketData" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="Oky3xiUg_0sPJ1ObaN60-1">
-          <mxGeometry x="-137" y="460" width="260" height="164" as="geometry"/>
+          <mxGeometry x="-137" y="460" width="260" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="oXJIRUg5IWU0B8Irutq--1" value="# market: Market" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+        <mxCell id="oXJIRUg5IWU0B8Irutq--1" value="# id: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
           <mxGeometry y="26" width="260" height="26" as="geometry"/>
         </mxCell>
-        <mxCell id="oXJIRUg5IWU0B8Irutq--4" value="# month: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+        <mxCell id="LrERPderTjd6sT7BqLi4-0" value="# market: Market" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
           <mxGeometry y="52" width="260" height="26" as="geometry"/>
         </mxCell>
-        <mxCell id="oXJIRUg5IWU0B8Irutq--5" value="# candles: ArrayList&lt;Candle&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+        <mxCell id="oXJIRUg5IWU0B8Irutq--4" value="# month: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
           <mxGeometry y="78" width="260" height="26" as="geometry"/>
         </mxCell>
-        <mxCell id="oXJIRUg5IWU0B8Irutq--2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
-          <mxGeometry y="104" width="260" height="8" as="geometry"/>
+        <mxCell id="oXJIRUg5IWU0B8Irutq--5" value="# candles: ArrayList&lt;Candle&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+          <mxGeometry y="104" width="260" height="26" as="geometry"/>
         </mxCell>
-        <mxCell id="oXJIRUg5IWU0B8Irutq--3" value="+ MarketData(Market, month, Candles...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
-          <mxGeometry y="112" width="260" height="26" as="geometry"/>
+        <mxCell id="oXJIRUg5IWU0B8Irutq--2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+          <mxGeometry y="130" width="260" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="oXJIRUg5IWU0B8Irutq--3" value="+ MarketData(Market, int,  month, Candles...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
+          <mxGeometry y="138" width="260" height="26" as="geometry"/>
         </mxCell>
         <mxCell id="oXJIRUg5IWU0B8Irutq--7" value="+ getCandles(): ArrayList&lt;Candle&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="oXJIRUg5IWU0B8Irutq--0">
-          <mxGeometry y="138" width="260" height="26" as="geometry"/>
+          <mxGeometry y="164" width="260" height="26" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
