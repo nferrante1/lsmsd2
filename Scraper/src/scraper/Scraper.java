@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import scraper.db.Bar;
+import scraper.db.Candle;
 import scraper.db.Market;
-import scraper.sources.Coinbase;
-import scraper.sources.DataSource;
+import scraper.sources.CoinbaseConnector;
+import scraper.sources.SourceConnector;
 
 public class Scraper {
 
 	public static void main(String[] args) {
 		
-		DataSource ds = new Coinbase();
+		SourceConnector ds = new CoinbaseConnector();
 		ArrayList<Market> m = ds.getMarkets();
 		for(Market market: m)
 				System.out.println(market.id);
@@ -43,14 +43,14 @@ public class Scraper {
 		options.put("granularity", "300");
 		
 		
-		ArrayList<Bar> b = ds.getBars(market_id, options);
-		for(Bar bar: b) {
-			System.out.println(bar.t);
-			System.out.println(bar.o);
-			System.out.println(bar.l);
-			System.out.println(bar.h);
-			System.out.println(bar.c);
-			System.out.println(bar.v);
+		ArrayList<Candle> b = ds.getBars(market_id, options);
+		for(Candle bar: b) {
+			System.out.println(bar.time);
+			System.out.println(bar.open);
+			System.out.println(bar.low);
+			System.out.println(bar.high);
+			System.out.println(bar.close);
+			System.out.println(bar.volume);
 		}
 				
 	}

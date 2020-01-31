@@ -14,12 +14,12 @@ import com.google.gson.stream.JsonReader;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
-import scraper.db.Bar;
+import scraper.db.Candle;
 
-public class CoinbaseBarConverter implements Converter<ResponseBody,List<Bar>>{
+public class CoinbaseCandleConverter implements Converter<ResponseBody,List<Candle>>{
 
 	@Override
-	public List<Bar> convert(ResponseBody value) throws IOException {
+	public List<Candle> convert(ResponseBody value) throws IOException {
 		//Per provare creo una lista con un solo elemento
 		
 		Gson gson = new Gson(); 
@@ -37,8 +37,8 @@ public class CoinbaseBarConverter implements Converter<ResponseBody,List<Bar>>{
 		double c = jarr_bar.get(4).getAsDouble();
 		double v = jarr_bar.get(5).getAsDouble();
 		
-		Bar bar= new Bar(t,o,h,l,c,v);
-		List<Bar> lb= new ArrayList<Bar>();
+		Candle bar= new Candle(t,o,h,l,c,v);
+		List<Candle> lb= new ArrayList<Candle>();
 		lb.add(bar);
 		
 		return lb;}

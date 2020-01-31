@@ -7,7 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
-import scraper.db.Bar;
+import scraper.db.Candle;
 
 /*
 @GET("group/{id}/users")
@@ -18,6 +18,6 @@ public interface CoinbaseInterface {
 	@GET("products")
 	Call<List<CoinbaseMarket>> listMarkets();
 	@GET("products/{market}/candles")
-	Call<List<Bar>> getBars(@Path("market") String id, @QueryMap Map<String, String> options);
+	Call<List<Candle>> getBars(@Path("market") String id, @QueryMap Map<String, String> options);
 	
 }

@@ -14,10 +14,10 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import scraper.db.Bar;
+import scraper.db.Candle;
 import scraper.db.Market;
 
-public class Coinbase implements DataSource {
+public class CoinbaseConnector implements SourceConnector {
 
 	@Override
 	public ArrayList<Market> getMarkets() {
@@ -46,15 +46,15 @@ public class Coinbase implements DataSource {
 	}
 
 	@Override
-	public ArrayList<Bar> getBars(String id, Map<String,String> options) {
-		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(CoinbaseBarConverterFactory.create()).build();
+	public ArrayList<Candle> getBars(String id, Map<String,String> options) {
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").addConverterFactory(CoinbaseCandleConverterFactory.create()).build();
 		CoinbaseInterface api = retrofit.create(CoinbaseInterface.class);
-		Call<List<Bar>> call = api.getBars(id, options);
-		ArrayList<Bar> lb = new ArrayList<Bar>();
+		Call<List<Candle>> call = api.getBars(id, options);
+		ArrayList<Candle> lb = new ArrayList<Candle>();
 		try {
-			Response<List<Bar>> res;
+			Response<List<Candle>> res;
 			res = call.execute();
-			lb = (ArrayList<Bar>) res.body();
+			lb = (ArrayList<Candle>) res.body();
 			
 		} catch (IOException e) {
 
