@@ -5,7 +5,7 @@
 		"id": "BTC-USD",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "USD",
-		"granularity": 300,
+		"granularity": 5,
 		"firstMonthAvailable": "2019-01",
 		"selectable": true,
 		"sync": true,
@@ -15,7 +15,7 @@
 		"id": "BTC-EUR",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
-		"granularity": 900,
+		"granularity": 15,
 		"firstMonthAvailable": "2016-03",
 		"selectable": true,
 		"filled": true
@@ -27,7 +27,7 @@
 		"id": "BTC-USD",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "USD",
-		"granularity": 300,
+		"granularity": 5,
 		"selectable": true,
 		"sync": true
 	},
@@ -35,7 +35,7 @@
 		"id": "BTC-EUR",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
-		"granularity": 1800,
+		"granularity": 30,
 		"firstMonthAvailable": "2017-11"
 	}]
 }]
