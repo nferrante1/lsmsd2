@@ -185,6 +185,7 @@
 % switch used as state variable
 \newif\ifcolonfoundonthisline
 
+%TODO: numbers inside strings should not be colorized
 \lstdefinestyle{jsoncode}
 {
 	showstringspaces=false,
@@ -196,6 +197,8 @@
 	\lst@DefSaveDef{`:}\colon@json{\processColon@json},
 	basicstyle=\ttfamily,
 	keywordstyle=\ttfamily\bfseries,
+	captionpos=b,
+	tabsize=2
 }
 
 % flip the switch if a colon is found in Pmode
