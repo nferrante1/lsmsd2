@@ -1,0 +1,18 @@
+\section{Further improvements}\label{sec:future}
+
+When a user logs-in with the server, an auth token is created and returned to
+the client. From now on, the client resends this token with every request with
+the server. This allows for the server to be \standout{stateless} \idest{it does
+not need to maintain the user login informations on its memory: when a new
+request arrive, it just checks again the database for the validity of the
+token}.
+
+With a stateless server, we can also distribute it on multiple servers in order
+to ensure high availability of the application and better performance, since it
+does not matter which server handles the request when it arrives from the
+client.
+
+We may choose to distribute the server program on multiple server machines with
+\standout{Docker Swarm}. But since this decision does not impact with the
+design, the architecture and the implementation of the application, we postpone
+this decision to the future.

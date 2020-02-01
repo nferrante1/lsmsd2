@@ -1,0 +1,10 @@
+\section{Scraper}\label{sec:scraper}
+
+The scraper is the program, run on a server, that downloads data from data
+sources \exgratia{Binance, Coinbase, \etc} through the API that those sources
+provide, and store the data in our database following the structure defined in
+\secref{sec:collections}.
+
+The scraper may receive a \code{SYNC} message from the server: this message
+instruct the scraper that he needs to reload the data from the database because
+something has been changed \exgratia{the configuration of a source/market}.

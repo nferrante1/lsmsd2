@@ -1,6 +1,11 @@
 \chapter{Architecture}\label{ch:arch}
 
 The application is compound by three components:
+\begin{enumerate*}[label=]
+	\item Scraper;
+	\item Server;
+	\item Client.
+\end{enumerate*}
 \begin{enumerate*}[label=(\roman*)]
 	\item The scraper, which can be active or not, that uses online
 		exchanges API to download market data and save it in a document
@@ -21,5 +26,9 @@ The application is compound by three components:
 
 \figref{fig:arch} shows the application's architecture.
 
+\input{arch/scraper}
+\input{arch/server}
+\input{arch/client}
 \input{arch/distributed}
 \input{arch/dependencies}
+\input{arch/future}

@@ -1,5 +1,22 @@
 \section{Replication and Sharding}\label{sec:distributed}
+
 The application uses replicas to ensure high availability.
+
+All programs that compound the application will always write to the primary
+server (as enforced by \mongodb).
+
+The scraper will use the \standout{read preference mode}
+\code{primary}, meaning that it will \emph{always} read from the primary server
+(if the primary is not online, the read operation will fail). In fact the
+scraper needs to be \emph{sure} that the configuration that reads from the
+database is the last configuration submitted by the administrator. Moreover,
+since the objective of the scraper is to download data and store it in the
+database, it would not make sense to run the scraper when the primary server is
+not available (the scraper would not be allowed to write to the database).
+
+The server will use the \standout{read preference mode} \code{nearest}, meaning
+that it will read from the server with the least network latency. It is in fact
+acceptable that some data that the server reads may not be up to date.
 
 To ensure a good load balancing between cluster's servers the \code{Market\-Data}
 collection is sharded, because it is the biggest one and it is often read when

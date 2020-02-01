@@ -8,7 +8,7 @@
 		"granularity": 300,
 		"firstMonthAvailable": "2019-01",
 		"selectable": true,
-		"download": true,
+		"sync": true,
 		"filled": false
 	},
 	{
@@ -29,7 +29,7 @@
 		"quoteCurrency": "USD",
 		"granularity": 300,
 		"selectable": true,
-		"download": true
+		"sync": true
 	},
 	{
 		"id": "BTC-EUR",
