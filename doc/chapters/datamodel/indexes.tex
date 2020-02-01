@@ -1,18 +1,91 @@
 \section{Indexes}\label{sec:indexes}
 
-To ensure better performance of our application the following indexes are
-defined:
-\begin{description}
-	\item[users: \{"auth\_tokens"."auth\_token":1\}] this index is useful
-		when a request is performed by an user, the application must
-		check if the provided auth\_token is present in the database.
-	\item[marketdata: \{"market\_name":1,"month":1\}] this index is useful
-		when the strategy is run. The application must retrieve the data
-		in chronological order.
-	\item[strategies:\{"run"."run\_config":1\}] this index can speed up the
-		retrieval of the execution of a given "\code{run\_config}", in
-		order to give to the user an immediate response, instead to run
-		from scratch a strategy.
-	\item[strategies:\{"runs"."report"."net\_profit":1\}] this index is used
-		to order the strategies on their performances.
-\end{description}
+To ensure better performance of the application, some indexes are defined for
+each collection.
+
+\subsection{Users}
+
+We need to get a user by username (\code{\_id}) and \code{passwordHash}
+when the user performs login. So, a compound index as the following can support
+the query:
+
+\begin{lstlisting}[language=json]
+{"_id": 1, "passwordHash": 1}
+\end{lstlisting}
+
+Moreover, this also support queries on the username only since the \code{\_id}
+field is a prefix for the index (and this fields is also an unique index by
+default).
+
+\subsection{AuthTokens}
+
+Auth tokens are always retrieved by the token hash, which is saved in the
+\code{\_id} field that is already an unique index.
+
+Additionally, the following \standout{TTL index} is defined:
+
+\begin{lstlisting}[language=json]
+{"expireTime": 1}, {expireAfterSeconds: 0}
+\end{lstlisting}
+
+This will instruct \mongodb{} to automatically remove tokens when they expire.
+
+\subsection{Sources}
+
+We need to get a source, with all the markets, or a single market inside a
+source. The following compound index can support both queries:
+
+\begin{lstlisting}[language=json]
+{"_id": 1, "markets.id": 1}
+\end{lstlisting}
+
+We may use index intersection to fulfill the query that gets a single market,
+but since there is no need to get all the markets with a specific id from all
+sources (we always get a specific market in a specific source), we prefer to
+define a compound index in order to save \mongodb{} the need to access two indexes
+to perform the query.
+
+\subsection{MarketData}
+
+We need to get market data by \code{\_id} during the execution of a strategy. In
+fact, when a strategy is run, the user specifies the source name, the market
+name and the application will start pulling data from the database
+month-by-month, so there are all elements to fully build the \code{\_id} field.
+The \code{\_id} field is already indexed, but we will define an \standout{hashed
+index} on it:
+
+\begin{lstlisting}[language=json]
+{_id: "hashed"}
+\end{lstlisting}
+
+This is an hashed index since it will also be used as a shard key to shard the
+collection over multiple servers, as defined in \chref{sec:distributed}.
+
+\subsection{Strategies}
+
+Strategies are retrieved by file hash (the \code{\_id} field, already indexed)
+or by name. Thus, we define the following \standout{unique index}:
+
+\begin{lstlisting}[language=json]
+{"name": 1}, {unique: true}
+\end{lstlisting}
+
+Since we also need to check if a strategy has been already run with a specific
+configuration \idest{a configuration with the same hash}, we also define the
+following:
+
+\begin{lstlisting}[language=json]
+{"run.config.hash": 1}
+\end{lstlisting}
+
+We can leverage the \mongodb's index intersection feature in order to support
+queries that specifies the \code{name} or the \code{\_id} of a strategy and the
+\code{hash} of the configuration.
+
+To allow the application to rapidly sort strategies by the net profit (commonly
+used to represent the overall performance of a strategy), we define the
+following index:
+
+\begin{lstlisting}[language=json]
+{"run.report.netProfit": 1}
+\end{lstlisting}

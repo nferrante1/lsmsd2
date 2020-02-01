@@ -2,8 +2,7 @@
 
 \begin{figure}[p]
 	\includegraphics[width=\textwidth]{usecases}
-	\caption{Use cases UML diagram.}
-	\label{fig:usecases}
+	\caption{Use cases UML diagram.}\label{fig:usecases}
 \end{figure}
 
 \figref{fig:usecases} shows the UML diagram for use cases.
@@ -30,11 +29,11 @@ user to be logged in):
 		name;
 	\item[View Market] Users can view a market to select it; the
 		administrator can view and edit the configuration of the market;
-	\item[Enable/Disable Market] \textit{(admin)} Enable or disable a
-		market, in order to allow or deny users to run strategies over
-		it;
-	\item[Enable/Disable Data Download] \textit{(admin)} Enable or disable
-		the download of the data from the selected data source;
+	\item[Enable/Disable Market Selection] \textit{(admin)} Enable or
+		disable the ability for users to select the market to run
+		strategies over it;
+	\item[Enable/Disable Market Data Download] \textit{(admin)} Enable or
+		disable the download of the data from the source for the market;
 	\item[Configure Granularity] \textit{(admin)} Set the minimum
 		granularity of the selected market. The API scraper will
 		download data using this granularity;
@@ -50,8 +49,11 @@ user to be logged in):
 	\item[Sort Strategies] Sort strategies by their performance in a
 		specific market;
 	\item[Find Strategy] Search a strategy by name;
-	\item[Remove Strategy] Delete a strategy they wrote (they can not remove
-		strategies wrote by other users);
+	\item[Download Strategy] Download the file containing the strategy's
+		code;
+	\item[Remove Strategy] Delete a strategy (A user can delete only
+		strategies he created, except for the administrator that can
+		delete any strategy);
 	\item[Add User] \textit{(admin)} Add a new user for the application,
 		specifying its username and password;
 	\item[Browse Users] \textit{(admin)} See the list of all the users of
@@ -60,8 +62,6 @@ user to be logged in):
 	\item[View User] \textit{(admin)} See all the information about the
 		selected user (except the password);
 	\item[Remove User] \textit{(admin)} Delete a user from the application;
-	\item[Apply User's Submissions Rate Limit] \textit{(admin)} Set a limit
-		to the availability of a user to submit strategies for testing;
 	\item[Delete Data] \textit{(admin)} Delete data which satisfy some
 		criteria \exgratia{old data; data of a specific market or data
 		source, \etc};
@@ -70,8 +70,7 @@ user to be logged in):
 	\item[Find Data Source] \textit{(admin)} Select a data source;
 	\item[View Data Source] \textit{(admin)} See all the configuration of
 		the selected data source;
-	\item[Edit API Key] \textit{(admin)} Change the API key used by the API
-		scraper for the selected data source;
 	\item[Enable/Disable Data Source] \textit{(admin)} Enable or disable
-		entirely a data source;
+		entirely a data source (as if it is not present in the database,
+		but without deleting the data);
 \end{description}

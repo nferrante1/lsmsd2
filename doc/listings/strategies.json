@@ -3,25 +3,26 @@
 	"name": "MACD cross strategy v1",
 	"author": "username",
 	"runs":	[{
-		"run_config": {
+		"config": {
+			"hash": "41d8891c22e5eb149642126f34fa9f4893bf6920de4a67ae5c5e6b19d1276c26",
 			"time": 1547404200,
 			"market": "COINBASE:BTCUSD",
 			"granularity": 5,
 			...
 		},
 		"report": {
-			"net_profit": 0.83,
-			"gross_profit": 1.12,
-			"max_drawback": 0.56,
-			"hodl_profit": 0.23,
+			"netProfit": 0.83,
+			"grossProfit": 1.12,
+			"maxDrawback": 0.56,
+			"hodlProfit": 0.23,
 			"trades": [{
-				"entry_time": 1547079000,
-				"exit_time": 1547081400,
+				"entryTime": 1547079000,
+				"exitTime": 1547081400,
 				"amount": 0.25,
 				"profit": 0.97
 			},
 			{
-				"entry_time": 1547403300,
+				"entryTime": 1547403300,
 				"amount": 0.10
 			},
 			...

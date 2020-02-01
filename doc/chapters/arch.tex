@@ -21,14 +21,5 @@ The application is compound by three components:
 
 \figref{fig:arch} shows the application's architecture.
 
-\section{Third-party softwares}\label{sec:thirdparty}
-
-The following frameworks and libraries are used:
-\begin{description}
-	\item[MongoDB Java Driver v3.11.2] \textit{(Server-side)} for handling
-		MongoDB server;
-	\item[XChart v3.6.0] \textit{(Client-side)} for chart generation;
-	\item[Gson v2.8.6] \textit{(Both-side)} for JSON (de)serialization.
-\end{description}
-
-All dependencies are handled with Maven.
+\input{arch/distributed}
+\input{arch/dependencies}

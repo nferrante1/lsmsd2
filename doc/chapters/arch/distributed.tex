@@ -1,0 +1,11 @@
+\section{Replication and Sharding}\label{sec:distributed}
+The application uses replicas to ensure high availability.
+
+To ensure a good load balancing between cluster's servers the \code{Market\-Data}
+collection is sharded, because it is the biggest one and it is often read when
+running a strategy.
+
+The \code{\_id} field is the shard key since it has a good granularity (so
+\mongodb{} can split the documents into a large number of chunks). The field is
+hash-indexed, thus the chunks will be randomly distributed across the configured
+servers.

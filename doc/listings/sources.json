@@ -1,28 +1,41 @@
 [{
 	"_id": "COINBASE",
 	"enabled": true,
-	"streaming": false,
-	"api_key": "f5b9666b767dc73ea04b24e4179865510b21f1f8c75f2b6b1cc959df1cb7d193",
 	"markets": [{
-		"_id": "BTCUSD",
-		"granularity": 5,
-		"enabled": false
+		"id": "BTC-USD",
+		"baseCurrency": "BTC",
+		"quoteCurrency": "USD",
+		"granularity": 300,
+		"firstMonthAvailable": "2019-01",
+		"selectable": true,
+		"download": true,
+		"filled": false
 	},
 	{
-		"_id": "BTCEUR",
-		"granularity": 15
+		"id": "BTC-EUR",
+		"baseCurrency": "BTC",
+		"quoteCurrency": "EUR",
+		"granularity": 900,
+		"firstMonthAvailable": "2016-03",
+		"selectable": true,
+		"filled": true
 	}]
 },
 {
 	"_id": "BINANCE",
-	"api_key": "6161f31947f85e83750ea1782f42e2f5648eae055a7353f074a5b43bde41ba63",
 	"markets": [{
-		"_id": "BTCUSD",
-		"granularity": 5
+		"id": "BTC-USD",
+		"baseCurrency": "BTC",
+		"quoteCurrency": "USD",
+		"granularity": 300,
+		"selectable": true,
+		"download": true
 	},
 	{
-		"_id": "BTCEUR",
-		"granularity": 30,
-		"enabled": true
+		"id": "BTC-EUR",
+		"baseCurrency": "BTC",
+		"quoteCurrency": "EUR",
+		"granularity": 1800,
+		"firstMonthAvailable": "2017-11"
 	}]
 }]
