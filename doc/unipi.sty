@@ -19,6 +19,7 @@
 % TODO: add option to enable/disable caption formatting
 \RequirePackage[font=small,labelfont=bf,position=bottom]{caption}
 \RequirePackage{amsmath}
+\RequirePackage{interval}
 \RequirePackage{array}
 \RequirePackage{makecell}
 \RequirePackage[inline]{enumitem}
@@ -118,6 +119,8 @@
 \definecolor{bgcolor}{rgb}{0.95,0.95,0.92}
 
 \titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hspace{20pt}\textcolor{gray75}{|}\hspace{20pt}}{0pt}{\Huge\bfseries}
+
+\intervalconfig{soft open fences}
 
 \newcommand\code{\texttt}
 \newcommand\standout{\textbf}

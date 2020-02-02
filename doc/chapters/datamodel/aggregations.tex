@@ -56,11 +56,16 @@ The following \standout{Aggregation Pipelines} has been defined:
 				each bucket, the \code{\_id} of the first and
 				last document.
 		\end{enumerate}
-	\item To obtain the number of winning and losing trades we can aggregate
-		the data present in the \code{trades} field of the report.
-		%TODO: explain
+	\item Regarding the \code{Strategies} collection, to compute some of the
+		statistics defined in \chref{ch:specs}, we need to aggregate the
+		documents in the \code{run.report.trades} array in various ways.
 	\item Further aggregations may be defined in future. In particular,
 		other aggregations probably may be needed during the development
 		of the functions used by strategies to get statistics over the
-		market data.
+		market data. Moreover, during the development of the
+		application, the need for other aggregations may arise.
 \end{itemize}
+
+Note that, during the development of the application, the above pipelines may be
+implemented in some other way \exgratia{different stages or in different order}
+in order to improve the performance of the queries.
