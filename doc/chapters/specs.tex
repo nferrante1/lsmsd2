@@ -1,7 +1,10 @@
 \chapter{Specifications}\label{ch:specs}
 
 The application developed for this workgroup task is a tool for
-\standout{automated backtesting of financial trading strategies}.
+\standout{automated backtesting\footnote{\standout{NOTE:} this document makes
+use of a very domain-specific terminology. Whenever in doubt about the meaning
+of a word, try to check \appendixref{appendix:glossary}.} of financial trading
+strategies}.
 
 The application allows the user to define a strategy and to test it with the
 historical price action data of various markets. The user can then visualize
@@ -11,7 +14,8 @@ The \standout{User}, when logged-in, can write a new trading strategy. The
 strategy will execute for every \emph{trading day}\footnote{A trading day is a
 time span for which the price action, during that time span, is aggregated into
 four values: highest, lowest, opening (the price at the start of the day) and
-closing (the price at the end of the day) prices.}, having as input the highest,
+closing (the price at the end of the day) prices. See
+\appendixref{appendix:glossary} for more details.}, having as input the highest,
 lowest, opening and closing price for that day, and it must respond each time
 with a buy/sell/do-nothing decision\footnote{More specifically, the strategy can
 open multiple trades with different amounts and then close it at some time in
@@ -55,14 +59,12 @@ The \standout{Administrator} can:
 	\item Add/remove users;
 	\item Enable/disable data sources;
 	\item Delete old or no-more-relevant data;
-	\item Change various parameters for each data source \exgratia{API keys,
-		data granularity, markets};
+	\item Change various parameters for each data source \exgratia{Data
+		granularity, selectable markets, \etc};
 	\item Regenerate the data, re-downloading it from configured data
 		sources;
 	\item Enable/disable the download in streaming of new data;
 	\item Enable/disable markets for selection by users;
-	\item Set a rate-limit over the ability of users to test their
-		strategies.
 \end{itemize}
 
 There's only one administrator. The administrator is created when the
