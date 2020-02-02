@@ -12,10 +12,10 @@ are defined:
 
 \subsection{Users}
 
+Each document represents a user.
+
 \lstinputlisting[language=json, label={lst:userscollection},
 caption={\code{Users} collection example.}]{users.json}
-
-Each document represents a user.
 
 Fields' description:
 \begin{description}
@@ -28,13 +28,13 @@ Fields' description:
 
 \subsection{AuthTokens}
 
-\lstinputlisting[language=json, label={lst:authtokenscollection},
-caption={\code{AuthTokens} collection example.}]{authtokens.json}
-
 Each document represents an authorization token used to authenticate the user
 with the server. Multiple clients can connect as the same user creating a
 session (a token) for each client (this allows for a session management feature
 to be implemented in future).
+
+\lstinputlisting[language=json, label={lst:authtokenscollection},
+caption={\code{AuthTokens} collection example.}]{authtokens.json}
 
 Fields' description:
 \begin{description}
@@ -48,10 +48,10 @@ Fields' description:
 
 \subsection{Sources}
 
+Each document represents a data source.
+
 \lstinputlisting[language=json, label={lst:sourcescollection},
 caption={\code{Sources} collection example.}]{sources.json}
-
-Each document represents a data source.
 
 Fields' description:
 \begin{description}
@@ -89,11 +89,11 @@ Fields' description:
 
 \subsection{MarketData}
 
-\lstinputlisting[language=json, label={lst:marketdatacollection},
-caption={\code{MarketData} document example.}]{marketdata.json}
-
 Market data is divided into multiple documents, where each document represents a
 month of data.
+
+\lstinputlisting[language=json, label={lst:marketdatacollection},
+caption={\code{MarketData} document example.}]{marketdata.json}
 
 Fields' description:
 \begin{description}
@@ -124,10 +124,10 @@ that otherwise it will need to be frequently re-allocated.
 
 \subsection{Strategies}
 
+Each document represents a strategy.
+
 \lstinputlisting[language=json, label={lst:strategiescollection},
 caption={\code{Strategy} document example.}]{strategies.json}
-
-Each document represents a strategy.
 
 Fields' description:
 \begin{description}
