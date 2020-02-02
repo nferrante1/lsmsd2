@@ -6,7 +6,6 @@
 		"baseCurrency": "BTC",
 		"quoteCurrency": "USD",
 		"granularity": 5,
-		"firstMonthAvailable": "2019-01",
 		"selectable": true,
 		"sync": true,
 		"filled": false
@@ -16,7 +15,6 @@
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
 		"granularity": 15,
-		"firstMonthAvailable": "2016-03",
 		"selectable": true,
 		"filled": true
 	}]
@@ -36,6 +34,5 @@
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
 		"granularity": 30,
-		"firstMonthAvailable": "2017-11"
 	}]
 }]
