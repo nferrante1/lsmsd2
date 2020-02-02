@@ -1,12 +1,66 @@
 \section{Aggregation Pipelines}\label{sec:aggregations}
 
+The following \standout{Aggregation Pipelines} has been defined:
+
 \begin{itemize}
 	\item To obtain a larger granularity on the data present in a given
 		market, when we apply a strategy, we can aggregate the
-		\code{"data"} fields.
+		documents contained in the \code{data} array in the
+		\code{MarketData} collection:
+		\begin{enumerate}
+			\item \code{\$match} stage to get the document
+				containing the data for the specific market and
+				the current month. This stage includes the
+				entire shard key, so it is directed only to the
+				specific server where the shard containing the
+				document is saved;
+			\item \code{\$project} stage to exclude the \code{\_id}
+				field, no longer needed;
+			\item \code{\$redact} stage to remove empty documents
+				(with \code{null} values) from the \code{data}
+				array;
+			\item \code{\$unwind} stage to extract the documents in
+				the \code{data} field;
+			\item \code{\$bucket} stage to aggregate multiple
+				documents based on ranges of the \code{t} field.
+		\end{enumerate}
+	\item The server needs to know what is the first month for which data is
+		available for a specific market, in order to run a query on that
+		market. The following pipeline on the \code{MarketData}
+		collection is defined:
+		\begin{enumerate}
+			\item \code{\$match} stage selects all documents for a
+				specific market;
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{\_id};
+			\item \code{\$group} stage to get the value of the
+				\code{\_id} field of the first document.
+		\end{enumerate}
+	\item At the start, the scraper needs to know the
+		first and last month for which data is available for each
+		market, on order to determine the range of data already
+		available and restart downloading the data that is outside of
+		this range. The following pipeline on the \code{MarketData}
+		collection, similar to the previous one, is defined:
+		\begin{enumerate}
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{\_id};
+			\item \code{\$bucket} stage to aggregate all documents
+				for the same market into buckets and output, for
+				each bucket, the \code{\_id} of the first and
+				last document.
+		\end{enumerate}
 	\item To obtain the number of winning and losing trades we can aggregate
-		the data present in the \code{"trades"} field of the report.
-	\item Further aggregations can be found in the library functions,
-		mentioned in \chref{ch:specs}, provided to the user to develop
-		his/her strategy.
+		the data present in the \code{trades} field of the report.
+		%TODO: explain
+	\item Further aggregations may be defined in future. In particular,
+		other aggregations probably may be needed during the development
+		of the functions used by strategies to get statistics over the
+		market data.
 \end{itemize}
