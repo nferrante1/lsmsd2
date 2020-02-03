@@ -6,6 +6,7 @@
 		"config": {
 			"hash": "41d8891c22e5eb149642126f34fa9f4893bf6920de4a67ae5c5e6b19d1276c26",
 			"market": "COINBASE:BTC-USD",
+			"inverseCross": false,
 			"granularity": 5,
 			"startTime": 1328350200,
 			"endTime": 1547404200,
