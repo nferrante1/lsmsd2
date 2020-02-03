@@ -45,10 +45,10 @@ source. The following compound index can support both queries:
 \end{lstlisting}
 
 We may use index intersection to fulfill the query that gets a single market,
-but since there is no need to get all the markets with a specific id from all
-sources (we always get a specific market in a specific source), we prefer to
-define a compound index in order to save \mongodb{} the need to access two indexes
-to perform the query.
+but since there is no need to get all the markets with a specific \code{id} from
+all sources (we always get a specific market in a specific source), we prefer to
+define a compound index in order to save \mongodb{} the need to access two
+indexes to perform the query.
 
 \subsection{MarketData}
 
@@ -83,7 +83,7 @@ following:
 {"run.config.hash": 1}
 \end{lstlisting}
 
-We can leverage the \mongodb's index intersection feature in order to support
+We can exploit the \mongodb's index intersection feature in order to support
 queries that specifies the \code{name} or the \code{\_id} of a strategy and the
 \code{hash} of the configuration.
 
