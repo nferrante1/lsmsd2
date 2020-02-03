@@ -20,12 +20,13 @@ The following terms are used throughout this document.
 		of the last candle. This strategy is often evaluated in
 		comparison with other strategies, since a strategy that performs
 		worse than the HODL strategy is totally useless.
-	\item[Buy order] (or \textbf{Buy operation}) The action to buy the
-		\textit{base currency} and sell the \textit{quoting currency} at
-		the current \textit{market} price.
-	\item[Buy trade] A \textit{trade} where the \textit{entry order} is a
-		\textit{buy order} (and thus the \textit{exit order} is a
-		\textit{sell order} with the same \textit{amount}).
+	\item[Buy order] (or \textbf{Buy operation} or \textbf{Long order}) The
+		action to buy the \textit{base currency} and sell the
+		\textit{quoting currency} at the current \textit{market} price.
+	\item[Buy trade] (or \textbf{Long trade}) A \textit{trade} where the
+		\textit{entry order} is a \textit{buy order} (and thus the
+		\textit{exit order} is a \textit{sell order} with the same
+		\textit{amount}).
 	\item[Closing price] The price, at the end of a \textit{trading
 		day} in a \textit{market}, of the \textit{base currency} in
 		terms of the \textit{quoting currency}.
@@ -112,18 +113,18 @@ The following terms are used throughout this document.
 		\textit{trading days}.
 	\item[Quoting currency] The \textit{currency} at the denominator of a
 		\textit{market cross}.
-	\item[Sell order] (or \textbf{Sell operation}) The action to sell the
-		\textit{base currency} and buy the \textit{quoting currency} at
-		the current \textit{market} price.
-	\item[Sell trade] A \textit{trade} where the \textit{entry order} is a
-		\textit{sell order} (and thus the \textit{exit order} is a
-		\textit{buy order} with the same \textit{amount}). In the
-		context of this application, a \textit{strategy} never places
-		this type of trades, since it's assumed that all the
-		\textit{invested amount} when the strategy is started represents
-		the amount of \textit{quoting currency} held at the beginning
-		(note also that a strategy may be run in a \textit{inverted
-		market cross}).
+	\item[Sell order] (or \textbf{Sell operation} or \textbf{Short order})
+		The action to sell the \textit{base currency} and buy the
+		\textit{quoting currency} at the current \textit{market} price.
+	\item[Sell trade] (or \textbf{Short trade}) A \textit{trade} where the
+		\textit{entry order} is a \textit{sell order} (and thus the
+		\textit{exit order} is a \textit{buy order} with the same
+		\textit{amount}). In the context of this application, a
+		\textit{strategy} never places this type of trades, since it's
+		assumed that all the \textit{invested amount} when the strategy
+		is started represents the amount of \textit{quoting currency}
+		held at the beginning (note also that a strategy may be run in a
+		\textit{inverted market cross}).
 	\item[Strategy] A set of rules that define which \textit{trades} to
 		place and when to place them. Strategies often make use of
 		\textit{indicators} to take their decisions. In the context of
