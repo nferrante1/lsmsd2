@@ -10,6 +10,10 @@ are defined:
 	\item \code{Strategies}.
 \end{enumerate*}
 
+Small changes may be made in future to the structure and the content of each
+collection in order to ensure better performance or a simpler implementation of
+the application.
+
 \subsection{Users}
 
 Each document represents a user.
@@ -244,6 +248,12 @@ Fields' description:
 				\end{description}
 		\end{description}
 \end{description}
+
+Note that all amounts specified are expressed as a percentage of the initial
+amount. This means that when a strategy opens a trade, it will specify a
+percentage of the total invested amount. This allows the users to change the
+initial amount for a strategy and view the report without the need to rerun the
+strategy.
 
 The \code{report} document structure may be changed in future: some of its
 fields are redundancies that may be computed by aggregating the \code{trades}
