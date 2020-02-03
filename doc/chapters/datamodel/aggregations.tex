@@ -16,9 +16,6 @@ The following \standout{Aggregation Pipelines} has been defined:
 				document is saved;
 			\item \code{\$project} stage to exclude the \code{\_id}
 				field, no longer needed;
-			\item \code{\$redact} stage to remove empty documents
-				(with \code{null} values) from the \code{data}
-				array;
 			\item \code{\$unwind} stage to extract the documents in
 				the \code{data} field;
 			\item \code{\$bucket} stage to aggregate multiple
