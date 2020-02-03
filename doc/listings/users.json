@@ -1,9 +1,9 @@
 [{
 	"_id": "admin",
-	"passwordHash": "bc90f3e4f1968719e4d9040d6eba59cc5039fa599c1a00808332c5ebadb55ddc",
+	"passwordHash": "bc93e4f1968719e4d9c5ebadb55ddc",
 	"isAdmin": true
 },
 {
 	"_id": "username",
-	"passwordHash": "65e81d8538fadb5a07ff80350cad88b0de4b400cdb21840a97f2de8041be3874",
+	"passwordHash": "65ed85db21840a97f2de8041be3874"
 }]

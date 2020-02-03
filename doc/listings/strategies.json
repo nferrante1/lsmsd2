@@ -1,10 +1,10 @@
 {
-	"_id": "1da9d9b72cc6512f485ddf5375539983007a6f225c93e7d331be9ed1d45919f5",
+	"_id": "1da96f225c93e7d331be9ed1d45919f5",
 	"name": "MACD cross strategy v1",
 	"author": "username",
 	"runs":	[{
 		"config": {
-			"hash": "41d8891c22e5eb149642126f34fa9f4893bf6920de4a67ae5c5e6b19d1276c26",
+			"hash": "41d8891cde4a67ae5c5e6b19d1276c26",
 			"market": "COINBASE:BTC-USD",
 			"inverseCross": false,
 			"granularity": 5,

@@ -151,21 +151,20 @@
 \newcommand\thesubtitle{\@subtitle}
 \newcommand\thetitle{\@title}
 
-\colorlet{punct}{red!60!black}
-\definecolor{background}{HTML}{EEEEEE}
-\definecolor{delim}{RGB}{20,105,176}
+\definecolor{jsonBackground}{HTML}{EEEEEE}
 \colorlet{numb}{magenta!60!black}
+\definecolor{jsonCommentColor}{RGB}{42,0.0,255}
+\definecolor{jsonStringColor}{RGB}{127,0,85}
 
 \lstdefinelanguage{json}{
 	basicstyle=\normalfont\ttfamily,
-	numbers=left,
-	numberstyle=\scriptsize,
+	commentstyle=\color{jsonCommentColor},
+	stringstyle=\color{jsonStringColor},
 	stepnumber=1,
-	numbersep=8pt,
-	showstringspaces=false,
-	breaklines=true,
 	frame=lines,
-	backgroundcolor=\color{background},
+	string=[s]{"}{"},
+	comment=[l]{:\ "},
+	morecomment=[l]{:"},
 	literate=
 		*{0}{{{\color{numb}0}}}{1}
 		{1}{{{\color{numb}1}}}{1}
@@ -177,57 +176,19 @@
 		{7}{{{\color{numb}7}}}{1}
 		{8}{{{\color{numb}8}}}{1}
 		{9}{{{\color{numb}9}}}{1}
-		{:}{{{\color{punct}{:}}}}{1}
-		{,}{{{\color{punct}{,}}}}{1}
-		{\{}{{{\color{delim}{\{}}}}{1}
-		{\}}{{{\color{delim}{\}}}}}{1}
-		{[}{{{\color{delim}{[}}}}{1}
-		{]}{{{\color{delim}{]}}}}{1},
 }
 
-\newcommand\JSONnumbervaluestyle{\color{blue}}
-\newcommand\JSONstringvaluestyle{\color{red}}
-
-% switch used as state variable
-\newif\ifcolonfoundonthisline
-
-%TODO: numbers inside strings should not be colorized
 \lstdefinestyle{jsoncode}
 {
+	numbers=left,
+	numberstyle=\scriptsize,
+	numbersep=8pt,
+	backgroundcolor=\color{jsonBackground},
+	breaklines=true,
 	showstringspaces=false,
-	keywords={false,true},
-	alsoletter=0123456789.,
-	morestring=[s]{"}{"},
-	stringstyle=\ifcolonfoundonthisline\JSONstringvaluestyle\fi,
-	MoreSelectCharTable=%
-	\lst@DefSaveDef{`:}\colon@json{\processColon@json},
-	basicstyle=\ttfamily,
-	keywordstyle=\ttfamily\bfseries,
 	captionpos=b,
 	tabsize=2
 }
-
-% flip the switch if a colon is found in Pmode
-\newcommand\processColon@json{%
-	\colon@json%
-	\ifnum\lst@mode=\lst@Pmode%
-		\global\colonfoundonthislinetrue%
-	\fi
-}
-
-\lst@AddToHook{Output}{%
-	\ifcolonfoundonthisline%
-		\ifnum\lst@mode=\lst@Pmode%
-			\def\lst@thestyle{\JSONnumbervaluestyle}%
-		\fi
-	\fi
-	%override by keyword style if a keyword is detected!
-	\lsthk@DetectKeywords%
-}
-
-% reset the switch at the end of line
-\lst@AddToHook{EOL}%
-	{\global\colonfoundonthislinefalse}
 
 \lstdefinestyle{javacode}{%
 	backgroundcolor=\color{bgcolor},
@@ -248,6 +209,7 @@
 	showtabs=false,
 	tabsize=2
 }
+
 \lstdefinestyle{xmlcode}{%
 	backgroundcolor=\color{bgcolor},
 	commentstyle=\color{codegray},
