@@ -13,19 +13,19 @@ statistics on the performance of the strategy.
 The \standout{User}, when logged-in, can write a new trading strategy. The
 strategy will execute for every \emph{trading day}\footnote{A trading day is a
 time span for which the price action, during that time span, is aggregated into
-four values: highest, lowest, opening (the price at the start of the day) and
-closing (the price at the end of the day) prices. See
-\appendixref{appendix:glossary} for more details.}, having as input the highest,
-lowest, opening and closing price for that day, and it must respond each time
-with a buy/sell/do-nothing decision\footnote{More specifically, the strategy can
-open multiple trades with different amounts and then close it at some time in
-the future. A trade can be a long (buy) trade or a short (sell) trade. The close
-operation, consist of making the inverse of the opening operation with the same
-amount.}. Then, through the application, the user selects a market, the amount
-to invest, the time interval of the trading day and others configurable
-parameters for the selected strategy. After that, the application will apply the
-defined strategy to all the historical data available for that market. At the
-end, the application shows:
+five values: highest, lowest, opening (the price at the start of the day) and
+closing (the price at the end of the day) prices, and the volume (amount of
+asset traded). See \appendixref{appendix:glossary} for more details.}, having as
+input the highest, lowest, opening and closing price for that day, and it must
+respond each time with a buy/sell/do-nothing decision\footnote{More
+specifically, the strategy can open multiple trades with different amounts and
+then close it at some time in the future. A trade can be a long (buy) trade or a
+short (sell) trade. The close operation consist of making the inverse of the
+opening operation with the same amount.}. Then, through the application, the
+user selects a market, the amount to invest, the time interval of the trading
+day and others configurable parameters for the selected strategy. After that,
+the application will apply the defined strategy to all the historical data
+available for that market. At the end, the application shows:
 \begin{itemize}
 	\item The net profit or loss;
 	\item The gross profit \idest{the sum of the profits from all winning
@@ -47,9 +47,6 @@ compute common statistics over market data \exgratia{moving averages, standard
 deviations, common indicators like the Relative Strength Index, Moving Average
 Convergence/Divergence, Bollinger Bands margins, \etc}.
 
-The application allows the user to display assets in different sort order (top
-gainers, top losers, largest volume, \etc).
-
 Once the strategy has been developed and tested it will be available to other
 users. All users will be able to visualize the reports for this strategy so that
 they can evaluate its performance and improve it.
@@ -63,7 +60,8 @@ The \standout{Administrator} can:
 		granularity, selectable markets, \etc};
 	\item Regenerate the data, re-downloading it from configured data
 		sources;
-	\item Enable/disable the download in streaming of new data;
+	\item Enable/disable the synchronization of the data for each market
+		with the source;
 	\item Enable/disable markets for selection by users;
 \end{itemize}
 
