@@ -53,6 +53,22 @@ The following \standout{Aggregation Pipelines} has been defined:
 				each bucket, the \code{\_id} of the first and
 				last document.
 		\end{enumerate}
+	\item When the user requests the list of strategies, these are normally
+		sorted by name and paginated. So the application will use the
+		following pipeline on the \code{Strategies} collection:
+		\begin{enumerate}
+			\item \code{\$match} stage that contains some filter
+				specified by the user;
+			\item \code{\$skip} and \code{\$limit} stages to get
+				paginated results;
+			\item \code{\$project} stage to remove any unneeded
+				field;
+			\item \code{\$sort} by the \code{name} field.
+		\end{enumerate}
+	\item As in the above pipeline, whenever the application needs to
+		produce paginated results \exgratia{list of users, list of
+		markets, \etc}, a pipeline with \code{\$skip}, \code{\$limit}
+		and \code{\$sort} stages is used.
 	\item Regarding the \code{Strategies} collection, to compute some of the
 		statistics defined in \chref{ch:specs}, we need to aggregate the
 		documents in the \code{run.report.trades} array in various ways.
