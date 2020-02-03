@@ -1,4 +1,4 @@
-{
+[{
 	"_id": "1da96f225c93e7d331be9ed1d45919f5",
 	"name": "MACD cross strategy v1",
 	"author": "username",
@@ -32,4 +32,6 @@
 	},
 	...
 	]
-}
+},
+...
+]

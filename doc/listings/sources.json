@@ -17,7 +17,9 @@
 		"granularity": 15,
 		"selectable": true,
 		"filled": true
-	}]
+	},
+	...
+	]
 },
 {
 	"_id": "BINANCE",
@@ -33,6 +35,10 @@
 		"id": "BTC-EUR",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
-		"granularity": 30,
-	}]
-}]
+		"granularity": 30
+	},
+	...
+	]
+},
+...
+]
