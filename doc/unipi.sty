@@ -118,7 +118,9 @@
 \definecolor{codeblack}{rgb}{0.0,0.0,0.0}
 \definecolor{bgcolor}{rgb}{0.95,0.95,0.92}
 
-\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hspace{20pt}\textcolor{gray75}{|}\hspace{20pt}}{0pt}{\Huge\bfseries}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hspace{20pt}\textcolor{gray75}{|}}{20pt}{}
+\let\appendix@original\appendix
+\renewcommand{\appendix}{\appendix@original\titleformat{\chapter}[display]{\Huge\bfseries}{Appendix~\thechapter}{20pt}{}}
 
 \intervalconfig{soft open fences}
 
