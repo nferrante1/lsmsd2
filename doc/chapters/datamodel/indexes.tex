@@ -75,22 +75,21 @@ or by name. Thus, we define the following \standout{unique index}:
 {"name": 1}, {unique: true}
 \end{lstlisting}
 
-Since we also need to check if a strategy has been already run with a specific
-configuration \idest{a configuration with the same hash}, we also define the
+Since we also need to retrieve a specific run of a strategy, we also define the
 following:
 
 \begin{lstlisting}[language=json]
-{"run.config.hash": 1}
+{"runs.id": 1}, {unique: true}
 \end{lstlisting}
 
 We can exploit the \mongodb's index intersection feature in order to support
-queries that specifies the \code{name} or the \code{\_id} of a strategy and the
-\code{hash} of the configuration.
+queries that specifies both the \code{name} or the \code{\_id} of a strategy and
+the \code{id} of the run.
 
 To allow the application to rapidly sort strategies by the net profit (commonly
 used to represent the overall performance of a strategy), we define the
 following index:
 
 \begin{lstlisting}[language=json]
-{"run.report.netProfit": 1}
+{"runs.report.netProfit": 1}
 \end{lstlisting}

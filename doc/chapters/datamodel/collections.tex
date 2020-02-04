@@ -144,14 +144,12 @@ Fields' description:
 		list all the tests made by the users with this strategy. The
 		structure of these documents is the following:
 		\begin{description}
+			\item[id] \textit{(ObjectId)} An unique id of the run;
+			\item[user] \textit{(string)} The user who launched the
+				run;
 			\item[config] \textit{(document)} Strategy's
 				configuration used:
 				\begin{description}
-					\item[hash] \textit{(string)} An hash
-						that uniquely identifies the
-						run configuration. If two
-						configuration are equal, they
-						should have the same hash;
 					\item[market] \textit{(string)} Name of
 						the market on which the strategy
 						has been executed. Format:
