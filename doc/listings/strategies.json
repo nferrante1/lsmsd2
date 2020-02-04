@@ -15,20 +15,16 @@
 		},
 		"report": {
 			"netProfit": 0.23,
-			"maxDrawdown": 0.56,
+			"grossProfit": 0.53,
+			"grossLoss": 0.3,
 			"hodlProfit": -0.12,
-			"trades": [{
-				"entryTime": 1347079000,
-				"exitTime": 1347081400,
-				"amount": 0.25,
-				"profit": 0.04
-			},
-			{
-				"entryTime": 1547403300,
-				"amount": 0.10
-			},
-			...
-			]
+			"totalTrades": 1457,
+			"openTrades": 2,
+			"winningTrades": 752,
+			"maxConsecutiveLosing": 19,
+			"avgAmount": 0.05,
+			"avgDuration": 22.334,
+			"maxDrawdown": 0.56
 		}
 	},
 	...

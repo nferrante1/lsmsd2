@@ -189,66 +189,43 @@ Fields' description:
 						profit minus the total loss of
 						the trades (percentage of the
 						initial amount);
-					\item[maxDrawdown] \textit{(numeric)}
-						The maximum drawdown as defined
-						in \chref{ch:specs}. This is
-						expressed as a percentage of the
-						initial amount;
+					\item[grossProfit] \textit{(numeric)}
+						The gross profit, computed as
+						the total profits of all winning
+						trades;
+					\item[grossLoss] \textit{(numeric)} The
+						gross loss, computed as the
+						total losses of all losing
+						trades;
 					\item[hodlProfit] \textit{(numeric)} The
 						profit (\(\interval[open
 						right]{0}{+\infty}\)) or loss
 						(\(\interval[open
 						right]{-1}{0}\)) of the Buy and
 						Hold strategy (percentage of the
-						initial amount).
-					\item[trades] \textit{(array, optional)}
-						Array of embedded documents that
-						describes the transactions made
-						by the strategy. The structure
-						of these documents is the
-						following:
-						\begin{description}
-							\item[entryTime]
-								\textit{(timestamp)}
-								The time at
-								which the trade
-								is initiated;
-							\item[exitTime]
-								\textit{(timestamp,
-								optional)}
-								The time at
-								which the trade
-								is concluded
-								(not present if
-								the trade is
-								still open);
-							\item[amount]
-								\textit{(numeric)}
-								The amount of
-								asset traded.
-								This is a value
-								between 0 and 1
-								(percentage of
-								the initial
-								amount);
-							\item[profit]
-								\textit{(numeric,
-								optional)} The
-								profit
-								(\(\interval[open
-								right]{0}{+\infty}\))
-								or the loss
-								(\(\interval[open
-								right]{-1}{0}\))
-								of the trade,
-								expressed as a
-								percentage of
-								the traded
-								amount (not
-								present if the
-								trade is still
-								open).
-						\end{description}
+						initial amount);
+					\item[totalTrades] \textit{(integer)}
+						The total number of trades;
+					\item[openTrades] \textit{(integer)} The
+						number of uncompleted trades;
+					\item[winningTrades] \textit{(integer)}
+						The number of winning trades;
+					\item[maxConsecutiveLosing]
+						\textit{(integer)} The maximum
+						number of consecutive losing
+						trades;
+					\item[avgAmount] \textit{(numeric)} The
+						average amount of money involved
+						in trades (percentage of the
+						initial amount);
+					\item[avgDuration] \textit{(numeric)}
+						The average duration, in terms
+						of trading days, of a trade;
+					\item[maxDrawdown] \textit{(numeric)}
+						The maximum drawdown as defined
+						in \chref{ch:specs}. This is
+						expressed as a percentage of the
+						initial amount;
 				\end{description}
 		\end{description}
 \end{description}
@@ -258,9 +235,3 @@ amount. This means that when a strategy opens a trade, it will specify a
 percentage of the total invested amount. This allows the users to change the
 initial amount for a strategy and view the report without the need to rerun the
 strategy.
-
-The \code{report} document structure may be changed in future: some of its
-fields are redundancies that may be computed by aggregating the \code{trades}
-array\footnote{See \secref{sec:aggregations}.}. We will decide in future if
-those redundancies are worth to maintain or not and if other redundancies should
-be added.
