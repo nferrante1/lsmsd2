@@ -3,7 +3,7 @@
 The following terms are used throughout this document.
 
 \begin{description}
-	\item[Asset] Something with a value. In the context of this application,
+	\item[Asset] Something with a value. In the context of our application,
 		an asset is a \textit{currency}. Often, this term is used in
 		place of \textit{base currency}.
 	\item[Backtesting] A process used to estimate the performance of a
@@ -32,7 +32,7 @@ The following terms are used throughout this document.
 		terms of the \textit{quoting currency}.
 	\item[Cryptocurrency] A digital \textit{asset} used as a money
 		\exgratia{Bitcoin, Ethereum, Monero, \etc}.
-	\item[Currency] A monetary unit. In the context of this application, a
+	\item[Currency] A monetary unit. In the context of our application, a
 		currency may be a \textit{fiat currency} or a
 		\textit{cryptocurrency}. Moreover, a currency may be the
 		\textit{base} or the \textit{quoting} currency for a specific
@@ -119,7 +119,7 @@ The following terms are used throughout this document.
 	\item[Sell trade] (or \textbf{Short trade}) A \textit{trade} where the
 		\textit{entry order} is a \textit{sell order} (and thus the
 		\textit{exit order} is a \textit{buy order} with the same
-		\textit{amount}). In the context of this application, a
+		\textit{amount}). In the context of our application, a
 		\textit{strategy} never places this type of trades, since it's
 		assumed that all the \textit{invested amount} when the strategy
 		is started represents the amount of \textit{quoting currency}
@@ -128,7 +128,7 @@ The following terms are used throughout this document.
 	\item[Strategy] A set of rules that define which \textit{trades} to
 		place and when to place them. Strategies often make use of
 		\textit{indicators} to take their decisions. In the context of
-		this application, a strategy is defined by a Java class
+		our application, a strategy is defined by a Java class
 		implementing a method that is called iteratively for each
 		\textit{trading day} and places trades using some
 		library-provided methods.
@@ -137,7 +137,7 @@ The following terms are used throughout this document.
 		\textit{sell order}, with the same \textit{amount}. Opening a
 		trade means placing the first order (either the buy or the sell
 		order), closing it means placing the other order. The
-		\textit{strategies} defined for this application always take
+		\textit{strategies} defined for our application always take
 		decision in the form of trades. In the context of this
 		application, strategies always place \textit{buy trades}, since
 		it's assumed that all the \textit{invested amount} when the
