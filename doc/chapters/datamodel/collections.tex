@@ -86,8 +86,14 @@ Fields' description:
 				this is considered \code{false};
 			\item[filled] \textit{(boolean, optional)} Specifies if
 				the scraper has finished the download of old
-				data for this market or not. If not present, is
-				considered \code{false}.
+				data for this market or not. This field is
+				necessary only for some data sources
+				\exgratia{Coinbase} that does not offer the
+				possibility to determine which is the first time
+				for which data is available and so data must be
+				downloaded in reversed order (from most recent
+				data to older data). If not present, means that
+				it is not necessary and so it is not used.
 		\end{description}
 \end{description}
 
