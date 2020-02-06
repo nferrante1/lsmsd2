@@ -24,7 +24,7 @@
 {
 	"_id": "BINANCE",
 	"markets": [{
-		"id": "BTC-USD",
+		"id": "BTCUSD",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "USD",
 		"granularity": 5,
@@ -32,7 +32,7 @@
 		"sync": true
 	},
 	{
-		"id": "BTC-EUR",
+		"id": "BTCEUR",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
 		"granularity": 30
