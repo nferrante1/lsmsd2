@@ -46,6 +46,7 @@
 \def\@academicyear{}
 \def\@author{}
 \def\@authors{}
+\def\@institute{}
 \def\@class{}
 \def\@course{}
 \def\@subtitle{}
@@ -53,6 +54,7 @@
 
 \def\academicyear#1{\gdef\@academicyear{#1}}
 \def\authors#1{\gdef\@authors{#1}}
+\def\institute#1{\gdef\@institute{#1}}
 \def\class#1{\gdef\@class{#1}}
 \def\course#1{\gdef\@course{#1}}
 \def\subtitle#1{\gdef\@subtitle{#1}}
@@ -146,6 +148,7 @@
 \newcommand\theacademicyear{\@academicyear}
 \newcommand\theauthor{\@author}
 \newcommand\theauthors{\@authors}
+\newcommand\theinstitute{\@institute}
 \newcommand\theclass{\@class}
 \newcommand\thecourse{\@course}
 \newcommand\thesubtitle{\@subtitle}
@@ -230,5 +233,7 @@
 	tabsize=2
 }
 \lstset{style=jsoncode}
+
+\institute{University of Pisa}
 
 \endinput
