@@ -1,0 +1,12 @@
+package app.scraper;
+
+public class Scraper
+{
+
+	public static void main(String[] args)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+}
