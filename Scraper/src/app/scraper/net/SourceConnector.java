@@ -8,6 +8,6 @@ import app.scraper.data.Market;
 
 public interface SourceConnector
 {
-	public List<Market> getMarkets();
-	public List<Candle> getCandles(String marketId, int granularity, Instant start, PullDirection direction);
+	public List<Market> getMarkets() throws InterruptedException;
+	public List<Candle> getCandles(String marketId, int granularity, Instant start, PullDirection direction) throws InterruptedException;
 }

@@ -102,6 +102,11 @@ public class Market
 		setDocument.append("markets.$." + fieldName, value);
 	}
 	
+	public void setGranularity(int granularity)
+	{
+		this.granularity = granularity;
+	}
+	
 	public void setBaseCurrency(String baseCurrency)
 	{
 		if (this.baseCurrency.equals(baseCurrency))
@@ -137,6 +142,7 @@ public class Market
 			.append("id", id)
 			.append("baseCurrency", baseCurrency)
 			.append("quoteCurrency", quoteCurrency)
+			.append("granularity", granularity)
 			.append("filled", filled);
 	}
 	

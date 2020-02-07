@@ -10,4 +10,6 @@ module scraper
 	requires org.mongodb.driver.sync.client;
 	requires retrofit2;
 	requires retrofit2.converter.gson;
+	requires okhttp3;
+	requires okhttp3.logging;
 }

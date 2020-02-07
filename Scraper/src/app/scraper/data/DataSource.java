@@ -74,6 +74,11 @@ public class DataSource
 		return null;
 	}
 	
+	public List<Market> getMarkets()
+	{
+		return markets;
+	}
+	
 	public void mergeMarkets(List<Market> markets)
 	{
 		if (!saved) {
@@ -103,10 +108,12 @@ public class DataSource
 			savedMarket.mergeWith(upstreamMarket);
 			savedMarket.save();
 		}
-		this.markets.addAll(markets);
 		List<Document> documents = new ArrayList<Document>();
-		for (Market market: markets)
+		for (Market market: markets) {
 			documents.add(market.getCreateDocument());
+			market.setGranularity(5);
+			this.markets.add(market);
+		}
 		DBManager.getInstance().updateOne("Sources", getFilter(), new Document("$push", new Document("markets", new Document("$each", documents))));
 	}
 	
@@ -129,6 +136,8 @@ public class DataSource
 	public void save()
 	{
 		if (!saved) {
+			for (Market market: markets)
+				market.setGranularity(5);
 			Document document = getCreateDocument();
 			DBManager.getInstance().insert("Sources", document);
 			saved = true;
