@@ -45,7 +45,7 @@ public class Scraper
 		{
 			DataSource source = null;
 			for (DataSource curSource: sources)
-				if (curSource.getName() == sourceConnector.getKey())
+				if (curSource.getName().equals(sourceConnector.getKey()))
 					source = curSource;
 			if (source == null)
 				source = new DataSource(sourceConnector.getKey());

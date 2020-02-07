@@ -132,23 +132,19 @@ public final class DBManager
 		return getDatabase().getCollection(collectionName);
 	}
 	
-	public void insert(String collectionName, List<String> jsonDocuments)
+	public void insert(String collectionName, List<Document> documents)
 	{
-		List<Document> documents = new ArrayList<Document>();
-		for (String jsonDocument: jsonDocuments)
-			documents.add(Document.parse(jsonDocument));
 		getCollection(collectionName).insertMany(documents);
 	}
 	
-	public void insert(String collectionName, String jsonDocument)
+	public void insert(String collectionName, Document document)
 	{
-		Document document = Document.parse(jsonDocument);
 		getCollection(collectionName).insertOne(document);
 	}
 	
-	public List<String> find(String collectionName, Bson filter)
+	public List<Document> find(String collectionName, Bson filter)
 	{
-		List<String> jsonDocuments = new ArrayList<String>();
+		List<Document> documents = new ArrayList<Document>();
 		MongoCursor<Document> cursor;
 		if (filter == null)
 			cursor = getCollection(collectionName).find().cursor();
@@ -156,14 +152,14 @@ public final class DBManager
 			cursor = getCollection(collectionName).find(filter).cursor();
 		try {
 			while (cursor.hasNext())
-				jsonDocuments.add(cursor.next().toJson());
+				documents.add(cursor.next());
 		} finally {
 			cursor.close();
 		}
-		return jsonDocuments;
+		return documents;
 	}
 	
-	public List<String> find(String collectionName)
+	public List<Document> find(String collectionName)
 	{
 		return find(collectionName, null);
 	}
