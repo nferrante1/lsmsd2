@@ -35,6 +35,7 @@ public class Market
 	protected transient YearMonth lastDataMonth;
 	protected transient MarketData data;
 	protected transient Document setDocument;
+	protected transient DataSource source;
 	
 	private Market()
 	{
@@ -63,6 +64,11 @@ public class Market
 	public int getGranularity()
 	{
 		return granularity;
+	}
+	
+	public void setSource(DataSource source)
+	{
+		this.source = source;
 	}
 	
 	public boolean isSelectabled()
@@ -120,9 +126,9 @@ public class Market
 		registerUpdate("filled");
 	}
 	
-	Bson getFilter(String sourceName)
+	Bson getFilter()
 	{
-		return Filters.and(Filters.eq("_id", sourceName), Filters.eq("markets.id", getId()));
+		return Filters.and(Filters.eq("_id", source.getName()), Filters.eq("markets.id", getId()));
 	}
 	
 	Document getCreateDocument()
@@ -134,11 +140,11 @@ public class Market
 			.append("filled", filled);
 	}
 	
-	public void save(String sourceName)
+	public void save()
 	{
 		if (setDocument == null)
 			return;
-		DBManager.getInstance().updateOne("Sources", getFilter(sourceName), new Document("$set", setDocument));
+		DBManager.getInstance().updateOne("Sources", getFilter(), new Document("$set", setDocument));
 		setDocument = null;
 	}
 	
@@ -148,8 +154,8 @@ public class Market
 		setQuoteCurrency(market.getQuoteCurrency());
 	}
 	
-	public void delete(String sourceName)
+	public void delete()
 	{
-		DBManager.getInstance().updateOne("Sources", getFilter(sourceName), new Document("$pull", new Document("markets", new Document("id", getId()))));
+		DBManager.getInstance().updateOne("Sources", getFilter(), new Document("$pull", new Document("markets", new Document("id", getId()))));
 	}
 }

@@ -42,9 +42,18 @@ public class DataSource
 		Gson gson = new Gson();
 		List<Document> documents = DBManager.getInstance().find("Sources");
 		List<DataSource> sources = new ArrayList<DataSource>();
-		for (Document document: documents)
-			sources.add(gson.fromJson(document.toJson(), DataSource.class));
+		for (Document document: documents) {
+			DataSource source = gson.fromJson(document.toJson(), DataSource.class);
+			source.setAllMarketsSource();
+			sources.add(source);
+		}
 		return sources.toArray(new DataSource[0]);
+	}
+	
+	public void setAllMarketsSource()
+	{
+		for (Market market: markets)
+			market.setSource(this);
 	}
 	
 	public String getName()
@@ -69,6 +78,7 @@ public class DataSource
 	{
 		if (!saved) {
 			this.markets = markets;
+			setAllMarketsSource();
 			save();
 			return;
 		}
@@ -86,13 +96,14 @@ public class DataSource
 				}
 			}
 			if (upstreamMarket == null) {
-				savedMarket.delete(name);
+				savedMarket.delete();
 				savedMarketsIterator.remove();
 				continue;
 			}
 			savedMarket.mergeWith(upstreamMarket);
-			savedMarket.save(name);
+			savedMarket.save();
 		}
+		this.markets.addAll(markets);
 		List<Document> documents = new ArrayList<Document>();
 		for (Market market: markets)
 			documents.add(market.getCreateDocument());
@@ -124,34 +135,6 @@ public class DataSource
 			return;
 		}
 		for (Market market: markets)
-			market.save(name);
+			market.save();
 	}
-	
-	/*public void mergeMarkets(Market... markets)
-	{ // FIXME: various bugs...
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		if (!saved) {
-			for (Market market: markets)
-				this.markets.put(market.getId(), market);
-			DBManager.getInstance().insert("Sources", gson.toJson(this));
-			return;
-		}
-		List<String> newMarketsJson = new ArrayList<String>();
-		for (Market upstreamMarket: markets) {
-			Market savedMarket = this.markets.get(upstreamMarket.getId());
-			if (savedMarket == null) {
-				this.markets.put(upstreamMarket.getId(), upstreamMarket);
-				newMarketsJson.add(gson.toJson(upstreamMarket));
-				continue;
-			}
-			Bson filter = Filters.and(Filters.eq("_id", name), Filters.eq("markets.id", savedMarket.getId()));
-			Document setDocument = new Document();
-			if (savedMarket.getBaseCurrency() != upstreamMarket.getBaseCurrency())
-				setDocument.append("markets.$.baseCurrency", upstreamMarket.getBaseCurrency());
-			if (savedMarket.getQuoteCurrency() != upstreamMarket.getQuoteCurrency())
-				setDocument.append("markets.$.quoteCurrency", upstreamMarket.getQuoteCurrency());
-			DBManager.getInstance().updateOne("Sources", filter, new Document("$set", setDocument));
-		}.
-		DBManager.getInstance().insert("Sources", newMarketsJson);
-	}*/
 }
