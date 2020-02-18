@@ -93,7 +93,14 @@ Fields' description:
 				for which data is available and so data must be
 				downloaded in reversed order (from most recent
 				data to older data). If not present, means that
-				it is not necessary and so it is not used.
+				it is not necessary and so it is not
+				used\footnote{Note that we may decide, in order
+					to simplify the development of the
+					scraper, that the data from \emph{all}
+					sources will be downloaded in reversed
+					order. In such case, the \code{filled}
+					field will be used for all markets saved
+					in the database.}.
 		\end{description}
 \end{description}
 
