@@ -164,7 +164,7 @@ public final class DBManager
 		return find(collectionName, null);
 	}
 	
-	public long update(String collectionName, Bson filter, Bson update)
+	public long update(String collectionName, Bson filter, Document update)
 	{
 		UpdateResult updateResult = getCollection(collectionName).updateMany(filter, update);
 		return updateResult.getModifiedCount();
@@ -176,7 +176,7 @@ public final class DBManager
 		return deleteResult.getDeletedCount();
 	}
 	
-	public boolean updateOne(String collectionName, Bson filter, Bson update)
+	public boolean updateOne(String collectionName, Bson filter, Document update)
 	{
 		UpdateResult updateResult = getCollection(collectionName).updateOne(filter, update);
 		return updateResult.wasAcknowledged();
@@ -186,5 +186,11 @@ public final class DBManager
 	{
 		DeleteResult deleteResult = getCollection(collectionName).deleteOne(filter);
 		return deleteResult.wasAcknowledged();
+	}
+	
+	public boolean replaceOne(String collectionName, Bson filter, Document replacement)
+	{
+		UpdateResult updateResult = getCollection(collectionName).replaceOne(filter, replacement);
+		return updateResult.wasAcknowledged();
 	}
 }

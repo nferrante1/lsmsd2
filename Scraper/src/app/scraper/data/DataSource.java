@@ -14,7 +14,7 @@ import com.mongodb.client.model.Filters;
 
 import app.scraper.data.mongo.DBManager;
 
-public class DataSource
+public class DataSource extends DataObject
 {
 	@SerializedName(value = "_id")
 	@Expose
