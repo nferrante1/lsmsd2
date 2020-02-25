@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -192,5 +193,14 @@ public final class DBManager
 	{
 		UpdateResult updateResult = getCollection(collectionName).replaceOne(filter, replacement);
 		return updateResult.wasAcknowledged();
+	}
+	public List<Document> aggregate(String collectionName, List<Bson> stages)
+	{
+		List<Document> documents = new ArrayList<Document>();
+		AggregateIterable<Document> aggregateResult = getCollection(collectionName).aggregate(stages);
+		for(Document document : aggregateResult) {
+			documents.add(document);
+		}
+		return documents;
 	}
 }

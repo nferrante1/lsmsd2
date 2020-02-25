@@ -2,7 +2,7 @@ package app.scraper.datamodel.mongo;
 
 public abstract class NestedDataObject extends DataObject
 {
-	private DataObject container;
+	private transient DataObject container;
 
 	protected DataObject getContainer()
 	{

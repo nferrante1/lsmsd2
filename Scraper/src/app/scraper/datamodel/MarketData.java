@@ -1,6 +1,28 @@
 package app.scraper.datamodel;
 
-public class MarketData
-{
+import java.util.ArrayList;
+import java.util.List;
 
+import app.scraper.datamodel.mongo.CollectionName;
+import app.scraper.datamodel.mongo.DataObject;
+
+@CollectionName("MarketData")
+public class MarketData extends DataObject
+{
+	protected String id;
+	protected List<Candle> candles = new ArrayList<Candle>();
+	
+	public MarketData(String sourceName, String marketName, String month) 
+	{
+		super();
+		this.id = sourceName + ":" + marketName + ":" + month;
+	}
+	
+	//public static createEmpty
+	
+	public void addCandles(Candle... candles) 
+	{
+		for(Candle candle: candles)
+			this.candles.add(candle);
+	}
 }

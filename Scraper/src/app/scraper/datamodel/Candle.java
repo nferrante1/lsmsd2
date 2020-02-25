@@ -5,25 +5,23 @@ import java.time.Instant;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Candle
+import app.scraper.datamodel.mongo.CollectionName;
+import app.scraper.datamodel.mongo.NestedDataObject;
+
+@CollectionName("MarketData")
+public class Candle extends NestedDataObject
 {
 	@SerializedName(value = "t")
-	@Expose
 	protected Instant time;
-	@Expose
 	@SerializedName(value = "o")
 	protected double open;
 	@SerializedName(value = "h")
-	@Expose
 	protected double high;
 	@SerializedName(value = "l")
-	@Expose
 	protected double low;
 	@SerializedName(value = "c")
-	@Expose
 	protected double close;
 	@SerializedName(value = "v")
-	@Expose
 	protected double volume;
 	
 	public Candle(Instant time, double open, double high, double low, double close, double volume)

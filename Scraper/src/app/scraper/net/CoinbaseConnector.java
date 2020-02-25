@@ -67,11 +67,13 @@ public class CoinbaseConnector implements SourceConnector
 	
 	private void rateLimit() throws InterruptedException
 	{
+		if(lastRequestMillis == 0) return;
 		long curMillis = System.currentTimeMillis();
 		double waitTime = (curMillis - lastRequestMillis) - 1/(maxRequestsPerSecond * (1 - requestMargin));
 		if (waitTime > 0)
 			Thread.sleep((long)Math.ceil(waitTime) + (additionalRateLimit ? 1000 : 0));
 		additionalRateLimit = false;
+		lastRequestMillis = curMillis;
 	}
 
 	@Override

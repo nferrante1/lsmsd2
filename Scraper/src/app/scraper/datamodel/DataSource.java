@@ -18,6 +18,10 @@ public class DataSource extends DataObject
 	protected List<Market> markets = new ArrayList<Market>();
 	private List<Market> newMarkets = new ArrayList<Market>();
 	
+	private DataSource()
+	{
+		super();
+	}
 	public DataSource(String name)
 	{
 		super();

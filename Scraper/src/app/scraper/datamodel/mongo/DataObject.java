@@ -9,7 +9,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
@@ -46,7 +45,7 @@ public abstract class DataObject
 		return load(objType, null);
 	}
 
-	public static <T extends DataObject> List<T> load(Class<T> objType, @SuppressWarnings("exports") Bson filter)
+	public static <T extends DataObject> List<T> load(Class<T> objType, Bson filter)
 	{
 
 		Gson gson = new Gson();
@@ -95,7 +94,7 @@ public abstract class DataObject
 	{
 		Document document = new Document();
 		for (Field field: this.getClass().getDeclaredFields())
-			if (field.isAnnotationPresent(Expose.class)) {
+			if (!Modifier.isTransient(field.getModifiers())) {
 				String serializedName;
 				if (field.isAnnotationPresent(SerializedName.class))
 					serializedName = field.getAnnotation(SerializedName.class).value();
@@ -103,6 +102,7 @@ public abstract class DataObject
 					serializedName = field.getName();
 				Object value;
 				try {
+					field.setAccessible(true);
 					value = field.get(this);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();
@@ -164,9 +164,10 @@ public abstract class DataObject
 		} catch (NoSuchFieldException | SecurityException e) {
 			throw new IllegalArgumentException();
 		}
-		if (!field.isAnnotationPresent(Expose.class))
+		if (Modifier.isTransient(field.getModifiers()))
 			return;
 		try {
+			field.setAccessible(true);
 			if (field.get(this).equals(value))
 				return;
 		} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -201,5 +202,11 @@ public abstract class DataObject
 			return;
 		}
 		db.replaceOne(getCollectionName(), getIdFilter(), getCreateDocument());
+	}
+	
+	protected List<Document> aggregate(String collectionName, List<Bson> stages)
+	{
+		return db.aggregate(collectionName, stages);
+		
 	}
 }

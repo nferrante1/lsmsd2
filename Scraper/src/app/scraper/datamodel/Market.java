@@ -2,6 +2,8 @@ package app.scraper.datamodel;
 
 import java.lang.reflect.Field;
 import java.time.YearMonth;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -9,7 +11,6 @@ import org.bson.conversions.Bson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
-
 import app.scraper.datamodel.mongo.CollectionName;
 import app.scraper.datamodel.mongo.DBManager;
 import app.scraper.datamodel.mongo.NestedDataObject;
@@ -18,30 +19,31 @@ import app.scraper.datamodel.mongo.NestedDataObject;
 public class Market extends NestedDataObject
 {
 	@SerializedName(value = "id", alternate = "symbol")
-	@Expose
 	protected String id;
 	@SerializedName(value = "baseCurrency", alternate = {"base_currency", "baseAsset"})
-	@Expose
 	protected String baseCurrency;
 	@SerializedName(value = "quoteCurrency", alternate = {"quote_currency", "quoteAsset"})
-	@Expose
 	protected String quoteCurrency;
-	@Expose(serialize = false)
 	protected int granularity;
-	@Expose(serialize = false)
 	protected boolean selectable;
-	@Expose(serialize = false)
 	protected boolean sync;
-	@Expose
 	protected boolean filled;
 	protected transient YearMonth firstDataMonth;
 	protected transient YearMonth lastDataMonth;
 	protected transient MarketData data;
-	protected transient Document setDocument;
-	protected transient DataSource source;
 	
 	private Market()
 	{
+		super();
+	}
+	public Market(String id, String base, String quote )
+	{
+		super();
+		this.id = id;
+		this.baseCurrency = base;
+		this.quoteCurrency = quote;
+		this.granularity = 5;
+		
 	}
 	
 	public String getId()
@@ -59,22 +61,13 @@ public class Market extends NestedDataObject
 		return quoteCurrency;
 	}
 	
-	public String getDisplayName()
-	{
-		return baseCurrency + "/" + quoteCurrency;
-	}
-	
 	public int getGranularity()
 	{
 		return granularity;
 	}
 	
-	public void setSource(DataSource source)
-	{
-		this.source = source;
-	}
 	
-	public boolean isSelectabled()
+	public boolean isSelectable()
 	{
 		return selectable;
 	}
@@ -89,82 +82,61 @@ public class Market extends NestedDataObject
 		return filled;
 	}
 	
-	private void registerUpdate(String fieldName)
-	{
-		Field field;
-		Object value;
-		try {
-			field = getClass().getDeclaredField(fieldName);
-			value = field.get(this);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		}
-		if (setDocument == null)
-			setDocument = new Document();
-		setDocument.append("markets.$." + fieldName, value);
-	}
-	
-	public void setGranularity(int granularity)
-	{
-		this.granularity = granularity;
-	}
-	
 	public void setBaseCurrency(String baseCurrency)
 	{
-		if (this.baseCurrency.equals(baseCurrency))
-			return;
-		this.baseCurrency = baseCurrency;
-		registerUpdate("baseCurrency");
+		updateField("baseCurrency", baseCurrency);
 	}
 	
 	public void setQuoteCurrency(String quoteCurrency)
 	{
-		if (this.quoteCurrency.equals(quoteCurrency))
-			return;
-		this.quoteCurrency = quoteCurrency;
-		registerUpdate("quoteCurrency");
+		updateField("quoteCurrency", quoteCurrency);
 	}
 	
 	public void setFilled(boolean filled)
 	{
-		if (this.filled == filled)
+		updateField("filled", filled);
+	}
+	
+	public YearMonth getFirstDataMonth() {
+		if(firstDataMonth == null)
+			getAvailableDataRange();
+		return firstDataMonth;
+	}
+
+	public YearMonth getLastDataMonth() {
+		if(lastDataMonth == null)
+			getAvailableDataRange();
+		return lastDataMonth;
+	}
+	
+	protected void getAvailableDataRange() {
+		List<Document> documents = aggregate("marketData", Arrays.asList(
+			new Document("$match", new Document("_id","/^"+((DataSource)getContainer()).getName()+":"+getId()+":/")),
+			new Document("$project", new Document("_id", 1)),
+			new Document("$sort", new Document("_id", 1)),
+			new Document("$group", new Document("_id", null).append("first", new Document("$first", "$$ROOT")).
+									append("last", new Document("$last", "$$ROOT")))
+			));
+		if(documents.isEmpty())
 			return;
-		this.filled = filled;
-		registerUpdate("filled");
+		
+		String firstId = documents.get(0).getEmbedded(Arrays.asList("first", "_id"), String.class);
+		String lastId = documents.get(0).getEmbedded(Arrays.asList("last","_id"), String.class);
+		firstDataMonth = YearMonth.parse(firstId.split(":", 3)[2]);
+		lastDataMonth = YearMonth.parse(lastId.split(":", 3)[2]);
 	}
 	
-	Bson getFilter()
+	public void addCandles(Candle... candles) 
 	{
-		return Filters.and(Filters.eq("_id", source.getName()), Filters.eq("markets.id", getId()));
+		if(data == null)
+			data = new MarketData(((DataSource)getContainer()).getName(), getId(), lastDataMonth.plusMonths(1).toString());
+		
+		for(Candle candle: candles)
+			data.addCandles(candle);
 	}
-	
-	Document getCreateDocument()
+		
+	public void saveData() 
 	{
-		return new Document()
-			.append("id", id)
-			.append("baseCurrency", baseCurrency)
-			.append("quoteCurrency", quoteCurrency)
-			.append("granularity", granularity)
-			.append("filled", filled);
-	}
-	
-	public void save()
-	{
-		if (setDocument == null)
-			return;
-		DBManager.getInstance().updateOne("Sources", getFilter(), new Document("$set", setDocument));
-		setDocument = null;
-	}
-	
-	public void mergeWith(Market market)
-	{
-		setBaseCurrency(market.getBaseCurrency());
-		setQuoteCurrency(market.getQuoteCurrency());
-	}
-	
-	public void delete()
-	{
-		DBManager.getInstance().updateOne("Sources", getFilter(), new Document("$pull", new Document("markets", new Document("id", getId()))));
+		data.save();
 	}
 }

@@ -1,6 +1,7 @@
 package app.scraper;
 
 import java.time.Instant;
+import java.time.YearMonth;
 import java.util.List;
 
 import app.scraper.datamodel.Candle;
@@ -8,6 +9,7 @@ import app.scraper.datamodel.DataSource;
 import app.scraper.datamodel.Market;
 import app.scraper.net.PullDirection;
 import app.scraper.net.SourceConnector;
+import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 
 final class Worker extends Thread
@@ -39,15 +41,39 @@ final class Worker extends Thread
 			System.out.println(getName() + ": No markets! Exiting...");
 			return;
 		}
-		source.mergeMarkets(markets);
-		if (source.getName().equals("BINANCE")) {
-			List<Market> savedMarkets = source.getMarkets();
-			Market market = savedMarkets.get(5);
-			List<Candle> candles = connector.getCandles(market.getId(), market.getGranularity(), Instant.now(), PullDirection.REVERSE);
-			for (Candle candle: candles)
-				System.out.println(getName() + ": CANDLE: t=" + candle.getTime() + "; o=" + candle.getOpen() + "; h=" + candle.getHigh() + "; l=" + candle.getLow() + "; c=" + candle.getClose() + "; v=" + candle.getVolume());
-			System.out.println(getName() + ": CANDLES COUNT = " + candles.size());
+		
+		for(APIMarket curMarket: markets) 
+		{
+			Market market = source.getMarket(curMarket.getId());
+			if(market == null) 
+				source.addMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
+			else
+				source.updateMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
 		}
+		
+		source.save();
+		
+		List<Market> sourceMarkets = source.getMarkets();
+		
+		for(Market market: sourceMarkets) {
+			YearMonth month = market.getLastDataMonth();
+			if(month == null)
+				month = YearMonth.now();
+			List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month.plusMonths(1));
+			for(APICandle candle : sourceCandles)
+				market.addCandles(new Candle(
+						candle.getTime(), 
+						candle.getOpen(), 
+						candle.getHigh(), 
+						candle.getLow(), 
+						candle.getClose(), 
+						candle.getVolume()
+				));
+			market.saveData();
+			Thread.yield();
+		}
+		
+		
 		System.out.println(getName() + ": Exiting...");
 	}
 }
