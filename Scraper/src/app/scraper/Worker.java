@@ -3,11 +3,12 @@ package app.scraper;
 import java.time.Instant;
 import java.util.List;
 
-import app.scraper.data.Candle;
-import app.scraper.data.DataSource;
-import app.scraper.data.Market;
+import app.scraper.datamodel.Candle;
+import app.scraper.datamodel.DataSource;
+import app.scraper.datamodel.Market;
 import app.scraper.net.PullDirection;
 import app.scraper.net.SourceConnector;
+import app.scraper.net.data.APIMarket;
 
 final class Worker extends Thread
 {
@@ -33,7 +34,7 @@ final class Worker extends Thread
 	private void execute() throws InterruptedException
 	{
 		System.out.println(getName() + ": source=" + source.getName());
-		List<Market> markets = connector.getMarkets();
+		List<APIMarket> markets = connector.getMarkets();
 		if (markets == null) {
 			System.out.println(getName() + ": No markets! Exiting...");
 			return;

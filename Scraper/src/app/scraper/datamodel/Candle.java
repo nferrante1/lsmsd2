@@ -1,4 +1,4 @@
-package app.scraper.data;
+package app.scraper.datamodel;
 
 import java.time.Instant;
 

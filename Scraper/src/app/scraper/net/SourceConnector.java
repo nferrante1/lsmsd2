@@ -1,13 +1,15 @@
 package app.scraper.net;
 
 import java.time.Instant;
+import java.time.YearMonth;
 import java.util.List;
 
-import app.scraper.data.Candle;
-import app.scraper.data.Market;
+import app.scraper.net.data.APICandle;
+import app.scraper.net.data.APIMarket;
 
 public interface SourceConnector
 {
-	public List<Market> getMarkets() throws InterruptedException;
-	public List<Candle> getCandles(String marketId, int granularity, Instant start, PullDirection direction) throws InterruptedException;
+	public List<APIMarket> getMarkets() throws InterruptedException;
+	public List<APICandle> getLastCandles(String marketId, int granularity, Instant start) throws InterruptedException;
+	public List<APICandle> getMonthCandles(String marketId, int granularity, YearMonth month) throws InterruptedException;
 }

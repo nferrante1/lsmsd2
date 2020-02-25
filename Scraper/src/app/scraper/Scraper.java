@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import app.scraper.data.DataSource;
-import app.scraper.data.mongo.DBManager;
+import app.scraper.datamodel.DataSource;
+import app.scraper.datamodel.mongo.DBManager;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;
@@ -40,7 +40,7 @@ public class Scraper
 	
 	private static void createWorkers()
 	{
-		DataSource[] sources = DataSource.loadSources();
+		List<DataSource> sources = DataSource.load();
 		for (Map.Entry<String, Class<? extends SourceConnector>> sourceConnector: sourceConnectorMap.entrySet())
 		{
 			DataSource source = null;

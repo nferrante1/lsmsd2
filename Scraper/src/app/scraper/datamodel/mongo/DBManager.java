@@ -1,4 +1,4 @@
-package app.scraper.data.mongo;
+package app.scraper.datamodel.mongo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

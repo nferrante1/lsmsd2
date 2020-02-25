@@ -1,4 +1,4 @@
-package app.scraper.data;
+package app.scraper.datamodel;
 
 import java.lang.reflect.Field;
 import java.time.YearMonth;
@@ -10,9 +10,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
-import app.scraper.data.mongo.DBManager;
+import app.scraper.datamodel.mongo.CollectionName;
+import app.scraper.datamodel.mongo.DBManager;
+import app.scraper.datamodel.mongo.NestedDataObject;
 
-public class Market
+@CollectionName("Sources")
+public class Market extends NestedDataObject
 {
 	@SerializedName(value = "id", alternate = "symbol")
 	@Expose

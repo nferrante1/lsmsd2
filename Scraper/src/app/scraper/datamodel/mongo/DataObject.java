@@ -1,4 +1,4 @@
-package app.scraper.data;
+package app.scraper.datamodel.mongo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -12,8 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
-
-import app.scraper.data.mongo.DBManager;
 
 public abstract class DataObject
 {

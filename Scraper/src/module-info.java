@@ -2,8 +2,8 @@ module scraper
 {
 
 	
-	exports app.scraper.data to com.google.gson;
-	opens app.scraper.data to com.google.gson;
+	exports app.scraper.datamodel to com.google.gson;
+	opens app.scraper.datamodel to com.google.gson;
 	requires org.mongodb.bson;
 	requires com.google.gson;
 	requires org.mongodb.driver.core;
