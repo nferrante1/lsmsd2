@@ -36,6 +36,8 @@ final class Worker extends Thread
 	private void execute() throws InterruptedException
 	{
 		System.out.println(getName() + ": source=" + source.getName());
+		if (source.getName().equals("COINBASE"))
+			return;
 		List<APIMarket> markets = connector.getMarkets();
 		if (markets == null) {
 			System.out.println(getName() + ": No markets! Exiting...");
@@ -59,7 +61,11 @@ final class Worker extends Thread
 			YearMonth month = market.getLastDataMonth();
 			if(month == null)
 				month = YearMonth.now();
-			List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month.plusMonths(1));
+			else if (month.equals(YearMonth.now()))
+				month = market.getFirstDataMonth().minusMonths(1);
+			else
+				month = month.plusMonths(1);
+			List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
 			for(APICandle candle : sourceCandles)
 				market.addCandles(new Candle(
 						candle.getTime(), 

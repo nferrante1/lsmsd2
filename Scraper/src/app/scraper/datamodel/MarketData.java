@@ -3,12 +3,15 @@ package app.scraper.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 import app.scraper.datamodel.mongo.CollectionName;
 import app.scraper.datamodel.mongo.DataObject;
 
 @CollectionName("MarketData")
 public class MarketData extends DataObject
 {
+	@SerializedName(value = "_id")
 	protected String id;
 	protected List<Candle> candles = new ArrayList<Candle>();
 	

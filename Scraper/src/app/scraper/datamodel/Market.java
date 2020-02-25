@@ -2,6 +2,7 @@ package app.scraper.datamodel;
 
 import java.lang.reflect.Field;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -129,7 +130,7 @@ public class Market extends NestedDataObject
 	public void addCandles(Candle... candles) 
 	{
 		if(data == null)
-			data = new MarketData(((DataSource)getContainer()).getName(), getId(), lastDataMonth.plusMonths(1).toString());
+			data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()).toString());
 		
 		for(Candle candle: candles)
 			data.addCandles(candle);
@@ -138,5 +139,6 @@ public class Market extends NestedDataObject
 	public void saveData() 
 	{
 		data.save();
+		data = null;
 	}
 }

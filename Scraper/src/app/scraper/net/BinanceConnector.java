@@ -23,6 +23,8 @@ import app.scraper.datamodel.Candle;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -59,13 +61,17 @@ public class BinanceConnector implements SourceConnector
 	
 	public BinanceConnector()
 	{
-		Gson gson = new GsonBuilder().registerTypeAdapter(Candle.class, new CandleDeserializer()).create();
-		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").addConverterFactory(GsonConverterFactory.create(gson)).build();
+		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+		interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
+		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
 	}
 	
 	private void rateLimit() throws InterruptedException
 	{
+		Thread.sleep(3000);
 		LocalTime curTime = LocalTime.now();
 		int curMinute = curTime.getHour() * 60 + curTime.getMinute();
 		int remainingSeconds = 60 - curTime.getSecond();
@@ -170,6 +176,7 @@ public class BinanceConnector implements SourceConnector
 			if (end.isAfter(lastMonth))
 				end = lastMonth;
 			candles.addAll(getCandles(marketId, granularity, start, end));
+			start = end.plusSeconds(1);
 		}
 		return candles;
 	}

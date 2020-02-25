@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class CoinbaseConnector implements SourceConnector
 	
 	private void rateLimit() throws InterruptedException
 	{
+		Thread.sleep(3000);
 		if(lastRequestMillis == 0) return;
 		long curMillis = System.currentTimeMillis();
 		double waitTime = (curMillis - lastRequestMillis) - 1/(maxRequestsPerSecond * (1 - requestMargin));
@@ -139,7 +141,10 @@ public class CoinbaseConnector implements SourceConnector
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			if (end.isAfter(lastMonth))
 				end = lastMonth;
-			candles.addAll(getCandles(marketId, granularity, start, end));
+			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
+			Collections.reverse(curCandles);
+			candles.addAll(curCandles);
+			start = end.plusSeconds(1);
 		}
 		return candles;
 	}
