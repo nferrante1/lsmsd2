@@ -1,0 +1,8 @@
+title Browse Market
+
+Client->Server:message_code, numPagina, [filter]
+Client<-Server:list <market_name, granularity, [dataSync], [selectable]>
+
+
+consider dataSync and selectable only if admin
+end

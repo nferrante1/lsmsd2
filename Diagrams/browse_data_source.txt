@@ -1,0 +1,4 @@
+title Browse Data Source
+
+Client->Server:message_code
+Client<-Server:list <dataSource>

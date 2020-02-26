@@ -1,0 +1,4 @@
+title Run Strategy
+
+Client->Server:message_code, ID_strategy, parameters
+Client<-Server:report (canDelete)

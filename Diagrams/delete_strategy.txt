@@ -1,0 +1,4 @@
+title Delete Strategy
+
+Client->Server:message_code, ID_strategy
+Client<-Server:OK

@@ -1,0 +1,4 @@
+title Delete User
+
+Client->Server:message_code, username
+Client<-Server:OK

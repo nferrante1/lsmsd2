@@ -1,0 +1,4 @@
+title Delete Data
+
+Client->Server:message_code, [rangeDate], [nome_parziale]
+Client<-Server:OK

@@ -1,0 +1,4 @@
+title Delete Report
+
+Client->Server:message_code, ID_report
+Client<-Server:OK

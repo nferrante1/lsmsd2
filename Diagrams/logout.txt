@@ -1,0 +1,3 @@
+title Logout
+
+Client->Server:message_code

@@ -1,0 +1,4 @@
+title Browse Report
+
+Client->Server:message_code, numPagina, [filter]
+Client<-Server:list<{ID, nomeMercato, rangeTemporale, utenteCreatore}>

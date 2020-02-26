@@ -1,0 +1,4 @@
+title Login
+
+Client->Server:message_code, username, password
+Client<-Server:authToken, isAdmin
