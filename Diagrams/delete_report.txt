@@ -1,4 +1,4 @@
 title Delete Report
 
-Client->Server:message_code, ID_report
+Client->Server:MSG_CODE, reportId
 Client<-Server:OK

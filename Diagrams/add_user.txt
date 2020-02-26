@@ -1,4 +1,4 @@
 title Add User
 
-Client->Server:message_code, username, password
+Client->Server:MSG_CODE, username, password
 Client<-Server:OK

@@ -1,4 +1,4 @@
 title Browse Data Source
 
-Client->Server:message_code
-Client<-Server:list <dataSource>
+Client->Server:MSG_CODE
+Client<-Server:List<DataSource>

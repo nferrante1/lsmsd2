@@ -1,4 +1,4 @@
 title Configure Market
 
-Client->Server:message_code, market_name, granularity, dataSync, selectable
+Client->Server:MSG_CODE, marketName, granularity, dataSync, selectable
 Client<-Server:OK

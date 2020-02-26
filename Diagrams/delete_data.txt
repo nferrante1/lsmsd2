@@ -1,4 +1,4 @@
 title Delete Data
 
-Client->Server:message_code, [rangeDate], [nome_parziale]
+Client->Server:MSG_CODE, [rangeDate], [partial_name]
 Client<-Server:OK

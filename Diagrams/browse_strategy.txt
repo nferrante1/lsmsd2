@@ -1,4 +1,4 @@
 title Browse Strategy
 
-Client->Server:message_code, numPagina, [filter]
-Client<-Server:list <strategy (ID + name)>
+Client->Server:MSG_CODE, numPage, [filter]
+Client<-Server:List<Strategy(ID + name)>
