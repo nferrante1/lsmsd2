@@ -139,6 +139,11 @@ public class Market extends NestedDataObject
 	public void saveData() 
 	{
 		data.save();
+		YearMonth newMonth = data.getMonth();
+		if (lastDataMonth == null || newMonth.isAfter(lastDataMonth))
+			lastDataMonth = newMonth;
+		if (firstDataMonth == null || newMonth.isBefore(firstDataMonth))
+			firstDataMonth = newMonth;
 		data = null;
 	}
 }

@@ -36,8 +36,6 @@ final class Worker extends Thread
 	private void execute() throws InterruptedException
 	{
 		System.out.println(getName() + ": source=" + source.getName());
-		if (source.getName().equals("COINBASE"))
-			return;
 		List<APIMarket> markets = connector.getMarkets();
 		if (markets == null) {
 			System.out.println(getName() + ": No markets! Exiting...");
@@ -55,31 +53,41 @@ final class Worker extends Thread
 		
 		source.save();
 		
+		if (!source.isEnabled())
+		{
+			System.out.println(getName() + ": Source not enabled. Exiting...");
+			return;
+		}
+		
 		List<Market> sourceMarkets = source.getMarkets();
 		
-		for(Market market: sourceMarkets) {
-			YearMonth month = market.getLastDataMonth();
-			if(month == null)
-				month = YearMonth.now();
-			else if (month.equals(YearMonth.now()))
-				month = market.getFirstDataMonth().minusMonths(1);
-			else
-				month = month.plusMonths(1);
-			List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
-			for(APICandle candle : sourceCandles)
-				market.addCandles(new Candle(
-						candle.getTime(), 
-						candle.getOpen(), 
-						candle.getHigh(), 
-						candle.getLow(), 
-						candle.getClose(), 
-						candle.getVolume()
-				));
-			market.saveData();
-			Thread.yield();
+		while(true) {
+			for(Market market: sourceMarkets) {
+				if (!market.isSyncEnabled())
+					continue;
+				YearMonth month = market.getLastDataMonth();
+				if(month == null)
+					month = YearMonth.now();
+				else if (month.equals(YearMonth.now()))
+					month = market.getFirstDataMonth().minusMonths(1);
+				else
+					month = month.plusMonths(1);
+				List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
+				for(APICandle candle : sourceCandles)
+					market.addCandles(new Candle(
+							candle.getTime(), 
+							candle.getOpen(), 
+							candle.getHigh(), 
+							candle.getLow(), 
+							candle.getClose(), 
+							candle.getVolume()
+					));
+				market.saveData();
+				Thread.yield();
+			}
 		}
 		
 		
-		System.out.println(getName() + ": Exiting...");
+		//System.out.println(getName() + ": Exiting...");
 	}
 }

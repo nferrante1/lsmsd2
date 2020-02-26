@@ -1,5 +1,6 @@
 package app.scraper.datamodel;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,5 +28,10 @@ public class MarketData extends DataObject
 	{
 		for(Candle candle: candles)
 			this.candles.add(candle);
+	}
+	
+	public YearMonth getMonth()
+	{
+		return YearMonth.parse(id.split(":", 3)[2]);
 	}
 }
