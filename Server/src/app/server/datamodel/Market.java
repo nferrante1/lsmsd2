@@ -1,4 +1,4 @@
-package app.scraper.datamodel;
+package app.server.datamodel;
 
 import java.lang.reflect.Field;
 import java.time.YearMonth;
@@ -17,14 +17,16 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
-import app.scraper.datamodel.mongo.CollectionName;
-import app.scraper.datamodel.mongo.DBManager;
-import app.scraper.datamodel.mongo.NestedDataObject;
+import app.server.datamodel.mongo.CollectionName;
+import app.server.datamodel.mongo.DBManager;
+import app.server.datamodel.mongo.DataObjectId;
+import app.server.datamodel.mongo.NestedDataObject;
 
-@CollectionName("Sources")
+@CollectionName(value = "Sources", nestedName = "markets")
 public class Market extends NestedDataObject
 {
 	@SerializedName(value = "id", alternate = "symbol")
+	@DataObjectId
 	protected String id;
 	@SerializedName(value = "baseCurrency", alternate = {"base_currency", "baseAsset"})
 	protected String baseCurrency;

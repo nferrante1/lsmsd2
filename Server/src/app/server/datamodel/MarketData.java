@@ -1,4 +1,4 @@
-package app.scraper.datamodel;
+package app.server.datamodel;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -6,16 +6,22 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-import app.scraper.datamodel.mongo.CollectionName;
-import app.scraper.datamodel.mongo.DataObject;
+import app.server.datamodel.mongo.CollectionName;
+import app.server.datamodel.mongo.DataObject;
+import app.server.datamodel.mongo.DataObjectId;
 
 @CollectionName("MarketData")
 public class MarketData extends DataObject
 {
+	@DataObjectId
 	@SerializedName(value = "_id")
 	protected String id;
 	protected List<Candle> candles = new ArrayList<Candle>();
 	
+	private MarketData() 
+	{
+		super();
+	}
 	
 	public MarketData(String sourceName, String marketName, String month) 
 	{
@@ -34,5 +40,10 @@ public class MarketData extends DataObject
 	public YearMonth getMonth()
 	{
 		return YearMonth.parse(id.split(":", 3)[2]);
+	}
+	
+	public List<Candle> getCandles()
+	{
+		return this.candles;
 	}
 }
