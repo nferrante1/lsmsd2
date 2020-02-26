@@ -9,6 +9,7 @@ public abstract class Menu
 {
 	protected String prompt;
 	protected abstract SortedSet<MenuEntry> getMenu();
+	protected static int currentPage = 0;
 	protected static Protocol protocol = Protocol.getInstance();
 	protected static User loggedUser;
 

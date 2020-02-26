@@ -13,6 +13,12 @@ public class UserMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "Find all strategies", this::handleBrowseStrategies));
 		menu.add(new MenuEntry(2, "Add a new strategy", this::handleAddStrategy));
+		if (loggedUser.isOwner()) {
+			menu.add(new MenuEntry(3, "Find all users", this::handleBrowseUsers));
+			menu.add(new MenuEntry(4, "Add a new user", this::handleAddUser));
+			menu.add(new MenuEntry(5, "Find all data sources", this::handleBrowseDataSource));
+			menu.add(new MenuEntry(6, "Delete data", this::handleDeleteData));
+		}
 		menu.add(new MenuEntry(0, "Log-Out", true, this::handleLogout));
 		return menu;
 	}
@@ -34,6 +40,26 @@ public class UserMenu extends Menu
 	}
 
 	private void handleAddStrategy(MenuEntry entry)
+	{
+		
+	}
+	
+	private void handleBrowseUsers(MenuEntry entry)
+	{
+		
+	}
+	
+	private void handleAddUser(MenuEntry entry)
+	{
+		
+	}
+	
+	private void handleBrowseDataSource(MenuEntry entry)
+	{
+		
+	}
+	
+	private void handleDeleteData(MenuEntry entry)
 	{
 		
 	}
