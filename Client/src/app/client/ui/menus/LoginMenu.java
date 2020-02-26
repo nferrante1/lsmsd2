@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import app.client.ui.Console;
 import app.client.ui.menus.forms.LoginForm;
 
 public class LoginMenu extends Menu
@@ -26,13 +25,7 @@ public class LoginMenu extends Menu
 
 	private void doLogin(String username, String password)
 	{
-		ResponseMessage resMsg = protocol.performLogin(new Customer(username, password));
-		if (!resMsg.isSuccess()) {
-			Console.println(resMsg.getErrorMsg());
-			return;
-		}
-		loggedUser = (User)resMsg.getEntity();
-		Console.println("Successfully logged in as " + loggedUser.getUsername() + "!");
+		//mandare la login al server. Gestire errori
 		new UserMenu().show();
 	}
 }

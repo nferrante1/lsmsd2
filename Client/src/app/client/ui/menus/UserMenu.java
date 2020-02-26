@@ -4,6 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import app.client.ui.Console;
+import ristogo.ui.menus.RestaurantListMenu;
 
 public class UserMenu extends Menu
 {
@@ -25,18 +26,12 @@ public class UserMenu extends Menu
 
 	private void handleLogout(MenuEntry entry)
 	{
-		ResponseMessage resMsg = protocol.performLogout();
-		loggedUser = null;
-		if (!resMsg.isSuccess()) {
-			Console.println(resMsg.getErrorMsg());
-			return;
-		}
-		Console.println("Sucessfully logged out!");
+		//mandare logout al server
 	}
 
 	private void handleBrowseStrategies(MenuEntry entry)
 	{
-	
+		new StrategyListMenu().show();
 	}
 
 	private void handleAddStrategy(MenuEntry entry)
