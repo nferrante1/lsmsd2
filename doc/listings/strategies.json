@@ -9,8 +9,8 @@
 			"market": "COINBASE:BTC-USD",
 			"inverseCross": false,
 			"granularity": 5,
-			"startTime": 1328350200,
-			"endTime": 1547404200,
+			"startTime": ISODate('2012-02-04T10:10:00.000Z'),
+			"endTime": ISODate('2019-01-13T18:30:00.000Z'),
 			...
 		},
 		"report": {

@@ -47,7 +47,7 @@ Fields' description:
 	\item[isAdmin] \textit{(boolean, optional)} Specifies whether the user
 		is the administrator or not; if not present, is considered
 		\code{false};
-	\item[expireTime] \textit{(timestamp)} Token expire time.
+	\item[expireTime] \textit{(ISODate)} Token expire time.
 \end{description}
 
 \subsection{Sources}
@@ -120,7 +120,7 @@ Fields' description:
 		document represent a trading day (candle). The structure of
 		these documents is the following:
 		\begin{description}
-			\item[t] \textit{(timestamp)} The opening time of the
+			\item[t] \textit{(ISODate)} The opening time of the
 				day;
 			\item[o] \textit{(numeric)} The opening price of the
 				day;
@@ -179,11 +179,11 @@ Fields' description:
 						multiple of the minimum
 						granularity of data available);
 					\item[startTime]
-						\textit{(timestamp)} Time of the
+						\textit{(ISODate)} Time of the
 						first data on which the strategy
 						has been executed;
 					\item[endTime]
-						\textit{(timestamp)} Time of the
+						\textit{(ISODate)} Time of the
 						last data on which the strategy
 						has been executed;
 					\item[\ldots] Other fields may be
