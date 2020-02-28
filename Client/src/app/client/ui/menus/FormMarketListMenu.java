@@ -27,19 +27,17 @@ public class FormMarketListMenu extends FormMenu<Market> {
 		int i=1;
 		//per ogni market i trovato ...
 
-		menu.add(new MenuEntry(i, market.getName() + " " + market.getGranularity(), this::handleSelectMarket, market));
+		menu.add(new FormMenuEntry<MenuEntry, Market>(i, market.getName() + " " + market.getGranularity(), this::handleSelectMarket, market));
 				
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		
 		return menu;
 	}
 	
-	private void handleSelectMarket(MenuEntry entry)
+	private Market handleSelectMarket(MenuEntry entry)
 	{
-		//richiedere informazioni market al server
-		//stampare informazioni market Console.print(strategy.toString);
-		
 		currentPage = 0;
+		return (Market) entry.getHandlerData();
 	}
 	
 	

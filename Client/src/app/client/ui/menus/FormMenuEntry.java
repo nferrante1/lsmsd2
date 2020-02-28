@@ -4,16 +4,19 @@ import java.util.function.Function;
 
 public class FormMenuEntry<T, R> extends MenuEntry {
 	
-	protected Function<MenuEntry, Market> formHandler;
+	protected Function<T, R> formHandler;
 	
-	public FormMenuEntry(int key, String text, Function<MenuEntry,Market> handler, Object handlerData) {
+	public FormMenuEntry(int key, String text, Function<T,R> handler, Object handlerData) {
 		super(key, text, null, null);
 		formHandler = handler;
 	}
 	
 	public R triggerFormHandler()
 	{
-		if (this.formHandler != null)
-			this.formHandler.apply(this);
+		if (this.formHandler != null) {
+			R r = this.formHandler.apply((T)this);
+			return r;
+		}
+		return null;
 	}
 }
