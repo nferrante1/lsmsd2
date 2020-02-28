@@ -72,9 +72,13 @@ public abstract class DataObject
 
 	public static <T extends DataObject> List<T> load(Class<T> objType, Bson filter)
 	{
-
+		return load(objType, filter, null, false, 0, 0);
+	}
+	
+	public static <T extends DataObject> List<T> load(Class<T> objType, Bson filter, String fieldName, boolean ascending, int pageNumber, int perPage)
+	{
 		Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantTypeConverter()).create();
-		List<Document> documents = DBManager.getInstance().find(getCollectionName(objType), filter);
+		List<Document> documents = DBManager.getInstance().find(getCollectionName(objType), filter, fieldName, ascending, pageNumber*perPage, perPage );
 		List<T> sources = new ArrayList<T>();
 		for (Document document: documents) {
 			T source = gson.fromJson(document.toJson(), objType);
@@ -86,6 +90,31 @@ public abstract class DataObject
 	
 	protected void postLoad()
 	{
+		for(Field field : getClass().getDeclaredFields())
+		{	
+			if (!Modifier.isTransient(field.getModifiers())) 
+			{
+				Object value;
+				field.setAccessible(true);
+				try 
+				{
+					value = field.get(this);
+				} catch (IllegalArgumentException | IllegalAccessException e)
+				{
+					e.printStackTrace();
+					throw new UnsupportedOperationException();	
+				}
+				if (!(value instanceof List<?>)) 
+					continue;
+				List<?> list = (List<?>) value;
+				
+				for (Object obj: list) {
+					NestedDataObject dataObj = (NestedDataObject)obj;
+					dataObj.setContainer(this);
+				}
+			}
+			
+		}
 		saved = true;
 	}
 	
@@ -158,16 +187,15 @@ public abstract class DataObject
 	
 	Bson getIdFilter()
 	{
-		List<Bson> filters = new ArrayList<Bson>();
-		HashMap<String, Object> hm = composeIdFilter();
-		for(Map.Entry<String, Object> mapEntry : hm.entrySet()) 
-		{
-			filters.add(Filters.eq(mapEntry.getKey(), mapEntry.getValue()));
-		}
-		return filters.size() > 1 ? Filters.and(filters) : filters.get(0);
+		return buildFilter(composeIdFilter());
 	}
 	
 	protected HashMap<String, Object> composeIdFilter()
+	{
+		return composeIdFilter("");
+	}
+	
+	protected HashMap<String, Object> composeIdFilter(String prefix)
 	{
 		Object value;
 		
@@ -187,9 +215,25 @@ public abstract class DataObject
 				} else {
 					serializedName = field.getName();
 				}
-				filters.put(serializedName, value);
+				filters.put(prefix+serializedName, value);
 			}
 		return filters;
+	}
+	
+	protected Bson buildFilter(HashMap<String, Object>... hms) 
+	{
+		List<Bson> filters = new ArrayList<Bson>();
+		
+		for(HashMap<String, Object> hm : hms) 
+		{
+			
+			for(Map.Entry<String, Object> mapEntry : hm.entrySet()) 
+			{
+				filters.add(Filters.eq(mapEntry.getKey(), mapEntry.getValue()));
+			}
+			
+		}
+		return filters.size() > 1 ? Filters.and(filters) : filters.get(0);
 	}
 	
 	protected void updateField(String fieldName, Object value)

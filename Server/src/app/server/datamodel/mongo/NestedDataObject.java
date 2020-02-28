@@ -25,24 +25,11 @@ public abstract class NestedDataObject extends DataObject
 	}
 	
 	@Override
-	Bson getIdFilter()
+	protected HashMap<String, Object> composeIdFilter()
 	{
-		List<Bson> filters = new ArrayList<Bson>();
-		HashMap<String, Object> hm = composeIdFilter();
-		String nestedName = getClass().getAnnotation(CollectionName.class).nestedName();
-		
-		for(Map.Entry<String, Object> mapEntry : hm.entrySet()) 
-		{
-			filters.add(Filters.eq(nestedName + "." + mapEntry.getKey(), mapEntry.getValue()));
-		}
-		
-		hm = container.composeIdFilter();
-		for(Map.Entry<String, Object> mapEntry : hm.entrySet()) 
-		{
-			filters.add(Filters.eq(mapEntry.getKey(), mapEntry.getValue()));
-		}	
-		
-		return filters.size() > 1 ? Filters.and(filters) : filters.get(0);
+		HashMap<String,Object> hm = super.composeIdFilter(getClass().getAnnotation(CollectionName.class).nestedName());
+		hm.putAll(container.composeIdFilter());
+		return hm;
 	}
 	
 	@Override

@@ -67,4 +67,10 @@ public class Candle extends NestedDataObject
 	{
 		return volume;
 	}
+	
+	@Override
+	public void delete()
+	{
+		throw new UnsupportedOperationException();
+	}
 }

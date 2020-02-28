@@ -46,4 +46,11 @@ public class MarketData extends DataObject
 	{
 		return this.candles;
 	}
+	
+	/*@Override
+	protected void postLoad() 
+	{
+		for(Candle candle : candles) 
+			candle.setContainer(this);
+	}*/
 }

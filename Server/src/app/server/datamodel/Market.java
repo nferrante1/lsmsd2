@@ -36,8 +36,6 @@ public class Market extends NestedDataObject
 	protected boolean selectable;
 	protected boolean sync;
 	protected boolean filled;
-	protected transient YearMonth firstDataMonth;
-	protected transient YearMonth lastDataMonth;
 	protected transient MarketData data;
 	
 	private Market()
@@ -106,35 +104,15 @@ public class Market extends NestedDataObject
 	}
 	
 	public YearMonth getFirstDataMonth() {
-		if(firstDataMonth == null)
-			getAvailableDataRange();
-		return firstDataMonth;
+		return DataRangeCache.getInstance().getStartMonth(((DataSource)getContainer()).getName() + ":" + getId());
+
 	}
 
 	public YearMonth getLastDataMonth() {
-		if(lastDataMonth == null)
-			getAvailableDataRange();
-		return lastDataMonth;
+		return DataRangeCache.getInstance().getEndMonth(((DataSource)getContainer()).getName() + ":" + getId());
 	}
 	
-	protected void getAvailableDataRange() {
 	
-		List<Document> documents = aggregate(
-				"MarketData", 
-				Arrays.asList(
-				Aggregates.match(Filters.regex("_id", "^"+((DataSource)getContainer()).getName()+":"+getId()+":")),
-				Aggregates.project(Projections.fields(Projections.include("_id"))),
-				Aggregates.sort(Sorts.ascending("_id")),
-				Aggregates.group(null, Accumulators.first("first","$$ROOT"),Accumulators.last("last", "$$ROOT"))));
-		if(documents.isEmpty())
-			return;
-		
-		String firstId = documents.get(0).getEmbedded(Arrays.asList("first", "_id"), String.class);
-		String lastId = documents.get(0).getEmbedded(Arrays.asList("last","_id"), String.class);
-		
-		firstDataMonth = YearMonth.parse(firstId.split(":", 3)[2]);
-		lastDataMonth = YearMonth.parse(lastId.split(":", 3)[2]);
-	}
 	
 	public void addCandles(Candle... candles) 
 	{
@@ -149,10 +127,11 @@ public class Market extends NestedDataObject
 	{
 		data.save();
 		YearMonth newMonth = data.getMonth();
-		if (lastDataMonth == null || newMonth.isAfter(lastDataMonth))
-			lastDataMonth = newMonth;
-		if (firstDataMonth == null || newMonth.isBefore(firstDataMonth))
-			firstDataMonth = newMonth;
+		if (getLastDataMonth() == null || newMonth.isAfter(getLastDataMonth()))
+			DataRangeCache.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
+		if (getFirstDataMonth() == null || newMonth.isBefore(getFirstDataMonth()))
+			DataRangeCache.getInstance().setStartMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
+		
 		data = null;
 	}
 }

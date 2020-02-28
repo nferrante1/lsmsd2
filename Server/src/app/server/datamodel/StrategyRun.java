@@ -9,4 +9,6 @@ public class StrategyRun extends NestedDataObject {
 	protected User user;
 	protected Config config;
 	protected Report report;
+	
+	
 }

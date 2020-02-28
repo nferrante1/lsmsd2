@@ -36,13 +36,13 @@ public class DataSource extends DataObject
 		return load(DataSource.class);
 	}
 	
-	@Override
+	/*@Override
 	protected void postLoad()
 	{
 		super.postLoad();
 		for (Market market: markets)
 			market.setContainer(this);
-	}
+	}*/
 	
 	public String getName()
 	{

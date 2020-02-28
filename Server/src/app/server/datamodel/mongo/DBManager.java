@@ -9,11 +9,13 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
@@ -143,14 +145,28 @@ public final class DBManager
 		getCollection(collectionName).insertOne(document);
 	}
 	
-	public List<Document> find(String collectionName, Bson filter)
+	public List<Document> find(String collectionName, Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
 		List<Document> documents = new ArrayList<Document>();
 		MongoCursor<Document> cursor;
+		FindIterable<Document> result;
 		if (filter == null)
-			cursor = getCollection(collectionName).find().cursor();
+			result = getCollection(collectionName).find();
 		else
-			cursor = getCollection(collectionName).find(filter).cursor();
+			result = getCollection(collectionName).find(filter);
+		
+		if(skip > 0) 
+			result = result.skip(skip);
+		if(limit > 0) 
+			result = result.limit(limit);
+		if(sortField != null)
+			if(ascending)
+				result = result.sort(Sorts.ascending(sortField));
+			else
+				result = result.sort(Sorts.descending(sortField));
+		
+		cursor = result.cursor();
+		
 		try {
 			while (cursor.hasNext())
 				documents.add(cursor.next());
@@ -158,6 +174,18 @@ public final class DBManager
 			cursor.close();
 		}
 		return documents;
+	}
+	
+	public List<Document> find(String collectionName, Bson filter, String sortField, boolean ascending){
+		return find(collectionName, filter, sortField, ascending, 0, 0);
+	}
+	public List<Document> find(String collectionName, Bson filter, String sortField){
+		return find(collectionName, filter, sortField, true);
+	}
+	
+	public List<Document> find(String collectionName, Bson filter)
+	{
+		return find(collectionName, filter, null);
 	}
 	
 	public List<Document> find(String collectionName)
@@ -202,5 +230,10 @@ public final class DBManager
 			documents.add(document);
 		}
 		return documents;
+	}
+	
+	public List<Document> findEmbedded(String collectionName, Bson filter)
+	{
+		
 	}
 }

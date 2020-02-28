@@ -3,9 +3,11 @@ package app.server;
 import java.util.List;
 
 import app.server.datamodel.Candle;
+import app.server.datamodel.DataRangeCache;
 import app.server.datamodel.DataSource;
 import app.server.datamodel.Market;
 import app.server.datamodel.MarketData;
+import app.server.datamodel.Strategy;
 import app.server.datamodel.mongo.DBManager;
 
 public class Server {
@@ -13,26 +15,10 @@ public class Server {
 	public static void main(String[] args)
 	{
 		setupDBManager();
-		List<DataSource> sources = DataSource.load();
-		for(DataSource source: sources) {
-			System.out.println(source.getName());
-			List<Market> markets = source.getMarkets();
-			for(Market market : markets) {
-				System.out.println(market.getId() + market.getBaseCurrency() + market.getQuoteCurrency());
-				market.delete();
-				break;
-			}
-		}
-		List<MarketData> datas = MarketData.load(MarketData.class);
-		for(MarketData data : datas) {
-			List<Candle> candles = data.getCandles();
-			for(Candle candle : candles) 
-			{
-				candle.delete();
-				break;
-				
-			}
-		}
+
+		List<Strategy> strategies = Strategy.load(0, 5);
+		strategies.get(0).setName("strategietta");;
+		strategies.get(0).save();
 		
 		
 	}

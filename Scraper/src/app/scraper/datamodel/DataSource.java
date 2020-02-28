@@ -16,7 +16,7 @@ public class DataSource extends DataObject
 	protected String name;
 	protected boolean enabled;
 	protected List<Market> markets = new ArrayList<Market>();
-	private List<Market> newMarkets = new ArrayList<Market>();
+	private transient List<Market> newMarkets = new ArrayList<Market>();
 	
 	private DataSource()
 	{
