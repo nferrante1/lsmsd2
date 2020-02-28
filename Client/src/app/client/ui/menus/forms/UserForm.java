@@ -8,6 +8,10 @@ public class UserForm extends TextForm
 	{
 		super("Please, log in");
 	}
+	
+	public UserForm(String prompt) {
+		super(prompt);
+	}
 
 	@Override
 	protected LinkedHashSet<FormField> createFields()

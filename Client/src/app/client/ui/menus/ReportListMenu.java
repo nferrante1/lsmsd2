@@ -10,9 +10,12 @@
 
 public class ReportListMenu extends Menu {
 	
-	public ReportListMenu()
+	protected Strategy strategy;
+	
+	public ReportListMenu(Strategy strategy)
 	{
 		super("All the reports of this strategy");
+		this.strategy = strategy;
 	}
 
 	@Override
@@ -22,9 +25,10 @@ public class ReportListMenu extends Menu {
 		//gestire casi di errore o se non ci sono report
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		
+		int i=1;
 		//per ogni report i trovato ...
-		menu.add(new MenuEntry(i, report.getName(), true, this::handleReportSelection, report));
+		menu.add(new MenuEntry(i, report.getId() + " " + report.getMarketName() + " " + report.getTimeRange() +
+				+" "+ report.getCreatorUser(), true, this::handleReportSelection, report));
 				
 		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));

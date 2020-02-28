@@ -23,22 +23,23 @@ public class StrategyListMenu extends Menu
 		//gestire casi di errore o se non ci sono strategie
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		
+		int i = 1;
 		//per ogni strategia i trovata ...
-		menu.add(new MenuEntry(i, strategy.getName(), true, this::handleSelection, strategy));
+		menu.add(new MenuEntry(i, strategy.getName(), true, this::handleStrategySelection, strategy));
 				
-		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
+		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
 
-	private void handleSelection(MenuEntry entry)
+	private void handleStrategySelection(MenuEntry entry)
 	{
 		//richiedere informazioni strategia al server
-		//stampare informazioni strategia Console.print(strategy.toString);
+		//stampare informazioni strategia Console.print(trategy.toString);
 		
 		currentPage = 0;
-		new StrategyMenu(entry.getHandlerData()).show();
+		//new StrategyMenu(entry.getHandlerData()).show();
+		new StrategyMenu(strategy).show();
 	}
 	
 	private void handleLoadNewPage(MenuEntry entry) 

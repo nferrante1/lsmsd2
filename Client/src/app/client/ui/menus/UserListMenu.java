@@ -13,21 +13,21 @@ public class UserListMenu extends Menu
 
 	public UserListMenu()
 	{
-		super("All the available strategies");
+		super("All the users of the application");
 	}
 
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		//richiedere una pagina di strategie al server
-		//gestire casi di errore o se non ci sono strategie
+		//richiedere una pagina di utenti al server
+		//gestire casi di errore o se non ci sono utenti
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		
+		int i =1;
 		//per ogni user i trovato ...
 		menu.add(new MenuEntry(i, user.getName() + user.isAdmin().toString, true, this::handleDeleteUser, user));
 				
-		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
+		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}

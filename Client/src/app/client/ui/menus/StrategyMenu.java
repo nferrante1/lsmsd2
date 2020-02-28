@@ -19,10 +19,10 @@ public class StrategyMenu extends Menu
 	protected SortedSet<MenuEntry> getMenu()
 	{
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		menu.add(new MenuEntry(1, "Browse reports", this::handleBrowseReports));
+		menu.add(new MenuEntry(1, "Browse reports", this::handleBrowseReports, this.strategy));
 		menu.add(new MenuEntry(2, "Run strategy", this::handleRunStrategy));
 		menu.add(new MenuEntry(3, "Download strategy", this::handleDownloadStrategy));
-		//Se la strategia ï¿½ dell' utente if(strategy.canDelete) {
+		//Se la strategia è dell' utente if(strategy.canDelete) {
 			menu.add(new MenuEntry(4, "Delete strategy", true, this::handleDeleteStrategy));
 		//}
 		menu.add(new MenuEntry(0, "Go back", true));
@@ -31,7 +31,7 @@ public class StrategyMenu extends Menu
 
 	private void handleBrowseReports(MenuEntry entry)
 	{
-		new ReportListMenu().show();
+		new ReportListMenu(entry.getHandlerData()).show();
 	}
 
 	private void handleRunStrategy(MenuEntry entry)

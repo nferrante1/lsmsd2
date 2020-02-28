@@ -42,12 +42,12 @@ public class UserMenu extends Menu
 	
 	private void handleBrowseUsers(MenuEntry entry)
 	{
-		
+		new UserListMenu().show();
 	}
 	
 	private void handleAddUser(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new UserForm().show();
+		HashMap<Integer, String> response = new UserForm("insert username and password").show();
 		// Richiesta di aggiunta utente al server
 	}
 	
