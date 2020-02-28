@@ -2,9 +2,9 @@ package app.client.ui.menus.forms;
 
 import java.util.LinkedHashSet;
 
-public class LoginForm extends TextForm
+public class UserForm extends TextForm
 {
-	public LoginForm()
+	public UserForm()
 	{
 		super("Please, log in");
 	}

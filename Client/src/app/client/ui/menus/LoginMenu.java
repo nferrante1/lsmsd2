@@ -19,7 +19,7 @@ public class LoginMenu extends Menu
 
 	private void handleLogin(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new LoginForm().show();
+		HashMap<Integer, String> response = new UserForm().show();
 		doLogin(response.get(0), response.get(1));
 	}
 

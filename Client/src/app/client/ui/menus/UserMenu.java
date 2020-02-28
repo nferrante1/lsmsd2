@@ -1,10 +1,11 @@
 package app.client.ui.menus;
 
+import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import app.client.ui.Console;
-import ristogo.ui.menus.RestaurantListMenu;
+import app.client.ui.menus.forms.UserForm;
 
 public class UserMenu extends Menu
 {
@@ -14,7 +15,7 @@ public class UserMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "Find all strategies", this::handleBrowseStrategies));
 		menu.add(new MenuEntry(2, "Add a new strategy", this::handleAddStrategy));
-		if (loggedUser.isOwner()) {
+		if (loggedUser.isAdmin()) {
 			menu.add(new MenuEntry(3, "Find all users", this::handleBrowseUsers));
 			menu.add(new MenuEntry(4, "Add a new user", this::handleAddUser));
 			menu.add(new MenuEntry(5, "Find all data sources", this::handleBrowseDataSource));
@@ -46,7 +47,8 @@ public class UserMenu extends Menu
 	
 	private void handleAddUser(MenuEntry entry)
 	{
-		
+		HashMap<Integer, String> response = new UserForm().show();
+		// Richiesta di aggiunta utente al server
 	}
 	
 	private void handleBrowseDataSource(MenuEntry entry)
