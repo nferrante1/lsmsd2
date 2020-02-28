@@ -53,7 +53,9 @@ public class UserMenu extends Menu
 	
 	private void handleBrowseDataSource(MenuEntry entry)
 	{
-		
+		// Richiesta di lista al server
+		// Stampo la lista
+		new DataSourceMenu(entry.getHandlerData()).show();
 	}
 	
 	private void handleDeleteData(MenuEntry entry)
