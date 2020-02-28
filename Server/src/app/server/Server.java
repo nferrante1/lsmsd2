@@ -16,9 +16,9 @@ public class Server {
 	{
 		setupDBManager();
 
-		List<Strategy> strategies = Strategy.load(0, 5);
-		strategies.get(0).setName("strategietta");;
-		strategies.get(0).save();
+		List<Market> markets = Market.load("COINBASE", 2, 5);
+		for (Market market: markets)
+			System.out.println(market.getId());
 		
 		
 	}

@@ -42,6 +42,7 @@ public class Market extends NestedDataObject
 	{
 		super();
 	}
+
 	public Market(String id, String base, String quote )
 	{
 		super();
@@ -50,6 +51,11 @@ public class Market extends NestedDataObject
 		this.quoteCurrency = quote;
 		this.granularity = 5;
 		
+	}
+	
+	public static List<Market> load(String sourceName, int pageNumber, int perPage)
+	{
+		return loadEmbedded(Market.class, Filters.eq("_id", sourceName), "id", true, pageNumber, perPage);
 	}
 	
 	public String getId()

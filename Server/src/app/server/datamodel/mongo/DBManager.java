@@ -1,6 +1,7 @@
 package app.server.datamodel.mongo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -232,8 +234,38 @@ public final class DBManager
 		return documents;
 	}
 	
-	public List<Document> findEmbedded(String collectionName, Bson filter)
+	public List<Document> findEmbedded(String collectionName, Bson filter, String subField, String sortField, boolean ascending, int skip, int limit)
 	{
-		
+		List<Bson> stages = new ArrayList<Bson>();
+		stages.add(Aggregates.match(filter));
+		stages.add(Aggregates.unwind("$" + subField));
+		stages.add(Aggregates.replaceRoot("$markets"));
+		if (subField != null)
+			stages.add(Aggregates.sort(ascending ? Sorts.ascending(sortField) : Sorts.descending(sortField)));
+		if (skip > 0)
+			stages.add(Aggregates.skip(skip));
+		if (limit > 0)
+			stages.add(Aggregates.limit(limit));
+		return aggregate(collectionName, stages);
+	}
+	
+	public List<Document> findEmbedded(String collectionName, Bson filter, String subField)
+	{
+		return findEmbedded(collectionName, filter, subField, null);
+	}
+
+	public List<Document> findEmbedded(String collectionName, Bson filter, String subField, String sortField)
+	{
+		return findEmbedded(collectionName, filter, subField, sortField, true);
+	}
+
+	public List<Document> findEmbedded(String collectionName, Bson filter, String subField, String sortField, boolean ascending)
+	{
+		return findEmbedded(collectionName, filter, subField, sortField, ascending, 0, 0);
+	}
+
+	public List<Document> findEmbedded(String collectionName, Bson filter, String subField, int skip, int limit)
+	{
+		return findEmbedded(collectionName, filter, subField, null, false, skip, limit);
 	}
 }
