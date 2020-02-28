@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import app.client.ui.menus.forms.LoginForm;
+import app.client.ui.menus.forms.*;
 
 public class LoginMenu extends Menu
 {

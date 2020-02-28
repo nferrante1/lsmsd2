@@ -9,7 +9,7 @@ public class StrategyMenu extends Menu
 {
 	protected Strategy strategy;
 
-	public RestaurantMenu(Strategy strategy)
+	public StrategyMenu(Strategy strategy)
 	{
 		super(strategy.getName() + " | select an action");
 		this.strategy = strategy;
@@ -22,7 +22,7 @@ public class StrategyMenu extends Menu
 		menu.add(new MenuEntry(1, "Browse reports", this::handleBrowseReports));
 		menu.add(new MenuEntry(2, "Run strategy", this::handleRunStrategy));
 		menu.add(new MenuEntry(3, "Download strategy", this::handleDownloadStrategy));
-		//Se la strategia è dell' utente if(strategy.canDelete) {
+		//Se la strategia ï¿½ dell' utente if(strategy.canDelete) {
 			menu.add(new MenuEntry(4, "Delete strategy", true, this::handleDeleteStrategy));
 		//}
 		menu.add(new MenuEntry(0, "Go back", true));

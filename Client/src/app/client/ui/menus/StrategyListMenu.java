@@ -8,10 +8,10 @@ import java.util.TreeSet;
 import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
 
-public class ListMenu extends Menu
+public class StrategyListMenu extends Menu
 {
 
-	public ListMenu()
+	public StrategyListMenu()
 	{
 		super("All the available strategies");
 	}
@@ -24,8 +24,8 @@ public class ListMenu extends Menu
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		
-		//per ogni oggetto i trovato ...
-		menu.add(new MenuEntry(i, entity.getName(), true, this::handleSelection, entity));
+		//per ogni strategia i trovata ...
+		menu.add(new MenuEntry(i, strategy.getName(), true, this::handleSelection, strategy));
 				
 		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));

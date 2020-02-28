@@ -31,13 +31,13 @@ public class ReportListMenu extends Menu {
 		return menu;
 	}
 
-	private void handleStrategySelection(MenuEntry entry)
+	private void handleReportSelection(MenuEntry entry)
 	{
-		//richiedere informazioni strategia al server
-		//stampare informazioni strategia Console.print(strategy.toString);
+		//richiedere informazioni report al server
+		//stampare informazioni report Console.print(strategy.toString);
 		
 		currentPage = 0;
-		new StrategyMenu(entry.getHandlerData()).show();
+		new ReportMenu(entry.getHandlerData()).show();
 	}
 	
 	private void handleLoadNewPage(MenuEntry entry) 
