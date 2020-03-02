@@ -19,7 +19,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import app.scraper.datamodel.Candle;
+import app.datamodel.Candle;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;

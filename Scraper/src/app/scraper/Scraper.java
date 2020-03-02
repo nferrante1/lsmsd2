@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import app.scraper.datamodel.DataSource;
-import app.scraper.datamodel.mongo.DBManager;
+import app.datamodel.DataSource;
+import app.datamodel.mongo.DBManager;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;

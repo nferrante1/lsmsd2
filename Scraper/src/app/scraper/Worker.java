@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.time.YearMonth;
 import java.util.List;
 
-import app.scraper.datamodel.Candle;
-import app.scraper.datamodel.DataSource;
-import app.scraper.datamodel.Market;
+import app.datamodel.Candle;
+import app.datamodel.DataSource;
+import app.datamodel.Market;
 import app.scraper.net.PullDirection;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;

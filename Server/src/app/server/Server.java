@@ -2,13 +2,13 @@ package app.server;
 
 import java.util.List;
 
-import app.server.datamodel.Candle;
-import app.server.datamodel.DataRangeCache;
-import app.server.datamodel.DataSource;
-import app.server.datamodel.Market;
-import app.server.datamodel.MarketData;
-import app.server.datamodel.Strategy;
-import app.server.datamodel.mongo.DBManager;
+import app.datamodel.Candle;
+import app.datamodel.DataRangeCache;
+import app.datamodel.DataSource;
+import app.datamodel.Market;
+import app.datamodel.MarketData;
+import app.datamodel.Strategy;
+import app.datamodel.mongo.DBManager;
 
 public class Server {
 

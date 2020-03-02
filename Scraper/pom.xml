@@ -4,6 +4,7 @@
   <artifactId>Scraper</artifactId>
   <version>1.0.0</version>
   <name>Scraper</name>
+  <packaging>jar</packaging>
   <description>Scraper program for task 2 application for the course of Large Scale and Multi-Structured Databases (Computer Engineering, UNIPI).</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -37,6 +38,11 @@
   		<groupId>com.squareup.okhttp3</groupId>
   		<artifactId>logging-interceptor</artifactId>
   		<version>3.14.4</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>DataModel</groupId>
+  		<artifactId>DataModel</artifactId>
+  		<version>1.0.0</version>
   	</dependency>
   </dependencies>
 </project>
