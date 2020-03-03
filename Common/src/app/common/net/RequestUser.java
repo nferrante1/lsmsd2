@@ -1,12 +1,14 @@
 package app.common.net;
 
-public class RequestLogin extends RequestMessage {
+import app.datamodel.AuthToken;
+
+public class RequestUser extends RequestMessage {
 	private String username;
 	private String password;
 	
-	public RequestLogin(String username, String password)
+	public RequestUser(ActionRequest action,AuthToken token, String username, String password)
 	{
-		super(ActionRequest.LOGIN, null);
+		super(action, token);
 		this.username = username;
 		this.password = password;
 	}
