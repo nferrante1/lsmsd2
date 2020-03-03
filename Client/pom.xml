@@ -64,5 +64,11 @@
 		    <artifactId>xstream</artifactId>
 		    <version>1.2.2</version>
 		</dependency>
+		<dependency>
+  		<groupId>DataModel</groupId>
+  		<artifactId>DataModel</artifactId>
+  		<version>1.0.0</version>
+  		<scope>compile</scope>
+  	</dependency>
 	</dependencies>
 </project>
