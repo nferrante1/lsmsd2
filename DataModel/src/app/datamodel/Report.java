@@ -9,7 +9,7 @@ import com.mongodb.client.model.Filters;
 
 import app.datamodel.mongo.NestedDataObject;
 
-public class Report extends NestedDataObject {
+public class Report {
 	protected double netProfit;
 	protected double grossProfit;
 	protected double grossLoss;
@@ -22,58 +22,68 @@ public class Report extends NestedDataObject {
 	protected double avgDuration;
 	protected double maxDrawdown;
 	
+	public Report(double np, double gp, double gl, double hp, int tt, int ot, int wt, int mcl, double aa, double ad, double md)
+	{
+		netProfit = np;
+		grossProfit = gp;
+		grossLoss = gl;
+		hodlProfit = hp;
+		totalTrades = tt;
+		openTrades = ot;
+		winningTrades = wt;
+		maxConsecutiveLosing = mcl;
+		avgAmount = aa;
+		avgDuration = ad;
+		maxDrawdown = md;
+	}
 	
 	public void setNetProfit(double netProfit)
 	{
-		updateField("netProfit", netProfit);
+		this.netProfit = netProfit;
 	}
 	public void setGrossProfit(double grossProfit)
 	{
-		updateField("grossProfit", grossProfit);
-		
+		this.grossProfit = grossProfit;
 	}
 	public void setGrossLoss(double grossLoss)
 	{
-		updateField("grossLoss", grossLoss);
+		this.grossLoss = grossLoss;
 	}
 	public void setHodlProfit(double hodlProfit)
 	{
-		updateField("hodlProfit", hodlProfit);
-		
+		this.hodlProfit = hodlProfit;
 	}
 	public void setTotalTrades(int totalTrades)
 	{
-		updateField("totalTrades", totalTrades);
-	
+		this.totalTrades = totalTrades;
 	}
 	public void setOpenTrades(int openTrades)
 	{
-		updateField("openTrades", openTrades);
+		this.openTrades = openTrades;
 	}
 	public void setWinningTrades(int winningTrades)
 	{
-		updateField("winningTrades", winningTrades);
-		
+		this.winningTrades = winningTrades;
 	}
 	public void setMaxConsecutiveLosing(int maxConsecutiveLosing)
 	{
-		updateField("maxConsecutiveLosing", maxConsecutiveLosing);
-		
+		this.maxConsecutiveLosing = maxConsecutiveLosing;
 	}
 	public void setAvgAmount(double avgAmount)
 	{
-		updateField("avgAmount", avgAmount);
-		
+		this.avgAmount = avgAmount;
 	}
 	public void setAvgDuration(double avgDuration)
 	{
-		updateField("avgDuration", avgDuration);
-		
+		this.avgDuration = avgDuration;
 	}
 	public void setMaxDrawdown(double maxDrawdown)
 	{
-		updateField("maxDrawdown", maxDrawdown);
+		this.maxDrawdown = maxDrawdown;
 	}
+
+	
+	
 	public double getNetProfit()
 	{
 		return netProfit;
@@ -117,14 +127,5 @@ public class Report extends NestedDataObject {
 	public double getMaxDrawdown()
 	{
 		return maxDrawdown;
-	}
-	
-	public static Report load(ObjectId id) 
-	{
-		List<Report> reports = load(Report.class, Filters.eq("id", id));
-		if(reports.isEmpty()) 
-			return null;
-		Report report =  reports.get(0);
-		return report;
 	}
 }

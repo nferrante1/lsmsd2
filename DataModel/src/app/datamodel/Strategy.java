@@ -1,5 +1,6 @@
 package app.datamodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.conversions.Bson;
@@ -18,7 +19,7 @@ public class Strategy extends DataObject {
 	protected String id;
 	protected String name;
 	protected String username;
-	protected StrategyRun runs;
+	protected List<StrategyRun> runs = new ArrayList<StrategyRun>();
 	
 	public Strategy(String name, String username, byte[] file)
 	{
@@ -26,6 +27,11 @@ public class Strategy extends DataObject {
 		this.name = name;
 		this.username = username;
 		this.id = "STRATEGIONA"; 
+	}
+	
+	public void addRun(StrategyRun run)
+	{
+		runs.add(run);
 	}
 	
 
@@ -42,7 +48,7 @@ public class Strategy extends DataObject {
 	{
 		Bson filter = null;
 		if(name != null)
-			filter = Filters.eq("name",name);
+			filter = Filters.regex("name", name);
 		return load(Strategy.class, filter, "name", true, pageNumber, perPage);
 	}
 
@@ -50,5 +56,10 @@ public class Strategy extends DataObject {
 	public void setName(String name)
 	{
 		updateField("name", name);
+	}
+	
+	public StrategyRun getRun(int index)
+	{
+		return runs.get(index);
 	}
 }

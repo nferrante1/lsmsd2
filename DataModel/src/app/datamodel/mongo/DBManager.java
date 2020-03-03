@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.conversions.Bson;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -30,6 +34,7 @@ public final class DBManager
 	private static String username;
 	private static String password;
 	private static String databaseName;
+	private static List<Codec<?>> codecs;
 	private static HashMap<String, String> options;
 	
 	private final MongoClient mongoClient;
@@ -65,7 +70,8 @@ public final class DBManager
 			sb.deleteCharAt(sb.length() - 1);
 		}
 
-		mongoClient = MongoClients.create(sb.toString());
+		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromCodecs(codecs))).build();
+		mongoClient = MongoClients.create(settings);
 
 		if (!customDbName)
 			databaseName = "admin";
@@ -116,6 +122,13 @@ public final class DBManager
 	public static <E extends Enum<E>> void setOption(String key, E value)
 	{
 		setOption(key, value.toString());
+	}
+	
+	public static void addCodec(Codec<?> codec)
+	{
+		if (codecs == null)
+			codecs = new ArrayList<Codec<?>>();
+		codecs.add(codec);
 	}
 	
 	public static DBManager getInstance()
