@@ -10,4 +10,9 @@ public class LoginResponse extends ResponseMessage {
 		super();
 		this.authToken = new AuthToken(username, isAdmin);
 	}
+	
+	public LoginResponse(AuthToken authToken) 
+	{
+		
+	}
 }
