@@ -1,10 +1,10 @@
 package app.common.net;
 
-public class LoginRequest extends RequestMessage {
+public class RequestLogin extends RequestMessage {
 	private String username;
 	private String password;
 	
-	public LoginRequest(String username, String password)
+	public RequestLogin(String username, String password)
 	{
 		super(ActionRequest.LOGIN, null);
 		this.username = username;
