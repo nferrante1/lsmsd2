@@ -111,12 +111,17 @@ public class DataRangeCache {
 	
 	public void setStartMonth(String marketName, YearMonth month) 
 	{
+		if(ranges.get(marketName) == null)
+			ranges.put(marketName, new Range(null, null));
 		ranges.get(marketName).start = month;
 	}
 	
 	public void setEndMonth(String marketName, YearMonth month) 
 	{
+		if(ranges.get(marketName) == null)
+			ranges.put(marketName, new Range(null, null));
 		ranges.get(marketName).end = month;
+			
 	}
 	
 	

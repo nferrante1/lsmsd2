@@ -169,7 +169,7 @@ public class BinanceConnector implements SourceConnector
 	{
 		List<APICandle> candles = new ArrayList<APICandle>();
 		Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
-		Instant lastMonth = month.atEndOfMonth().atTime(23, 59, 59, 999999999).atZone(ZoneId.of("UTC")).toInstant();
+		Instant lastMonth = (month.equals(YearMonth.now())) ? Instant.now() : month.atEndOfMonth().atTime(23, 59, 59, 999999999).atZone(ZoneId.of("UTC")).toInstant();
 		Instant start = startMonth;
 		while (start.isBefore(lastMonth)) {
 			Instant end = start.plusSeconds(granularity * 60 * 1000);
