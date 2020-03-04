@@ -9,6 +9,8 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
 import com.mongodb.ConnectionString;
@@ -69,8 +71,10 @@ public final class DBManager
 				sb.append(option.getKey() + "=" + option.getValue() + "&");
 			sb.deleteCharAt(sb.length() - 1);
 		}
-
-		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromCodecs(codecs))).build();
+		
+		CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+		                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(/*CodecRegistries.fromCodecs(codecs),*/pojoCodecRegistry)).build();
 		mongoClient = MongoClients.create(settings);
 
 		if (!customDbName)
