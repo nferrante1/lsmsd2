@@ -11,12 +11,12 @@ import org.bson.conversions.Bson;
 
 import com.mongodb.client.model.Filters;
 
+import app.datamodel.DataSource;
+
 public abstract class Pojo
 {
 	private transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
 	private transient boolean saved;
-	
-	abstract protected PojoManager<? extends Pojo> getManager();
 	
 	public Pojo()
 	{
@@ -77,20 +77,4 @@ public abstract class Pojo
 	{
 		return getCollectionName(this.getClass());
 	}
-	
-	public void save()
-	{
-		if (isSaved()) {
-			update();
-			return;
-		}
-		getManager().insert(this);
-		setSaved();
-	}
-	
-	public void update()
-	{
-		
-	}
-
 }

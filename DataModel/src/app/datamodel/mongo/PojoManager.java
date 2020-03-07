@@ -41,14 +41,29 @@ public class PojoManager<T extends Pojo>
 		return getDB().getCollection(collectionName, pojoClass);
 	}
 	
+	@SafeVarargs
+	public final void save(T... pojos)
+	{
+		for (T pojo: pojos) {
+			if (pojo.isSaved()) {
+				update(pojo);
+				return;
+			}
+			insert(pojo);
+		}
+	}
+	
 	public void insert(List<T> pojos)
 	{
 		getCollection().insertMany(pojos);
+		for (T pojo: pojos)
+			pojo.setSaved();
 	}
 	
 	public void insert(T pojo)
 	{
 		getCollection().insertOne(pojo);
+		pojo.setSaved();
 	}
 	
 	
@@ -75,8 +90,11 @@ public class PojoManager<T extends Pojo>
 		cursor = result.cursor();
 		
 		try {
-			while (cursor.hasNext())
-				pojos.add(cursor.next());
+			while (cursor.hasNext()) {
+				T pojo = cursor.next();
+				pojo.setSaved();
+				pojos.add(pojo);
+			}
 		} finally {
 			cursor.close();
 		}
@@ -102,23 +120,36 @@ public class PojoManager<T extends Pojo>
 		return find(null);
 	}
 	
-	public long update(T pojo)
+	public boolean update(T pojo)
 	{
-		return update(pojo.getFilter(), pojo.getUpdateDocument());
+		return updateOne(pojo.getFilter(), pojo.getUpdateDocument());
 	}
 	
-	public long update(Bson filter, Document update)
+	public boolean updateOne(Bson filter, Bson update)
+	{
+		UpdateResult updateResult = getCollection().updateOne(filter, update);
+		return updateResult.wasAcknowledged();
+	}
+	
+	public long updateMany(Bson filter, Bson update)
 	{
 		UpdateResult updateResult = getCollection().updateMany(filter, update);
 		return updateResult.getModifiedCount();
 	}
 	
-	public long delete(T pojo)
+	public boolean delete(T pojo)
 	{
-		return delete(pojo.getFilter());
+		pojo.setSaved(false);
+		return deleteOne(pojo.getFilter());
 	}
 	
-	public long delete(Bson filter)
+	public boolean deleteOne(Bson filter)
+	{
+		DeleteResult deleteResult = getCollection().deleteOne(filter);
+		return deleteResult.wasAcknowledged();
+	}
+	
+	public long deleteMany(Bson filter)
 	{
 		if (filter == null) {
 			drop();
@@ -143,19 +174,12 @@ public class PojoManager<T extends Pojo>
 		return updateOne(rootFilter, Updates.pullByFilter(filter));
 	}*/
 	
-	public boolean updateOne(Bson filter, Bson update)
+	public boolean replace(T pojo)
 	{
-		UpdateResult updateResult = getCollection().updateOne(filter, update);
-		return updateResult.wasAcknowledged();
+		return replace(pojo.getFilter(), pojo);
 	}
 	
-	public boolean deleteOne(Bson filter)
-	{
-		DeleteResult deleteResult = getCollection().deleteOne(filter);
-		return deleteResult.wasAcknowledged();
-	}
-	
-	public boolean replaceOne(Bson filter, T replacement)
+	public boolean replace(Bson filter, T replacement)
 	{
 		UpdateResult updateResult = getCollection().replaceOne(filter, replacement);
 		return updateResult.wasAcknowledged();
