@@ -4,21 +4,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.codecs.pojo.annotations.BsonId;
+
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.DataObject;
 import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Pojo;
+import app.datamodel.mongo.PojoManager;
 
 @CollectionName("Sources")
-public class DataSource extends DataObject
+public class DataSource extends Pojo
 {
-	@DataObjectId
-	@SerializedName(value = "_id")
+	@BsonId
 	protected String name;
 	protected boolean enabled;
 	protected List<Market> markets = new ArrayList<Market>();
 	private transient List<Market> newMarkets = new ArrayList<Market>();
+	private transient PojoManager<DataSource> manager;
 	
 	private DataSource()
 	{
@@ -106,5 +110,13 @@ public class DataSource extends DataObject
 			newMarkets.clear();
 		}
 		super.save();
+	}
+
+	@Override
+	protected PojoManager<DataSource> getManager()
+	{
+		if (manager == null)
+			manager = new PojoManager<DataSource>(DataSource.class);
+		return manager;
 	}
 }

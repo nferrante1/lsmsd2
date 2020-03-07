@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface CollectionName
+public @interface Embedded
 {
-	String value();
+	Class<? extends Pojo> value();
+	String nestedName() default "";
 }

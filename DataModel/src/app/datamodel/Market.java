@@ -20,23 +20,25 @@ import com.mongodb.client.model.Sorts;
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.DBManager;
 import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Embedded;
+import app.datamodel.mongo.EmbeddedPojo;
+import app.datamodel.mongo.EmbeddedPojoManager;
 import app.datamodel.mongo.NestedDataObject;
+import app.datamodel.mongo.Pojo;
+import app.datamodel.mongo.PojoManager;
 
-@CollectionName(value = "Sources", nestedName = "markets")
-public class Market extends NestedDataObject
+@Embedded(value = DataSource.class, nestedName = "markets")
+public class Market extends EmbeddedPojo
 {
-	@SerializedName(value = "id", alternate = "symbol")
-	@DataObjectId
 	protected String id;
-	@SerializedName(value = "baseCurrency", alternate = {"base_currency", "baseAsset"})
 	protected String baseCurrency;
-	@SerializedName(value = "quoteCurrency", alternate = {"quote_currency", "quoteAsset"})
 	protected String quoteCurrency;
 	protected int granularity;
 	protected boolean selectable;
 	protected boolean sync;
 	protected boolean filled;
 	protected transient MarketData data;
+	private transient EmbeddedPojoManager<Market> manager;
 	
 	private Market()
 	{
@@ -139,5 +141,13 @@ public class Market extends NestedDataObject
 			DataRangeCache.getInstance().setStartMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
 		
 		data = null;
+	}
+
+	@Override
+	protected EmbeddedPojoManager<Market> getManager()
+	{
+		if (manager == null)
+			manager = new EmbeddedPojoManager<Market>(Market.class);
+		return manager;
 	}
 }

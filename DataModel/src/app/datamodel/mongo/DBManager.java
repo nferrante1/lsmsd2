@@ -144,10 +144,8 @@ public class DBManager implements Closeable
 	@Override
 	public synchronized void close()
 	{
-		if (mongoDatabase != null) {
-			mongoDatabase.drop();
-			mongoDatabase = null;
-		}
+		if (instance == null)
+			throw new IllegalStateException("Called close() on a uninitialized instance.");
 		if (mongoClient != null) {
 			mongoClient.close();
 			mongoClient = null;

@@ -1,51 +1,42 @@
 package app.datamodel.mongo;
 
-import java.lang.reflect.ParameterizedType;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
-import org.bson.codecs.Codec;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
-public class POJOManager<T extends Pojo>
+import app.datamodel.Market;
+import app.datamodel.Test;
+
+public class PojoManager<T extends Pojo>
 {
-	private final Class<T> pojoClass;
-	private final String collectionName;
+	protected final Class<T> pojoClass;
+	protected String collectionName;
 	
-	public POJOManager(final Class<T> pojoClass)
+	public PojoManager(final Class<T> pojoClass)
 	{
 		this.pojoClass = pojoClass;
 		this.collectionName = Pojo.getCollectionName(pojoClass);
 	}
 	
-	private static MongoDatabase getDB()
+	protected static MongoDatabase getDB()
 	{
 		return DBManager.getInstance().getDatabase();
 	}
 
-	private MongoCollection<T> getCollection()
+	protected MongoCollection<T> getCollection()
 	{
 		return getDB().getCollection(collectionName, pojoClass);
 	}
@@ -55,10 +46,11 @@ public class POJOManager<T extends Pojo>
 		getCollection().insertMany(pojos);
 	}
 	
-	public void insert(String collectionName, T pojo)
+	public void insert(T pojo)
 	{
 		getCollection().insertOne(pojo);
 	}
+	
 	
 	public List<T> find(Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
@@ -110,17 +102,46 @@ public class POJOManager<T extends Pojo>
 		return find(null);
 	}
 	
+	public long update(T pojo)
+	{
+		return update(pojo.getFilter(), pojo.getUpdateDocument());
+	}
+	
 	public long update(Bson filter, Document update)
 	{
 		UpdateResult updateResult = getCollection().updateMany(filter, update);
 		return updateResult.getModifiedCount();
 	}
 	
+	public long delete(T pojo)
+	{
+		return delete(pojo.getFilter());
+	}
+	
 	public long delete(Bson filter)
 	{
+		if (filter == null) {
+			drop();
+			return 0;
+		}
 		DeleteResult deleteResult = getCollection().deleteMany(filter);
 		return deleteResult.getDeletedCount();
 	}
+	
+	public void drop()
+	{
+		getCollection().drop();
+	}
+	
+	/*public boolean deleteEmbedded(EmbeddedPojo pojo)
+	{
+		return deleteEmbedded(pojo.getContainer().getFilter(), pojo.getFilter());
+	}
+	
+	public boolean deleteEmbedded(Bson rootFilter, Bson filter)
+	{
+		return updateOne(rootFilter, Updates.pullByFilter(filter));
+	}*/
 	
 	public boolean updateOne(Bson filter, Bson update)
 	{
@@ -148,38 +169,20 @@ public class POJOManager<T extends Pojo>
 		return pojos;
 	}
 	
-	public List<T> findEmbedded(Bson filter, String subField, String sortField, boolean ascending, int skip, int limit)
+	/*private List<T> findEmbedded(Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
+		String subField = EmbeddedPojo.getFieldName(pojoClass);
 		List<Bson> stages = new ArrayList<Bson>();
-		stages.add(Aggregates.match(filter));
+		if (filter != null)
+			stages.add(Aggregates.match(filter));
 		stages.add(Aggregates.unwind("$" + subField));
-		stages.add(Aggregates.replaceRoot("$markets"));
-		if (subField != null)
+		stages.add(Aggregates.replaceRoot("$" + subField));
+		if (sortField != null)
 			stages.add(Aggregates.sort(ascending ? Sorts.ascending(sortField) : Sorts.descending(sortField)));
 		if (skip > 0)
 			stages.add(Aggregates.skip(skip));
 		if (limit > 0)
 			stages.add(Aggregates.limit(limit));
 		return aggregate(stages);
-	}
-	
-	public List<T> findEmbedded(Bson filter, String subField)
-	{
-		return findEmbedded(filter, subField, null);
-	}
-
-	public List<T> findEmbedded(Bson filter, String subField, String sortField)
-	{
-		return findEmbedded(filter, subField, sortField, true);
-	}
-
-	public List<T> findEmbedded(Bson filter, String subField, String sortField, boolean ascending)
-	{
-		return findEmbedded(filter, subField, sortField, ascending, 0, 0);
-	}
-
-	public List<T> findEmbedded(Bson filter, String subField, int skip, int limit)
-	{
-		return findEmbedded(filter, subField, null, false, skip, limit);
-	}
+	}*/
 }
