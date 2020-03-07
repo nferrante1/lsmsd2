@@ -23,10 +23,20 @@ public class Scraper
 	
 	public static void main(String[] args)
 	{
+		
 		setupDBManager();
-		createWorkers();
-		for (Worker worker: workers)
-			worker.start();
+		setupListener();
+		
+		while(true) {
+			if(!Listener.getRunning())
+			createWorkers();
+			for (Worker worker: workers)
+				worker.start();
+			Listener.addWorkers(workers);
+			Listener.setRunning(true);
+			Thread.yield();
+		}
+		
 	}
 	
 	public static void setupDBManager()
@@ -36,6 +46,14 @@ public class Scraper
 		 DBManager.setUsername("root");
 		DBManager.setPassword("rootpass");
 		DBManager.setDatabase("mydb");
+	}
+	
+	public static void setupListener() 
+	{
+		Listener.setScraperAddress("127.0.0.1");
+		Listener.addAllowedAddress("127.0.0.1");
+		Listener.setPortNumber(99999);
+		Listener.setRunning(false);
 	}
 	
 	private static void createWorkers()
