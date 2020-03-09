@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Listener extends Thread {
 	private static Listener instance;
-	private static AtomicBoolean running;
+	private static AtomicBoolean running = new AtomicBoolean();
 	private static List<Worker> workers = new ArrayList<Worker>();
 	private static int portNumber;
 	private static String scraperAddress;

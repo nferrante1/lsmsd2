@@ -17,11 +17,10 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
-import app.datamodel.Market;
-import app.datamodel.Test;
 
 public class PojoManager<T extends Pojo>
 {
+	private static PojoManager<T> instance;
 	protected final Class<T> pojoClass;
 	protected String collectionName;
 	

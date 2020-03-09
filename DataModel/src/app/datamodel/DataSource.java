@@ -22,11 +22,12 @@ public class DataSource extends Pojo
 	protected boolean enabled;
 	protected List<Market> markets = new ArrayList<Market>();
 	private transient List<Market> newMarkets = new ArrayList<Market>();
-	private transient PojoManager<DataSource> manager;
+	private static transient PojoManager<DataSource> manager;
 	
 	private DataSource()
 	{
 		super();
+		manager = new PojoManager<DataSource>(DataSource.class);
 	}
 	public DataSource(String name)
 	{
@@ -37,7 +38,7 @@ public class DataSource extends Pojo
 	
 	public static List<DataSource> load()
 	{
-		return load(DataSource.class);
+		return manager.find();
 	}
 	
 	/*@Override
@@ -99,20 +100,19 @@ public class DataSource extends Pojo
 			}
 	}
 	
-	@Override
+
 	public void save()
 	{
 		if (!newMarkets.isEmpty()) {
 			if (isSaved())
 				for (Market market: newMarkets)
-					market.save();
+					market.getManager().save();
 			markets.addAll(newMarkets);
 			newMarkets.clear();
 		}
-		super.save();
+		getManager().save();
 	}
 
-	@Override
 	protected PojoManager<DataSource> getManager()
 	{
 		if (manager == null)

@@ -9,9 +9,10 @@ import com.google.gson.annotations.SerializedName;
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.DataObject;
 import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Pojo;
 
 @CollectionName("MarketData")
-public class MarketData extends DataObject
+public class MarketData extends Pojo
 {
 	@DataObjectId
 	@SerializedName(value = "_id")

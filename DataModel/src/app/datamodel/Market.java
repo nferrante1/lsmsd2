@@ -38,7 +38,7 @@ public class Market extends EmbeddedPojo
 	protected boolean sync;
 	protected boolean filled;
 	protected transient MarketData data;
-	private transient EmbeddedPojoManager<Market> manager;
+	private static transient EmbeddedPojoManager<Market> manager;
 	
 	private Market()
 	{
@@ -57,7 +57,7 @@ public class Market extends EmbeddedPojo
 	
 	public static List<Market> load(String sourceName, int pageNumber, int perPage)
 	{
-		return loadEmbedded(Market.class, Filters.eq("_id", sourceName), "id", true, pageNumber, perPage);
+		return getManager().find(Filters.eq("_id", sourceName), "id", true, pageNumber, perPage);
 	}
 	
 	public String getId()
@@ -133,7 +133,7 @@ public class Market extends EmbeddedPojo
 		
 	public void saveData() 
 	{
-		data.save();
+		data.getManager().save();
 		YearMonth newMonth = (data.getMonth() == null)? YearMonth.now() : data.getMonth();
 		if (getLastDataMonth() == null || newMonth.isAfter(getLastDataMonth()))
 			DataRangeCache.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
@@ -143,8 +143,8 @@ public class Market extends EmbeddedPojo
 		data = null;
 	}
 
-	@Override
-	protected EmbeddedPojoManager<Market> getManager()
+
+	protected static EmbeddedPojoManager<Market> getManager()
 	{
 		if (manager == null)
 			manager = new EmbeddedPojoManager<Market>(Market.class);

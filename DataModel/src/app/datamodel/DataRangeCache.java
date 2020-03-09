@@ -16,6 +16,8 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
 import app.datamodel.mongo.DBManager;
+import app.datamodel.mongo.EmbeddedPojoManager;
+import app.datamodel.mongo.PojoManager;
 
 public class DataRangeCache {
 	private class Range {
@@ -35,7 +37,7 @@ public class DataRangeCache {
 	{
 		ranges = new HashMap<String, Range>();
 		
-		List<Document> documents = DBManager.getInstance().aggregate(
+		EmbeddedPojoManager<MarketData> manager = new EmbeddedPojoManager<MarketData>(MarketData.class).aggregate(
 				"MarketData", 
 				Arrays.asList(
 				Aggregates.project(

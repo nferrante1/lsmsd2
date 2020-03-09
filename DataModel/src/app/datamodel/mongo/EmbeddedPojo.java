@@ -13,7 +13,7 @@ public abstract class EmbeddedPojo extends Pojo
 		return (T)container;
 	}
 	
-	protected void setContainer(Pojo container)
+	public void setContainer(Pojo container)
 	{
 		this.container = container;
 	}
