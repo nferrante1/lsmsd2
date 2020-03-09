@@ -133,13 +133,12 @@ public class Market extends EmbeddedPojo
 		
 	public void saveData() 
 	{
-		data.getManager().save();
+		MarketData.getManager().save(getContainer());
 		YearMonth newMonth = (data.getMonth() == null)? YearMonth.now() : data.getMonth();
 		if (getLastDataMonth() == null || newMonth.isAfter(getLastDataMonth()))
 			DataRangeCache.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
 		if (getFirstDataMonth() == null || newMonth.isBefore(getFirstDataMonth()))
 			DataRangeCache.getInstance().setStartMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
-		
 		data = null;
 	}
 

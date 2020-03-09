@@ -37,8 +37,7 @@ public class DataRangeCache {
 	{
 		ranges = new HashMap<String, Range>();
 		
-		EmbeddedPojoManager<MarketData> manager = new EmbeddedPojoManager<MarketData>(MarketData.class).aggregate(
-				"MarketData", 
+		List<MarketData> marketDatas = MarketData.getManager().aggregate(
 				Arrays.asList(
 				Aggregates.project(
 					Projections.fields(
@@ -79,17 +78,14 @@ public class DataRangeCache {
 						)
 					),
 				Aggregates.project(Projections.fields(Projections.computed("market", new Document("$concat", Arrays.asList("$source",":" ,"$market"))), Projections.include("month"))),
-				Aggregates.sort(Sorts.ascending("month")),
-				Aggregates.group("$market", Accumulators.first("first","$$ROOT"),Accumulators.last("last", "$$ROOT"))));
-		if(documents.isEmpty())
+				Aggregates.sort(Sorts.ascending("month"))));
+		if(marketDatas.isEmpty())
 			return;
-		for(Document document : documents)
-		{
-			String id = document.getString("_id");
-			YearMonth start = YearMonth.parse(document.getEmbedded(Arrays.asList("first","month"), String.class));
-			YearMonth end = YearMonth.parse(document.getEmbedded(Arrays.asList("last","month"), String.class));
-			ranges.put(id, new Range(start, end));
-		}
+		String id = marketDatas.get(0).getId();
+		YearMonth start = marketDatas.get(0).getMonth();
+		YearMonth end = marketDatas.get(0).getMonth();
+		ranges.put(id, new Range(start, end));
+		
 	}
 
 	public static synchronized DataRangeCache getInstance()

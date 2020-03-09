@@ -1,6 +1,7 @@
 package app.datamodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,8 +10,7 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.DataObject;
-import app.datamodel.mongo.DataObjectId;
+
 import app.datamodel.mongo.Pojo;
 import app.datamodel.mongo.PojoManager;
 
@@ -18,6 +18,7 @@ import app.datamodel.mongo.PojoManager;
 public class DataSource extends Pojo
 {
 	@BsonId
+	@SerializedName("_id")
 	protected String name;
 	protected boolean enabled;
 	protected List<Market> markets = new ArrayList<Market>();
@@ -105,12 +106,11 @@ public class DataSource extends Pojo
 	{
 		if (!newMarkets.isEmpty()) {
 			if (isSaved())
-				for (Market market: newMarkets)
-					market.getManager().save();
+				Market.getManager().save(newMarkets);
 			markets.addAll(newMarkets);
 			newMarkets.clear();
 		}
-		getManager().save();
+		getManager().save(Arrays.asList(this));
 	}
 
 	protected PojoManager<DataSource> getManager()

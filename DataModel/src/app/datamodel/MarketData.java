@@ -4,20 +4,23 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.codecs.pojo.annotations.BsonId;
+
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.DataObject;
 import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.Pojo;
+import app.datamodel.mongo.PojoManager;
 
-@CollectionName("MarketData")
 public class MarketData extends Pojo
 {
-	@DataObjectId
-	@SerializedName(value = "_id")
+	@BsonId
 	protected String id;
 	protected List<Candle> candles = new ArrayList<Candle>();
+	private static transient PojoManager<MarketData> manager;
 	
 	private MarketData() 
 	{
@@ -30,8 +33,24 @@ public class MarketData extends Pojo
 		this.id = sourceName + ":" + marketName + ":" + month;
 	}
 	
+	public static PojoManager<MarketData> getManager()
+	{
+		if (manager == null)
+			manager = new PojoManager<MarketData>(MarketData.class);
+		return manager;
+	}
 	//public static createEmpty
 	
+	public String getId()
+	{
+		return id;
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
 	public void addCandles(Candle... candles) 
 	{
 		for(Candle candle: candles)

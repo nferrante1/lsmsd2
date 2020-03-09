@@ -20,7 +20,6 @@ import com.mongodb.client.result.UpdateResult;
 
 public class PojoManager<T extends Pojo>
 {
-	private static PojoManager<T> instance;
 	protected final Class<T> pojoClass;
 	protected String collectionName;
 	
@@ -39,9 +38,8 @@ public class PojoManager<T extends Pojo>
 	{
 		return getDB().getCollection(collectionName, pojoClass);
 	}
-	
-	@SafeVarargs
-	public final void save(T... pojos)
+
+	public final void save(List<T> pojos)
 	{
 		for (T pojo: pojos) {
 			if (pojo.isSaved()) {
