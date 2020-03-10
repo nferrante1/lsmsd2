@@ -7,19 +7,19 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.DataObject;
-import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Pojo;
+import app.datamodel.mongo.PojoManager;
 
 @CollectionName("AuthTokens")
-public class AuthToken extends DataObject {
+public class AuthToken extends Pojo {
 	
 	@SerializedName("_id")
-	@DataObjectId
 	@BsonId
 	protected String id;
 	protected String username;
 	protected boolean isAdmin;
 	protected Instant expireTime;
+	private static transient PojoManager<AuthToken> manager;
 	
 	public AuthToken(String username, boolean isAdmin)
 	{
@@ -33,4 +33,11 @@ public class AuthToken extends DataObject {
 	{
 		return "";
 	}	
+	
+	public static PojoManager<AuthToken> getManager()
+	{
+		if(manager == null)
+			manager = new PojoManager<AuthToken>(AuthToken.class);
+		return manager;
+	}
 }

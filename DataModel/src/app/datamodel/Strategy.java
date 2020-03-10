@@ -3,23 +3,25 @@ package app.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.conversions.Bson;
 
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.DataObject;
-import app.datamodel.mongo.DataObjectId;
+import app.datamodel.mongo.Pojo;
+import app.datamodel.mongo.PojoManager;
 
 @CollectionName("Strategies")
-public class Strategy extends DataObject {
+public class Strategy extends Pojo {
 	@SerializedName("_id")
-	@DataObjectId
+	@BsonId
 	protected String id;
 	protected String name;
 	protected String username;
 	protected List<StrategyRun> runs = new ArrayList<StrategyRun>();
+	private static transient PojoManager<Strategy> manager;
 	
 	public Strategy(String name, String username, byte[] file)
 	{
@@ -39,9 +41,16 @@ public class Strategy extends DataObject {
 	{
 		super();
 	}
+	
+	public static PojoManager<Strategy> getManager()
+	{
+		if(manager == null)
+			manager = new PojoManager<Strategy>(Strategy.class);
+		return manager;
+	}
 	public static List<Strategy> load(int pageNumber, int perPage)
 	{
-		return load(null, pageNumber, perPage);
+		return manager.find(null, "name", true, pageNumber, perPage);
 	}	
 	
 	public static List<Strategy> load(String name, int pageNumber, int perPage)
@@ -49,7 +58,7 @@ public class Strategy extends DataObject {
 		Bson filter = null;
 		if(name != null)
 			filter = Filters.regex("name", name);
-		return load(Strategy.class, filter, "name", true, pageNumber, perPage);
+		return manager.find(filter, "name", true, pageNumber, perPage);
 	}
 
 

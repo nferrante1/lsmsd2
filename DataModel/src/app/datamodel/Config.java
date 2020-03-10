@@ -3,16 +3,18 @@ package app.datamodel;
 import java.time.Instant;
 import java.util.HashMap;
 
-import app.datamodel.mongo.NestedDataObject;
+import app.datamodel.mongo.EmbeddedPojo;
+import app.datamodel.mongo.EmbeddedPojoManager;
 
-public class Config extends NestedDataObject {
+public class Config extends EmbeddedPojo {
 	protected String market;
 	protected boolean inverseCross;
 	protected int granularity;
 	protected Instant startTime;
 	protected Instant endTime;
 	protected HashMap<String, Object> parameters = new HashMap<String, Object>();
-
+	private static transient EmbeddedPojoManager<Config> manager;
+	
 	public Config(String market, boolean inverse, int granularity, Instant startTime, Instant endTime)
 	{
 		this.market = market;
@@ -22,6 +24,13 @@ public class Config extends NestedDataObject {
 		this.endTime = endTime;
 	}
 
+	public static EmbeddedPojoManager<Config> getManager()
+	{
+		if(manager == null) 
+			manager = new EmbeddedPojoManager<Config>(Config.class);
+		return manager;
+	}
+	
 	public String getMarket()
 	{
 		return market;

@@ -1,7 +1,6 @@
 package app.datamodel;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bson.BsonReader;

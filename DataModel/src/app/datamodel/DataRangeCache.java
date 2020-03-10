@@ -4,20 +4,12 @@ import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
 
-import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
-
-import app.datamodel.mongo.DBManager;
-import app.datamodel.mongo.EmbeddedPojoManager;
-import app.datamodel.mongo.PojoManager;
 
 public class DataRangeCache {
 	private class Range {

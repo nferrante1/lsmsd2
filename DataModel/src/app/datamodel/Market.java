@@ -1,31 +1,14 @@
 package app.datamodel;
 
-import java.lang.reflect.Field;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.List;
 
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.DBManager;
-import app.datamodel.mongo.DataObjectId;
 import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
-import app.datamodel.mongo.NestedDataObject;
-import app.datamodel.mongo.Pojo;
-import app.datamodel.mongo.PojoManager;
 
 @Embedded(value = DataSource.class, nestedName = "markets")
 public class Market extends EmbeddedPojo
@@ -57,7 +40,7 @@ public class Market extends EmbeddedPojo
 	
 	public static List<Market> load(String sourceName, int pageNumber, int perPage)
 	{
-		return getManager().find(Filters.eq("_id", sourceName), "id", true, pageNumber, perPage);
+		return manager.find(Filters.eq("_id", sourceName), "id", true, pageNumber, perPage);
 	}
 	
 	public String getId()

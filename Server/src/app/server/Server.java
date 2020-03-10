@@ -1,6 +1,7 @@
 package app.server;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -31,7 +32,7 @@ public class Server {
 		Report r = new Report(1.4, 3.65, 2.63, 1.1, 562, 63, 11, 16, 5.1, 5.55, 10.1);
 		StrategyRun sr = new StrategyRun("ccccc", c, r);
 		s.addRun(sr);
-		s.save();
+		Strategy.getManager().save(Arrays.asList(s));
 		s = Strategy.load(0, 3).get(0);
 		Gson gson = new Gson();
 	

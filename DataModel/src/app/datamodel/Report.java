@@ -1,15 +1,9 @@
 package app.datamodel;
 
-import java.util.List;
+import app.datamodel.mongo.EmbeddedPojo;
+import app.datamodel.mongo.EmbeddedPojoManager;
 
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
-import app.datamodel.mongo.NestedDataObject;
-
-public class Report {
+public class Report extends EmbeddedPojo {
 	protected double netProfit;
 	protected double grossProfit;
 	protected double grossLoss;
@@ -21,6 +15,7 @@ public class Report {
 	protected double avgAmount;
 	protected double avgDuration;
 	protected double maxDrawdown;
+	private static transient EmbeddedPojoManager<Report> manager;
 	
 	public Report(double np, double gp, double gl, double hp, int tt, int ot, int wt, int mcl, double aa, double ad, double md)
 	{
@@ -35,6 +30,13 @@ public class Report {
 		avgAmount = aa;
 		avgDuration = ad;
 		maxDrawdown = md;
+	}
+	
+	public static EmbeddedPojoManager<Report> getManager() 
+	{
+		if (manager == null)
+			manager = new EmbeddedPojoManager<Report>(Report.class);
+		return manager;
 	}
 	
 	public void setNetProfit(double netProfit)

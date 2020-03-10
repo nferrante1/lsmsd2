@@ -6,12 +6,6 @@ import java.util.List;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 
-import com.google.gson.annotations.SerializedName;
-
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.DataObject;
-import app.datamodel.mongo.DataObjectId;
-import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.Pojo;
 import app.datamodel.mongo.PojoManager;
 
