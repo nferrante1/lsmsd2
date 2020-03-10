@@ -61,4 +61,14 @@ public class User extends Pojo {
 		token =  new AuthToken(username, isAdmin);
 		AuthToken.getManager().insert(token);
 	}
+
+	public String getName()
+	{
+		return this.username;
+	}
+	
+	public boolean isAdmin() 
+	{
+		return this.isAdmin;
+	}
 }

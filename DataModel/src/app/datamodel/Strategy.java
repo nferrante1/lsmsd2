@@ -71,4 +71,9 @@ public class Strategy extends Pojo {
 	{
 		return runs.get(index);
 	}
+
+	public String getName()
+	{
+		return this.name;
+	}
 }

@@ -4,6 +4,7 @@ import java.util.SortedSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.datamodel.User;
 
 public abstract class FormMenu<T>
 {

@@ -8,6 +8,7 @@
 
 	import app.client.ui.Console;
 	import app.client.ui.menus.MenuEntry;
+import app.datamodel.DataSource;
 
 public class MarketListMenu extends Menu {
 	

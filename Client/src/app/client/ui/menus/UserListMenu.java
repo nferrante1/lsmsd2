@@ -25,7 +25,7 @@ public class UserListMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i =1;
 		//per ogni user i trovato ...
-		menu.add(new MenuEntry(i, user.getName() + user.isAdmin().toString, true, this::handleDeleteUser, user));
+		menu.add(new MenuEntry(i, loggedUser.getName() + Boolean.toString(loggedUser.isAdmin()), true, this::handleDeleteUser, loggedUser));
 				
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));

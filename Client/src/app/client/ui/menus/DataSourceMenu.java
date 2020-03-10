@@ -4,6 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import app.client.ui.Console;
+import app.datamodel.DataSource;
 
 public class DataSourceMenu extends Menu
 {
