@@ -7,13 +7,15 @@ import java.util.List;
 import com.mongodb.client.model.Filters;
 
 import app.datamodel.mongo.Embedded;
+import app.datamodel.mongo.EmbeddedId;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 
 @Embedded(value = DataSource.class, nestedName = "markets")
 public class Market extends EmbeddedPojo
 {
-	protected String id;
+	@EmbeddedId
+	public String id;
 	protected String baseCurrency;
 	protected String quoteCurrency;
 	protected int granularity;
@@ -23,9 +25,10 @@ public class Market extends EmbeddedPojo
 	protected transient MarketData data;
 	private static transient EmbeddedPojoManager<Market> manager;
 	
-	private Market()
+	public Market()
 	{
 		super();
+		this.setEmbeddedList();
 	}
 
 	public Market(String id, String base, String quote )
@@ -35,6 +38,7 @@ public class Market extends EmbeddedPojo
 		this.baseCurrency = base;
 		this.quoteCurrency = quote;
 		this.granularity = 5;
+		this.setEmbeddedList();
 		
 	}
 	
@@ -116,7 +120,6 @@ public class Market extends EmbeddedPojo
 		
 	public void saveData() 
 	{
-		MarketData.getManager().save(getContainer());
 		YearMonth newMonth = (data.getMonth() == null)? YearMonth.now() : data.getMonth();
 		if (getLastDataMonth() == null || newMonth.isAfter(getLastDataMonth()))
 			DataRangeCache.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
@@ -131,5 +134,30 @@ public class Market extends EmbeddedPojo
 		if (manager == null)
 			manager = new EmbeddedPojoManager<Market>(Market.class);
 		return manager;
+	}
+
+	public boolean isSync()
+	{
+		return sync;
+	}
+
+	public void setSync(boolean sync)
+	{
+		updateField("sync", sync);
+	}
+
+	public void setId(String id)
+	{
+		updateField("id", id);
+	}
+
+	public void setGranularity(int granularity)
+	{
+		updateField("granularity", granularity);
+	}
+
+	public void setSelectable(boolean selectable)
+	{
+		updateField("selectable", selectable);
 	}
 }

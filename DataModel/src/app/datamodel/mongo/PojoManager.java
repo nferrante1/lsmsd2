@@ -1,6 +1,7 @@
 package app.datamodel.mongo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -16,6 +17,8 @@ import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+
+import app.datamodel.DataSource;
 
 
 public class PojoManager<T extends Pojo>
@@ -124,12 +127,14 @@ public class PojoManager<T extends Pojo>
 	
 	public boolean updateOne(Bson filter, Bson update)
 	{
+		if(update == null) return false;
 		UpdateResult updateResult = getCollection().updateOne(filter, update);
 		return updateResult.wasAcknowledged();
 	}
 	
 	public long updateMany(Bson filter, Bson update)
 	{
+		if(update == null) return 0;
 		UpdateResult updateResult = getCollection().updateMany(filter, update);
 		return updateResult.getModifiedCount();
 	}
@@ -188,6 +193,11 @@ public class PojoManager<T extends Pojo>
 		for(T pojo: aggregateResult)
 			pojos.add(pojo);
 		return pojos;
+	}
+
+	public void save(T pojo)
+	{
+		save(Arrays.asList(pojo));
 	}
 	
 	/*private List<T> findEmbedded(Bson filter, String sortField, boolean ascending, int skip, int limit)

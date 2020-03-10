@@ -7,6 +7,7 @@ import java.util.Map;
 
 import app.datamodel.DataSource;
 import app.datamodel.mongo.DBManager;
+import app.datamodel.mongo.PojoManager;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;
@@ -27,8 +28,8 @@ public class Scraper
 		setupDBManager();
 		setupListener();
 		
-		while(true) {
-			if(!Listener.getRunning())
+		while(!Listener.getRunning()) {
+			
 			createWorkers();
 			for (Worker worker: workers)
 				worker.start();
@@ -58,7 +59,8 @@ public class Scraper
 	
 	private static void createWorkers()
 	{
-		List<DataSource> sources = DataSource.load();
+		PojoManager<DataSource> manager = new PojoManager<DataSource>(DataSource.class);
+		List<DataSource> sources = manager.find();
 		for (Map.Entry<String, Class<? extends SourceConnector>> sourceConnector: sourceConnectorMap.entrySet())
 		{
 			DataSource source = null;

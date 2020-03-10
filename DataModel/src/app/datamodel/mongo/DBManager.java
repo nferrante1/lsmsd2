@@ -2,6 +2,7 @@ package app.datamodel.mongo;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 import com.mongodb.ConnectionString;
@@ -61,9 +63,8 @@ public class DBManager implements Closeable
 				sb.append(option.getKey() + "=" + option.getValue() + "&");
 			sb.deleteCharAt(sb.length() - 1);
 		}
-		
 		CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-		CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+						CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()));
 		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(/*CodecRegistries.fromCodecs(codecs),*/pojoCodecRegistry)).build();
 		mongoClient = MongoClients.create(settings);
 

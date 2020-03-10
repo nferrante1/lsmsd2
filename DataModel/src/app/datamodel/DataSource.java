@@ -6,10 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
+import app.datamodel.mongo.EmbeddedPojoManager;
 import app.datamodel.mongo.Pojo;
 import app.datamodel.mongo.PojoManager;
 
@@ -17,14 +19,12 @@ import app.datamodel.mongo.PojoManager;
 public class DataSource extends Pojo
 {
 	@BsonId
-	@SerializedName("_id")
 	protected String name;
 	protected boolean enabled;
 	protected List<Market> markets = new ArrayList<Market>();
-	private transient List<Market> newMarkets = new ArrayList<Market>();
 	private static transient PojoManager<DataSource> manager;
 	
-	private DataSource()
+	public DataSource()
 	{
 		super();
 		manager = new PojoManager<DataSource>(DataSource.class);
@@ -54,10 +54,28 @@ public class DataSource extends Pojo
 		return name;
 	}
 	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
+	public void setMarkets(List<Market> markets)
+	{
+		for(Market market: markets)
+			market.setContainer(this);
+		this.markets = markets;
+	}
+
 	public boolean isEnabled()
 	{
 		return enabled;
 	}
+
+	@BsonIgnore
 	
 	public Market getMarket(String marketId)
 	{
@@ -66,7 +84,7 @@ public class DataSource extends Pojo
 				return market;
 		return null;
 	}
-	
+
 	public List<Market> getMarkets()
 	{
 		return markets;
@@ -75,7 +93,10 @@ public class DataSource extends Pojo
 	public void addMarket(Market market)
 	{
 		market.setContainer(this);
-		newMarkets.add(market);
+		markets.add(market);
+		EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
+		manager.insert(market);
+		
 	}
 	
 	public void removeMarket(String marketId)
@@ -85,6 +106,8 @@ public class DataSource extends Pojo
 			Market market = marketsIterator.next();
 			if (market.getId().equals(marketId)) {
 				marketsIterator.remove();
+				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
+				manager.delete(market);
 				break;
 			}
 		}
@@ -96,22 +119,14 @@ public class DataSource extends Pojo
 			if (market.getId().equals(updMarket.getId())) {
 				market.setBaseCurrency(updMarket.getBaseCurrency());
 				market.setQuoteCurrency(updMarket.getQuoteCurrency());
+				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
+				manager.update(market);
 				break;
+				
 			}
 	}
-	
 
-	public void save()
-	{
-		if (!newMarkets.isEmpty()) {
-			if (isSaved())
-				Market.getManager().save(newMarkets);
-			markets.addAll(newMarkets);
-			newMarkets.clear();
-		}
-		getManager().save(Arrays.asList(this));
-	}
-
+	@BsonIgnore
 	protected PojoManager<DataSource> getManager()
 	{
 		if (manager == null)

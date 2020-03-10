@@ -11,6 +11,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 
@@ -36,12 +37,6 @@ public class EmbeddedPojoManager<T extends EmbeddedPojo> extends PojoManager<T>
 		if (pojos.isEmpty())
 			return;
 		updateOne(pojos.get(0).getContainerFilter(), Updates.pushEach(fieldName, pojos));
-	}
-	
-	public boolean update(T pojo)
-	{
-		return updateOne(pojo.getContainerFilter(), Updates.set(fieldName, pojo));
-		
 	}
 	
 	public boolean update(List<T> pojos)

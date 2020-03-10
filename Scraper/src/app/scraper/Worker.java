@@ -2,11 +2,13 @@ package app.scraper;
 
 
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.datamodel.Candle;
 import app.datamodel.DataSource;
 import app.datamodel.Market;
+import app.datamodel.mongo.PojoManager;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -15,7 +17,7 @@ final class Worker extends Thread
 {
 	private final DataSource source;
 	private final SourceConnector connector;
-	
+	 
 	public Worker(DataSource source, SourceConnector connector)
 	{
 		this.source = source;
@@ -50,7 +52,19 @@ final class Worker extends Thread
 				source.updateMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
 		}
 		
-		source.save();
+		List<Market> sourceMarket = new ArrayList<Market>(source.getMarkets());
+		
+		OuterLoop: for(Market sm : sourceMarket) {
+			for(APIMarket m: markets) {
+				if (sm.getId().equals(m.getId()))
+					continue OuterLoop;
+			}
+			source.removeMarket(sm.getId());
+		}
+		
+		
+		PojoManager<DataSource> manager = new PojoManager<DataSource>(DataSource.class);
+		manager.save(source);
 		
 		if (!source.isEnabled())
 		{

@@ -24,7 +24,7 @@ public class Server {
 	{
 		setupDBManager();
 
-		Strategy s = new Strategy("aaaa", "bbbbb", null);
+		/*Strategy s = new Strategy("aaaa", "bbbbb", null);
 		Config c = new Config("COINBASE:BTC-USD", false, 10, Instant.now(), Instant.now());
 		c.setParameter("test", "prova");
 		c.setParameter("pippo", 10);
@@ -33,7 +33,8 @@ public class Server {
 		StrategyRun sr = new StrategyRun("ccccc", c, r);
 		s.addRun(sr);
 		Strategy.getManager().save(Arrays.asList(s));
-		s = Strategy.load(0, 3).get(0);
+		s = Strategy.load(0, 3).get(0);*/
+		DataSource ds = new DataSource()
 		Gson gson = new Gson();
 	
 		System.out.println(gson.toJson(s));
