@@ -8,7 +8,10 @@ import java.util.List;
 import app.datamodel.Candle;
 import app.datamodel.DataSource;
 import app.datamodel.Market;
+import app.datamodel.MarketData;
 import app.datamodel.mongo.PojoManager;
+import app.scraper.data.DataRange;
+import app.scraper.data.DataRangeManager;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -74,8 +77,17 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarkets = source.getMarkets();
 		
+		List<DataRange> ranges = (new DataRangeManager()).getRanges();
+		PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
 		while(true) {
 			for(Market market: sourceMarkets) {
+				
+				if (findDataRange(ranges, market.getId()) == null || newMonth.isAfter(getLastDataMonth()))
+					DataRangeManager.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
+				if (getFirstDataMonth() == null || newMonth.isBefore(getFirstDataMonth()))
+					//DataRangeCache.getInstance().setStartMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
+				
+				
 				if (!market.isSyncEnabled())
 					continue;
 				YearMonth month = market.getLastDataMonth();
@@ -95,12 +107,21 @@ final class Worker extends Thread
 							candle.getClose(), 
 							candle.getVolume()
 					));
-				market.saveData();
+				market.saveData();				
 				Thread.yield();
 			}
 		}
 		
 		
 		//System.out.println(getName() + ": Exiting...");
+	}
+	
+	protected DataRange findDataRange(List<DataRange> ranges, String marketId) 
+	{
+		for(DataRange range: ranges) {
+			if(range.id.equals(marketId))
+				return range;
+		}
+		return null;
 	}
 }
