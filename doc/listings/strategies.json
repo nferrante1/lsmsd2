@@ -5,14 +5,26 @@
 	"runs":	[{
 		"id": ObjectId("5399aba6e4b0ae375bfdca88"),
 		"user": "user2",
-		"config": {
-			"market": "COINBASE:BTC-USD",
-			"inverseCross": false,
-			"granularity": 5,
-			"startTime": ISODate('2012-02-04T10:10:00.000Z'),
-			"endTime": ISODate('2019-01-13T18:30:00.000Z'),
+		"parameters": [
+			{"name":"market",
+			 "value": "COINBASE:BTC-USD"
+			},
+			{"name":"inverseCross",
+			 "value": false
+			},
+			{
+			 "name":"granularity",
+			 "value":5
+			},
+			{
+			 "name":"startTime",
+			 "value": ISODate('2012-02-04T10:10:00.000Z')
+			},
+			 "name":"endTime",
+			 "value": ISODate('2019-01-13T18:30:00.000Z')
+			},
 			...
-		},
+		],
 		"report": {
 			"netProfit": 0.23,
 			"grossProfit": 0.53,
