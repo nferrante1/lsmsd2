@@ -6,22 +6,25 @@
 		"id": ObjectId("5399aba6e4b0ae375bfdca88"),
 		"user": "user2",
 		"parameters": [
-			{"name":"market",
-			 "value": "COINBASE:BTC-USD"
-			},
-			{"name":"inverseCross",
-			 "value": false
+			{
+				"name":"market",
+				"value": "COINBASE:BTC-USD"
 			},
 			{
-			 "name":"granularity",
-			 "value":5
+				"name":"inverseCross",
+				"value": false
 			},
 			{
-			 "name":"startTime",
-			 "value": ISODate('2012-02-04T10:10:00.000Z')
+				"name":"granularity",
+				"value":5
 			},
-			 "name":"endTime",
-			 "value": ISODate('2019-01-13T18:30:00.000Z')
+			{
+				"name":"startTime",
+				"value": ISODate('2012-02-04T10:10:00.000Z')
+			},
+			{
+				"name":"endTime",
+				"value": ISODate('2019-01-13T18:30:00.000Z')
 			},
 			...
 		],
