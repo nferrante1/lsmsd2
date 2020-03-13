@@ -45,13 +45,19 @@ The following \standout{Aggregation Pipelines} has been defined:
 		\begin{enumerate}
 			\item \code{\$project} stage to extract only the
 				\code{\_id} field, since the \code{data} field
-				is not needed;
+				is not needed. Moreover, in this stage, the
+				\code{\_id} field is split into two fields: the
+				first (\code{market}) contains the source name
+				concatenated with the market name; the second
+				(\code{month}) contains the string representing
+				the year and the month;
 			\item \code{\$sort} stage to sort all documents by
-				\code{\_id};
-			\item \code{\$bucket} stage to aggregate all documents
-				for the same market into buckets and output, for
-				each bucket, the \code{\_id} of the first and
-				last document.
+				\code{month};
+			\item \code{\$group} stage to aggregate all documents
+				by the same \code{market} and get the first and
+				last document for each market;
+			\item \code{\$poject} stage to output only the needed
+				values (the first and last month).
 		\end{enumerate}
 	\item Further aggregations may be defined in future. In particular,
 		other aggregations probably may be needed during the development
