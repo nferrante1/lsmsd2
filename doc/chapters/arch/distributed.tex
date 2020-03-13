@@ -15,7 +15,7 @@ sense to run the scraper when the primary server is not available (the scraper
 would not be allowed to write to the database).
 
 The server will use the \standout{read preference mode} \code{``nearest''},
-meaning that it will read from the server with the least network latency. It is
+meaning that it will read from the server with the lowest network latency. It is
 in fact acceptable that some data that the server reads may not be up to date.
 
 To ensure a good load balancing between cluster's servers the
