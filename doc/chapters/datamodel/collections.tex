@@ -161,7 +161,21 @@ Fields' description:
 			\item[user] \textit{(string)} The user who launched the
 				run;
 			\item[parameters] \textit{(array)} Strategy's
-				configuration parameters used, each parameter is
+				configuration parameters used, each parameter
+				contains the following fields\footnote{Since
+				\mongodb{} is \emph{schema-less}, we may also
+				decide in future to represent each parameter
+				with just a single key-value pair where the key
+				is the name of the parameter. But since we are
+				planning to use POJOs (Plain Old Java Objects)
+				to represent the data model in the application
+				(POJOs can be automatically converted by the
+				\mongodb{} Java Driver to and from BSON), the
+				defined document structure ensure that the
+				automatic conversion can be easily made, without
+				writing a custom converter, since it resembles
+				the structure of the Java class that it maps
+				to.}:
 				\begin{description}
 					\item[name] \textit{(String)} the name
 						of the parameter;
