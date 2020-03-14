@@ -28,4 +28,10 @@ public class DataRange  extends Pojo {
 	{	
 		
 	}
+	
+	public DataRange(String id, YearMonth start, YearMonth end) {
+		this.id = id;
+		this.start = start;
+		this.end = end;
+	}
 }

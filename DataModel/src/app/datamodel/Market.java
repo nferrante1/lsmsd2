@@ -95,18 +95,6 @@ public class Market extends EmbeddedPojo
 		updateField("filled", filled);
 	}
 	
-	public YearMonth getFirstDataMonth() {
-		//return DataRangeCache.getInstance().getStartMonth(((DataSource)getContainer()).getName() + ":" + getId());
-		return null;
-	}
-
-	public YearMonth getLastDataMonth() {
-		//return DataRangeCache.getInstance().getEndMonth(((DataSource)getContainer()).getName() + ":" + getId());
-		return null;
-	}
-	
-	
-	
 	public void addCandles(Candle... candles) 
 	{
 		if(data == null)
@@ -115,15 +103,7 @@ public class Market extends EmbeddedPojo
 		for(Candle candle: candles)
 			data.addCandles(candle);
 	}
-		
-	public void saveData() 
-	{
-		(new PojoManager<MarketData>(MarketData.class)).save(data);
-		YearMonth newMonth = (data.getMonth() == null)? YearMonth.now() : data.getMonth();
-		data = null;
-	}
-
-
+	
 	public boolean isSync()
 	{
 		return sync;
@@ -147,5 +127,16 @@ public class Market extends EmbeddedPojo
 	public void setSelectable(boolean selectable)
 	{
 		updateField("selectable", selectable);
+	}
+
+	public MarketData getData()
+	{
+		return this.data;
+	}
+
+	public void flushData()
+	{
+		this.data = null;
+		
 	}
 }

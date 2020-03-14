@@ -11,6 +11,7 @@ import app.datamodel.Market;
 import app.datamodel.MarketData;
 import app.datamodel.mongo.PojoManager;
 import app.scraper.data.DataRange;
+import app.scraper.data.DataRangeCache;
 import app.scraper.data.DataRangeManager;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
@@ -57,7 +58,8 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarket = new ArrayList<Market>(source.getMarkets());
 		
-		OuterLoop: for(Market sm : sourceMarket) {
+		OuterLoop: for(Market sm : sourceMarket) 
+		{
 			for(APIMarket m: markets) {
 				if (sm.getId().equals(m.getId()))
 					continue OuterLoop;
@@ -77,26 +79,36 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarkets = source.getMarkets();
 		
-		List<DataRange> ranges = (new DataRangeManager()).getRanges();
 		PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
+		
 		while(true) {
-			for(Market market: sourceMarkets) {
+			for(Market market: sourceMarkets) {				
 				
-				if (findDataRange(ranges, market.getId()) == null || newMonth.isAfter(getLastDataMonth()))
-					DataRangeManager.getInstance().setEndMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
-				if (getFirstDataMonth() == null || newMonth.isBefore(getFirstDataMonth()))
-					//DataRangeCache.getInstance().setStartMonth(((DataSource)getContainer()).getName() + ":" + getId(), newMonth);
-				
+				boolean updateCurrent = false;
 				
 				if (!market.isSyncEnabled())
 					continue;
-				YearMonth month = market.getLastDataMonth();
-				if(month == null)
-					month = YearMonth.now();
-				else if (month.equals(YearMonth.now()))
-					month = market.getFirstDataMonth().minusMonths(1);
-				else
-					month = month.plusMonths(1);
+			
+				YearMonth month = YearMonth.now();
+				
+//				if (DataRangeCache.getInstance().getRange(market.getId()) == null) { //Nuovo
+//					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
+//					DataRangeCache.getInstance().setStartMonth(market.getId(), month);
+//				}
+//				else if(DataRangeCache.getInstance().getEndMonth(market.getId()).isBefore(YearMonth.now())) {//Dati recenti non scaricati
+//					month = DataRangeCache.getInstance().getEndMonth(market.getId()).plusMonths(1);
+//					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
+//				}
+//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()) == null) {//Dati recenti scaricati ma dati vecchi non scaricati
+//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
+//				}
+//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()).isBefore(YearMonth.now())) {
+//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
+//				}
+//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()).isBefore(YearMonth.now())) {
+//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
+//				}
+					
 				List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
 				for(APICandle candle : sourceCandles)
 					market.addCandles(new Candle(
@@ -107,21 +119,25 @@ final class Worker extends Thread
 							candle.getClose(), 
 							candle.getVolume()
 					));
-				market.saveData();				
+				
+				if(updateCurrent)
+					if(marketDataManager.update(market.getData())) System.out.println("market: " + market.getId() + "last month updated");
+				else
+					marketDataManager.insert(market.getData());
+				
+				market.flushData();
+				
+				
+				if (DataRangeCache.getInstance().getEndMonth(market.getId()) == null || month.isAfter(DataRangeCache.getInstance().getEndMonth(market.getId())))
+					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
+				if (DataRangeCache.getInstance().getStartMonth(market.getId()) == null || month.isBefore(DataRangeCache.getInstance().getStartMonth(market.getId())))
+					DataRangeCache.getInstance().setStartMonth(market.getId(), month);
+				
 				Thread.yield();
 			}
 		}
 		
 		
 		//System.out.println(getName() + ": Exiting...");
-	}
-	
-	protected DataRange findDataRange(List<DataRange> ranges, String marketId) 
-	{
-		for(DataRange range: ranges) {
-			if(range.id.equals(marketId))
-				return range;
-		}
-		return null;
 	}
 }
