@@ -69,8 +69,6 @@ public class DataRangeManager extends PojoManager<DataRange>{
 				Aggregates.sort(Sorts.ascending("month")),
 				Aggregates.group("$market",  Arrays.asList(Accumulators.first("start","$$ROOT"),Accumulators.last("end", "$$ROOT"))),
 				Aggregates.project(Projections.fields(Projections.exclude(Arrays.asList("start.month", "end.month"))))));
-		if(ranges.isEmpty())
-			return null;
 		return ranges;
 	}
 }

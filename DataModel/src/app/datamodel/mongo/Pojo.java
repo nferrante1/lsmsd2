@@ -66,8 +66,38 @@ public abstract class Pojo
 	{
 		if(updatedFields.size() == 0) return null;
 		Bson document = new Document();
-		for (Map.Entry<String, Object> field: updatedFields.entrySet())
-			document = Updates.combine(document, Updates.set(field.getKey(), field.getValue()));
+		for (Map.Entry<String, Object> field: updatedFields.entrySet()) {
+			Field fieldEmbedded;
+			try {
+				fieldEmbedded = this.getClass().getDeclaredField(field.getKey());
+			} catch (NoSuchFieldException | SecurityException e) {
+				throw new IllegalStateException();
+			}
+			if(fieldEmbedded.isAnnotationPresent(Embedded.class))
+			{
+				fieldEmbedded.setAccessible(true);
+				Object fieldInstance;
+				try {
+					fieldInstance = fieldEmbedded.get(this);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					throw new UnsupportedOperationException();
+				}
+				if(fieldInstance instanceof List<?>) 
+				{
+					List<? extends EmbeddedPojo> listField = (List<? extends EmbeddedPojo>)fieldInstance;
+					for(EmbeddedPojo pojo : listField)
+					{
+						document = Updates.combine(document, pojo.getUpdateDocument());
+					}
+				}
+				else
+				{
+					document = Updates.combine(document, ((EmbeddedPojo)fieldInstance).getUpdateDocument());
+				}
+			} 
+			else
+				document = Updates.combine(document, Updates.set(field.getKey(), field.getValue()));
+		}
 		updatedFields.clear();
 		return document;
 

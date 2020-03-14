@@ -12,6 +12,8 @@ import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 import app.datamodel.mongo.PojoManager;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
 @Embedded(value = DataSource.class, nestedName = "markets")
 public class Market extends EmbeddedPojo
 {
@@ -69,7 +71,7 @@ public class Market extends EmbeddedPojo
 		return selectable;
 	}
 	
-	
+	@BsonIgnore
 	public boolean isSyncEnabled()
 	{
 		return sync;
@@ -98,7 +100,7 @@ public class Market extends EmbeddedPojo
 	public void addCandles(Candle... candles) 
 	{
 		if(data == null)
-			data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()).toString());
+			data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()), granularity);
 		
 		for(Candle candle: candles)
 			data.addCandles(candle);

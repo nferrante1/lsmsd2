@@ -121,8 +121,14 @@ public abstract class EmbeddedPojo extends Pojo
 	{
 		if(updatedFields.size() == 0) return null;
 		Bson document = new Document();
+			
 		for (Map.Entry<String, Object> field: updatedFields.entrySet())
-			document = Updates.combine(document, Updates.set(getFieldName()+ ".$." + field.getKey(), field.getValue()));
+			if(isEmbeddedList()) 
+			{
+				document = Updates.combine(document, Updates.push(getFieldName(), field.getValue()));
+			}	
+			else 
+				document = Updates.combine(document, Updates.set(getFieldName()+ ".$." + field.getKey(), field.getValue()));
 		updatedFields.clear();
 		return document;
 

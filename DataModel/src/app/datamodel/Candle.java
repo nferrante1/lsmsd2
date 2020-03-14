@@ -5,10 +5,12 @@ import java.time.Instant;
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
+import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 
 @CollectionName("MarketData")
+@Embedded(value = MarketData.class, nestedName = "candles")
 public class Candle extends EmbeddedPojo
 {
 	@SerializedName(value = "t")
@@ -23,7 +25,7 @@ public class Candle extends EmbeddedPojo
 	protected double close;
 	@SerializedName(value = "v")
 	protected double volume;
-	private static transient EmbeddedPojoManager<Candle> manager;
+	
 	
 	public Candle(Instant time, double open, double high, double low, double close, double volume)
 	{
@@ -35,17 +37,56 @@ public class Candle extends EmbeddedPojo
 		this.volume = volume;
 	}
 	
-	private Candle()
+	public Candle()
 	{
+		this.time = null;
+		this.open = 0;
+		this.high = 0;
+		this.low = 0;
+		this.close = 0;
+		this.volume = 0;
 	}
 	
-	public static EmbeddedPojoManager<Candle> getManager()
+	public Candle(Instant time)
 	{
-		if(manager == null)
-			manager = new EmbeddedPojoManager<Candle>(Candle.class);
-		return manager;
+		this.time = time;
+		this.open = 0;
+		this.high = 0;
+		this.low = 0;
+		this.close = 0;
+		this.volume = 0;
 	}
 	
+	public void setTime(Instant time)
+	{
+		updateField("time", time);
+	}
+
+	public void setOpen(double open)
+	{
+		updateField("open", open);
+	}
+
+	public void setHigh(double high)
+	{
+		updateField("high", high);
+	}
+
+	public void setLow(double low)
+	{
+		updateField("low", low);
+	}
+
+	public void setClose(double close)
+	{
+		updateField("close", close);
+	}
+
+	public void setVolume(double volume)
+	{
+		updateField("volume", volume);
+	}
+
 	public Instant getTime()
 	{
 		return time;

@@ -200,6 +200,8 @@ public class PojoManager<T extends Pojo>
 		save(Arrays.asList(pojo));
 	}
 	
+	//insertDocument( String collectionName, Document document){}
+	
 	/*private List<T> findEmbedded(Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
 		String subField = EmbeddedPojo.getFieldName(pojoClass);

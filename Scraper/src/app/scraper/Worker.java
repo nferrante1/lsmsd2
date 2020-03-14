@@ -83,32 +83,28 @@ final class Worker extends Thread
 		
 		while(true) {
 			for(Market market: sourceMarkets) {				
-				
-				boolean updateCurrent = false;
-				
 				if (!market.isSyncEnabled())
 					continue;
 			
 				YearMonth month = YearMonth.now();
 				
-//				if (DataRangeCache.getInstance().getRange(market.getId()) == null) { //Nuovo
-//					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
-//					DataRangeCache.getInstance().setStartMonth(market.getId(), month);
-//				}
-//				else if(DataRangeCache.getInstance().getEndMonth(market.getId()).isBefore(YearMonth.now())) {//Dati recenti non scaricati
-//					month = DataRangeCache.getInstance().getEndMonth(market.getId()).plusMonths(1);
-//					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
-//				}
-//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()) == null) {//Dati recenti scaricati ma dati vecchi non scaricati
-//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
-//				}
-//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()).isBefore(YearMonth.now())) {
-//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
-//				}
-//				else if(DataRangeCache.getInstance().getStartMonth(market.getId()).isBefore(YearMonth.now())) {
-//					month = DataRangeCache.getInstance().getStartMonth(market.getId()).minusMonths(1);
-//				}
-					
+				DataRange range = DataRangeCache.getInstance().getRange(market.getId());
+				
+				
+				
+				if(range != null) {
+					if(market.isFilled()) {
+						month = range.end.plusMonths(1);
+					} 
+					else 
+					{
+						month = range.start.minusMonths(1);
+					}
+				}
+				
+				if(month.isAfter(YearMonth.now()))
+					continue;
+				
 				List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
 				for(APICandle candle : sourceCandles)
 					market.addCandles(new Candle(
@@ -120,17 +116,19 @@ final class Worker extends Thread
 							candle.getVolume()
 					));
 				
-				if(updateCurrent)
-					if(marketDataManager.update(market.getData())) System.out.println("market: " + market.getId() + "last month updated");
+				//CREO DOCUMENTO CON CANDELE VUOTE
+				//E MARKETDATA, POI AGGIORNO DOC VUOTO CON MARKETDATA
+				
+				if(month.equals(YearMonth.now()))
+					marketDataManager.update(market.getData());
 				else
 					marketDataManager.insert(market.getData());
 				
 				market.flushData();
 				
-				
-				if (DataRangeCache.getInstance().getEndMonth(market.getId()) == null || month.isAfter(DataRangeCache.getInstance().getEndMonth(market.getId())))
+				if (DataRangeCache.getInstance().getRange(market.getId()) == null || month.isAfter(DataRangeCache.getInstance().getEndMonth(market.getId())))
 					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
-				if (DataRangeCache.getInstance().getStartMonth(market.getId()) == null || month.isBefore(DataRangeCache.getInstance().getStartMonth(market.getId())))
+				if (DataRangeCache.getInstance().getRange(market.getId()) == null || month.isBefore(DataRangeCache.getInstance().getStartMonth(market.getId())))
 					DataRangeCache.getInstance().setStartMonth(market.getId(), month);
 				
 				Thread.yield();

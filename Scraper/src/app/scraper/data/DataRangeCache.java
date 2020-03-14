@@ -2,14 +2,18 @@ package app.scraper.data;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class DataRangeCache {
 	private static DataRangeCache instance;
 	private List<DataRange> ranges = new ArrayList<DataRange>() ;
-	private DataRangeCache() {};
 	
-	public static DataRangeCache getInstance() 
+	private DataRangeCache() {
+		cacheRanges();
+	};
+	
+	public static synchronized DataRangeCache getInstance() 
 	{
 		if (instance == null)
 			instance = new DataRangeCache();
@@ -28,16 +32,7 @@ public class DataRangeCache {
 	
 	public void cacheRanges()
 	{
-		this.ranges = (new DataRangeManager()).getRanges();
-	}
-	
-	public DataRange findDataRange(String marketId) 
-	{
-		for(DataRange range: ranges) {
-			if(range.id.equals(marketId))
-				return range;
-		}
-		return null;
+		this.ranges = (new DataRangeManager()).getRanges();				
 	}
 	
 	public void setStartMonth(String marketId, YearMonth newMonth) 
@@ -94,20 +89,5 @@ public class DataRangeCache {
 				return range;
 		}
 		return null;
-	}
-	
-	//TODO
-	public YearMonth nextTargetMonth(String marketId)
-	{
-		DataRange range = getRange(marketId);
-		YearMonth month = YearMonth.now();
-		if(range == null) {
-			ranges.add(new DataRange(marketId, YearMonth.now(), YearMonth.now()));
-			return month;
-		}
-		else if(range.start.equals(YearMonth.now())) {
-			
-		}
-		return month;
 	}
 }
