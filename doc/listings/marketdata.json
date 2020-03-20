@@ -1,6 +1,9 @@
 [{
-	"_id": "COINBASE:BTC-USD:2019-01",
-	"data": [{
+	"_id": "ObjectId",
+	"market": "BTC:USD",
+	"start": ISODate('2019-01-22T15:40:00.00Z'),
+	"ncandles": 456,
+	"candles": [{
 		"t": ISODate('2019-01-22T15:40:00.000Z'),
 		"o": 3509.61,
 		"h": 3524.18,
