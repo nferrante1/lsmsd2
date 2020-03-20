@@ -1,5 +1,5 @@
 [{
-	"_id": "ObjectId",
+	"_id": ObjectId("5399aba6f4b0ae385bfdca76"),
 	"market": "BTC:USD",
 	"start": ISODate('2019-01-22T15:40:00.00Z'),
 	"ncandles": 456,
