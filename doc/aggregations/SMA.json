@@ -1,0 +1,39 @@
+[{$match: {"market": "COINBASE:BTC-USD"}}, {$sort: {
+  start: 1
+}}, {$project: {
+  _id: 0,
+  ncandles: 0,
+  "candles.h":0,
+  "candles.v":0,
+  "candles.l":0,
+  "candles.o":0
+}}, {$group: {
+  _id: "$market",
+  "candles":
+  {
+    $push: "$candles"
+  }
+}}, {$addFields: {
+  "candles": 
+  {
+    $reduce:
+    {
+      input:"$candles",
+      initialValue:[],
+      in:{$concatArrays:["$$value","$$this"]}
+    }
+  }
+}}, {$addFields: {
+  "candles": 
+    {
+      $map: 
+      {
+        input: {$range:[0,{$subtract:[{$size:"$candles"}, 1]}]},
+        as: "z",
+    in: {
+       avg: {$avg: {$slice: [ "$candles.c", "$$z", 2 ] } },
+       t: {$arrayElemAt:["$candles.t", {$add: ["$$z", 1] } ]}
+     }
+    }
+}
+}}]
