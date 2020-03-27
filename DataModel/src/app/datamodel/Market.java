@@ -2,9 +2,13 @@ package app.datamodel;
 
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.Embedded;
@@ -13,6 +17,7 @@ import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 import app.datamodel.mongo.PojoManager;
 
+import org.bson.BsonNull;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @CollectionName("Sources")
@@ -84,7 +89,23 @@ public class Market extends EmbeddedPojo
 	
 	public DataRange getRange() {
 		if(range == null) {
-			range = new PojoManager<DataRange>(DataRange.class).aggregate(stages);
+			range = new PojoManager<DataRange>(DataRange.class).aggregateOne(
+					Arrays.asList(
+							Aggregates.match(
+									Filters.eq("market", "COINBASE:BTC-USD")), 
+							Aggregates.sort(
+									Sorts.ascending("start")), 
+							Aggregates.group(new BsonNull(), 
+									Accumulators.first(
+											"start", "$start"), 
+									Accumulators.last("last", 
+											Filters.eq("$arrayElemAt", 
+													Arrays.asList("$candles.t", -1L)
+													)
+											)
+									)
+							)
+					);
 		}
 		return range;
 	}
@@ -104,15 +125,6 @@ public class Market extends EmbeddedPojo
 		updateField("filled", filled);
 	}
 	
-	public void addCandles(Candle... candles) 
-	{
-		//if(data == null)
-			//data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()), granularity);
-			//CHIAMARE POJOMANAGER
-		//for(Candle candle: candles)
-			//data.addCandles(candle);
-			//CHIAMARE POJOMANAGER
-	}
 	
 	public boolean isSync()
 	{

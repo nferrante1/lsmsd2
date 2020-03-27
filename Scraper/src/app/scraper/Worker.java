@@ -1,18 +1,18 @@
 package app.scraper;
 
 
+import java.time.Instant;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.datamodel.Candle;
+import app.datamodel.DataRange;
 import app.datamodel.DataSource;
 import app.datamodel.Market;
 import app.datamodel.MarketData;
 import app.datamodel.mongo.PojoManager;
-import app.scraper.data.DataRange;
-import app.scraper.data.DataRangeCache;
-import app.scraper.data.DataRangeManager;
+
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -86,10 +86,18 @@ final class Worker extends Thread
 				if (!market.isSyncEnabled())
 					continue;
 			
-				
-				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), month, true);
+				DataRange range = market.getRange();
+				Instant start;
+				if(range == null) 
+					start = Instant.now();
+				else if(market.isFilled())
+					start = range.end;
+				else 
+					start = range.start;
+				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start, market.isFilled());
+				List<Candle> candles = new ArrayList<Candle>();
 				for(APICandle candle : sourceCandles)
-					market.addCandles(new Candle(
+					candles.add(new Candle(
 							candle.getTime(), 
 							candle.getOpen(), 
 							candle.getHigh(), 
@@ -98,20 +106,13 @@ final class Worker extends Thread
 							candle.getVolume()
 					));
 				
-				//CREO DOCUMENTO CON CANDELE VUOTE
-				//E MARKETDATA, POI AGGIORNO DOC VUOTO CON MARKETDATA
-				
-				if(month.equals(YearMonth.now()))
-					marketDataManager.update(market.getData());
-				else
-					marketDataManager.insert(market.getData());
+				MarketData marketData = new MarketData(market.getId(), candles);
+//				if(month.equals(YearMonth.now()))
+//					marketDataManager.update(market.getData());
+//				else
+				marketDataManager.insert(marketData);
 				
 				market.flushData();
-				
-				if (DataRangeCache.getInstance().getRange(market.getId()) == null || month.isAfter(DataRangeCache.getInstance().getEndMonth(market.getId())))
-					DataRangeCache.getInstance().setEndMonth(market.getId(), month);
-				if (DataRangeCache.getInstance().getRange(market.getId()) == null || month.isBefore(DataRangeCache.getInstance().getStartMonth(market.getId())))
-					DataRangeCache.getInstance().setStartMonth(market.getId(), month);
 				
 				Thread.yield();
 			}

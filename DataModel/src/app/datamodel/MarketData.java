@@ -33,10 +33,10 @@ public class MarketData extends Pojo
 		super();
 	}
 	
-	public MarketData(String sourceName, String marketName, List<Candle> candles) 
+	public MarketData(String marketName, List<Candle> candles) 
 	{
 		super();
-		this.market = sourceName + ":" + marketName;
+		this.market = marketName;
 		this.start = candles.get(0).getTime();
 		this.candles = candles;
 		this.ncandles = candles.size();

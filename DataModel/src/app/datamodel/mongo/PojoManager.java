@@ -195,6 +195,14 @@ public class PojoManager<T extends Pojo>
 			pojos.add(pojo);
 		return pojos;
 	}
+	
+	public T aggregateOne(List<Bson> stages) 
+	{
+		List<T> pojos = aggregate(stages);
+		if(pojos.isEmpty())
+			return null;
+		return pojos.get(0);
+	}
 
 	public void save(T pojo)
 	{
