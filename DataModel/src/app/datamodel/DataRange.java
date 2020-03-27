@@ -1,4 +1,4 @@
-package app.scraper.data;
+package app.datamodel;
 
 import java.time.Instant;
 import java.time.YearMonth;

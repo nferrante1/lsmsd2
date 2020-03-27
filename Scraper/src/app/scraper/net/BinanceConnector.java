@@ -184,18 +184,27 @@ public class BinanceConnector implements SourceConnector
 		return candles;
 	}*/
 	
-	public List<APICandle> getThousandCandles(String marketId, int granularity, YearMonth month)
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, boolean forward)
 			throws InterruptedException
 		{
 			List<APICandle> returnCandles = new ArrayList<APICandle>();
-			Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
-			Instant start = startMonth;
 			while (candles.size() < 1000) {
-				Instant end = start.plusSeconds(granularity * 60 * 1000);
-				List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
+				Instant end;
+				List<APICandle> curCandles;
+				if(forward) {
+					end = start.plusSeconds(granularity * 60 * 1000);
+					curCandles = getCandles(marketId, granularity, start, end);
+					start = end.plusSeconds(1);
+				}
+				else {
+					 end = start.minusSeconds(1);
+					 start = start.minusSeconds(granularity * 60 * 1000);
+					 curCandles = getCandles(marketId, granularity, start, end);
+				}
+				
 				Collections.reverse(curCandles);
 				candles.addAll(curCandles);
-				start = end.plusSeconds(1);
+				
 			}
 			
 			for(int i = 0; i < 1000; i++) {

@@ -11,5 +11,5 @@ public interface SourceConnector
 {
 	public List<APIMarket> getMarkets() throws InterruptedException;
 	public List<APICandle> getLastCandles(String marketId, int granularity, Instant start) throws InterruptedException;
-	public List<APICandle> getThousandCandles(String marketId, int granularity, YearMonth month) throws InterruptedException;
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, boolean forward) throws InterruptedException;
 }

@@ -86,26 +86,8 @@ final class Worker extends Thread
 				if (!market.isSyncEnabled())
 					continue;
 			
-				/*YearMonth month = YearMonth.now();
 				
-				DataRange range = DataRangeCache.getInstance().getRange(market.getId());
-				
-				
-				
-				if(range != null) {
-					if(market.isFilled()) {
-						month = range.end.plusMonths(1);
-					} 
-					else 
-					{
-						month = range.start.minusMonths(1);
-					}
-				}
-				
-				if(month.isAfter(YearMonth.now()))
-					continue;*/
-				
-				List<APICandle> sourceCandles = connector.getMonthCandles(market.getId(), market.getGranularity(), month);
+				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), month, true);
 				for(APICandle candle : sourceCandles)
 					market.addCandles(new Candle(
 							candle.getTime(), 

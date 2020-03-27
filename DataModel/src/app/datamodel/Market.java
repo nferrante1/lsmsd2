@@ -28,6 +28,7 @@ public class Market extends EmbeddedPojo
 	protected boolean sync;
 	protected boolean filled;
 	protected transient MarketData data;
+	protected transient DataRange range;
 	
 	public Market()
 	{
@@ -79,6 +80,13 @@ public class Market extends EmbeddedPojo
 	public boolean isFilled()
 	{
 		return filled;
+	}
+	
+	public DataRange getRange() {
+		if(range == null) {
+			range = new PojoManager<DataRange>(DataRange.class).aggregate(stages);
+		}
+		return range;
 	}
 	
 	public void setBaseCurrency(String baseCurrency)
