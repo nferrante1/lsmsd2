@@ -62,7 +62,7 @@ public class EmbeddedPojoManager<T extends EmbeddedPojo> extends PojoManager<T>
 		else return updateOne(pojos.get(0).getContainerFilter(), Updates.unset(fieldName));
 	}
 	
-	public List<T> find(Bson filter, String sortField, boolean ascending, int skip, int limit)
+	public PojoCursor<T> find(Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
 		List<T> pojos = new ArrayList<T>();
 		MongoCursor<T> cursor;
@@ -82,34 +82,35 @@ public class EmbeddedPojoManager<T extends EmbeddedPojo> extends PojoManager<T>
 		
 		result = getCollection().aggregate(stages);
 		cursor = result.cursor();
-		
-		try {
-			while (cursor.hasNext()) {
-				T pojo = cursor.next();
-				pojo.setSaved();
-				pojos.add(pojo);
-			}
-		} finally {
-			cursor.close();
-		}
-		return pojos;
+		return new PojoCursor<T>(cursor);
+//		
+//		try {
+//			while (cursor.hasNext()) {
+//				T pojo = cursor.next();
+//				pojo.setSaved();
+//				pojos.add(pojo);
+//			}
+//		} finally {
+//			cursor.close();
+//		}
+//		return pojos;
 	}
 	
-	public List<T> find(Bson filter, String sortField, boolean ascending)
+	public PojoCursor<T> find(Bson filter, String sortField, boolean ascending)
 	{
 		return find(filter, sortField, ascending, 0, 0);
 	}
-	public List<T> find(Bson filter, String sortField)
+	public PojoCursor<T> find(Bson filter, String sortField)
 	{
 		return find(filter, sortField, true);
 	}
 	
-	public List<T> find(Bson filter)
+	public PojoCursor<T> find(Bson filter)
 	{
 		return find(filter, null);
 	}
 	
-	public List<T> find()
+	public PojoCursor<T> find()
 	{
 		return find(null);
 	}

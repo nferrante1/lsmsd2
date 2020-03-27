@@ -13,4 +13,5 @@ public @interface Embedded
 {
 	Class<? extends Pojo> value() default EmbeddedPojo.class;
 	String nestedName() default "";
+	boolean list() default false;
 }

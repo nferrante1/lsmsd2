@@ -13,6 +13,7 @@ import app.datamodel.mongo.EmbeddedPojoManager;
 @Embedded(value = MarketData.class, nestedName = "candles")
 public class Candle extends EmbeddedPojo
 {
+	//AAAAA
 	@SerializedName(value = "t")
 	protected Instant time;
 	@SerializedName(value = "o")

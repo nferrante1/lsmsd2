@@ -17,15 +17,12 @@ public class AuthToken extends Pojo {
 	@BsonId
 	protected String id;
 	protected String username;
-	protected boolean isAdmin;
 	protected Instant expireTime;
-	private static transient PojoManager<AuthToken> manager;
 	
 	public AuthToken(String username, boolean isAdmin)
 	{
 		super();
 		this.username = username;
-		this.isAdmin = isAdmin;
 		expireTime = Instant.now().plusSeconds(24 * 60 * 60);
 		id = generateToken();
 	}
@@ -33,11 +30,4 @@ public class AuthToken extends Pojo {
 	{
 		return "";
 	}	
-	
-	public static PojoManager<AuthToken> getManager()
-	{
-		if(manager == null)
-			manager = new PojoManager<AuthToken>(AuthToken.class);
-		return manager;
-	}
 }

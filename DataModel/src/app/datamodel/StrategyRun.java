@@ -1,23 +1,27 @@
 package app.datamodel;
 
+import java.util.List;
+
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 
 import app.datamodel.mongo.CollectionName;
+import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 
 
 @CollectionName("Strategies")
+@Embedded(value = Strategy.class, nestedName = "runs", list=true)
 public class StrategyRun extends EmbeddedPojo {
 	@BsonId
 	protected ObjectId id;
 	protected String user;
-	protected Config config;
+	protected List<Parameter<?>> config;
 	protected transient Report report;
-	private static transient EmbeddedPojoManager<StrategyRun> manager;
 	
-	public StrategyRun(String user, Config config, Report report)
+	
+	public StrategyRun(String user, List<Parameter<?>> config, Report report)
 	{
 		this.id = new ObjectId();
 		this.user = user;
@@ -25,17 +29,8 @@ public class StrategyRun extends EmbeddedPojo {
 		this.report = report;
 	}
 	
-	public static EmbeddedPojoManager<StrategyRun> getManager()
+	public List<Parameter<?>> getConfig()
 	{
-		if(manager == null)
-			manager = new EmbeddedPojoManager<StrategyRun>(StrategyRun.class);
-		return manager;
-	}
-	
-	public Config getConfig()
-	{
-		return config;
-	}
-	
-	
+		return this.config;
+	}	
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.mongodb.client.model.Filters;
 
+import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedId;
 import app.datamodel.mongo.EmbeddedPojo;
@@ -14,7 +15,8 @@ import app.datamodel.mongo.PojoManager;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-@Embedded(value = DataSource.class, nestedName = "markets")
+@CollectionName("Sources")
+@Embedded(value = DataSource.class, nestedName = "markets", list=true)
 public class Market extends EmbeddedPojo
 {
 	@EmbeddedId
@@ -30,7 +32,6 @@ public class Market extends EmbeddedPojo
 	public Market()
 	{
 		super();
-		this.setEmbeddedList();
 	}
 
 	public Market(String id, String base, String quote )
@@ -39,9 +40,7 @@ public class Market extends EmbeddedPojo
 		this.id = id;
 		this.baseCurrency = base;
 		this.quoteCurrency = quote;
-		this.granularity = 5;
-		this.setEmbeddedList();
-		
+		this.granularity = 5;		
 	}
 	
 
@@ -99,11 +98,12 @@ public class Market extends EmbeddedPojo
 	
 	public void addCandles(Candle... candles) 
 	{
-		if(data == null)
-			data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()), granularity);
-		
-		for(Candle candle: candles)
-			data.addCandles(candle);
+		//if(data == null)
+			//data = new MarketData(((DataSource)getContainer()).getName(), getId(), YearMonth.from(candles[0].getTime().atZone(ZoneId.of("UTC")).toLocalDate()), granularity);
+			//CHIAMARE POJOMANAGER
+		//for(Candle candle: candles)
+			//data.addCandles(candle);
+			//CHIAMARE POJOMANAGER
 	}
 	
 	public boolean isSync()

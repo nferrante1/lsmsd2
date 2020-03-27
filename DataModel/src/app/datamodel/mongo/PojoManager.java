@@ -67,7 +67,7 @@ public class PojoManager<T extends Pojo>
 	}
 	
 	
-	public List<T> find(Bson filter, String sortField, boolean ascending, int skip, int limit)
+	public PojoCursor<T> find(Bson filter, String sortField, boolean ascending, int skip, int limit)
 	{
 		List<T> pojos = new ArrayList<T>();
 		MongoCursor<T> cursor;
@@ -88,34 +88,35 @@ public class PojoManager<T extends Pojo>
 				result = result.sort(Sorts.descending(sortField));
 		
 		cursor = result.cursor();
+		return new PojoCursor(cursor);
 		
-		try {
-			while (cursor.hasNext()) {
-				T pojo = cursor.next();
-				pojo.setSaved();
-				pojos.add(pojo);
-			}
-		} finally {
-			cursor.close();
-		}
-		return pojos;
+//		try {
+//			while (cursor.hasNext()) {
+//				T pojo = cursor.next();
+//				pojo.setSaved();
+//				pojos.add(pojo);
+//			}
+//		} finally {
+//			cursor.close();
+//		}
+//		return pojos;
 	}
 	
-	public List<T> find(Bson filter, String sortField, boolean ascending)
+	public PojoCursor<T> find(Bson filter, String sortField, boolean ascending)
 	{
 		return find(filter, sortField, ascending, 0, 0);
 	}
-	public List<T> find(Bson filter, String sortField)
+	public PojoCursor<T> find(Bson filter, String sortField)
 	{
 		return find(filter, sortField, true);
 	}
 	
-	public List<T> find(Bson filter)
+	public PojoCursor<T> find(Bson filter)
 	{
 		return find(filter, null);
 	}
 	
-	public List<T> find()
+	public PojoCursor<T> find()
 	{
 		return find(null);
 	}

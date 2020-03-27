@@ -2,6 +2,7 @@ package app.datamodel.mongo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public abstract class Pojo
 {
 	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
 	private transient boolean saved;
+	private transient List<Bson> arrayFilter = new ArrayList<Bson>();
 	
 	public Pojo()
 	{
@@ -127,9 +129,7 @@ public abstract class Pojo
 			throw new UnsupportedOperationException();
 		}
 		
-		if(isSaved())
-			updatedFields.put(name, value);
-		
+		registerUpdate(field.getName(), value);
 	}
 
 	@BsonIgnore
@@ -144,4 +144,37 @@ public abstract class Pojo
 	{
 		return getCollectionName(this.getClass());
 	}
+	
+	protected void registerUpdate(String name, Object value, String embeddedName, HashMap<String,Bson> embeddedFilter) 
+	{
+		if(!isSaved())
+			return;
+		
+		if(embeddedFilter != null && embeddedFilter.size() > 0) {
+			Document document = new Document();
+			for(Map.Entry<String, Bson> filter : embeddedFilter.entrySet())
+				document.append("f"+arrayFilter.size()+"."+filter.getKey(), filter.getValue());
+			updatedFields.put(embeddedName+".$[f"+arrayFilter.size()+"]."+name, value);
+			arrayFilter.add(document);			
+		} else if(embeddedName != null) 
+		{
+			updatedFields.put(embeddedName+"."+name, value);
+		} else 
+		{
+			updatedFields.put(name, value);
+		}
+		
+	}
+	
+	protected void registerUpdate(String name, Object value, String embeddedName) 
+	{
+		registerUpdate(name, value, embeddedName, null);
+	}
+	
+	protected void registerUpdate(String name, Object value) 
+	{
+		registerUpdate(name, value, null, null);
+	}
+	
+	
 }

@@ -1,8 +1,12 @@
 package app.datamodel;
 
+import app.datamodel.mongo.CollectionName;
+import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
 
+@CollectionName("Strategies")
+@Embedded(value = StrategyRun.class, nestedName = "report")
 public class Report extends EmbeddedPojo {
 	protected double netProfit;
 	protected double grossProfit;
