@@ -36,6 +36,7 @@ public class CoinbaseConnector implements SourceConnector
 	private final int maxRequestsPerSecond = 3;
 	private final double requestMargin = 0.25;
 	private boolean additionalRateLimit;
+	private List<APICandle> candles;
 	
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
@@ -64,6 +65,7 @@ public class CoinbaseConnector implements SourceConnector
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
 		retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(CoinbaseInterface.class);
+		candles = new ArrayList<APICandle>();
 	}
 	
 	private void rateLimit() throws InterruptedException
@@ -128,7 +130,7 @@ public class CoinbaseConnector implements SourceConnector
 		}
 		return response.body();
 	}
-
+/*
 	@Override
 	public List<APICandle> getMonthCandles(String marketId, int granularity, YearMonth month)
 		throws InterruptedException
@@ -148,5 +150,29 @@ public class CoinbaseConnector implements SourceConnector
 		}
 		return candles;
 	}
+	*/
+	public List<APICandle> getThousandCandles(String marketId, int granularity, YearMonth month)
+		throws InterruptedException
+	{
+		List<APICandle> returnCandles = new ArrayList<APICandle>();
+		Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
+		Instant start = startMonth;
+		while (candles.size() < 1000) {
+			Instant end = start.plusSeconds(granularity * 60 * 300);
+			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
+			Collections.reverse(curCandles);
+			candles.addAll(curCandles);
+			start = end.plusSeconds(1);
+		}
+		
+		for(int i = 0; i < 1000; i++) {
+			returnCandles.add(i, candles.get(0));
+			candles.remove(0);
+		}
+		
+		
+		return returnCandles;
+	}
+
 
 }

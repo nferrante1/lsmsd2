@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class BinanceConnector implements SourceConnector
 	private final int availableWeight = 1200;
 	private final double requestMargin = 0.25;
 	private int requestedWaitTime;
+	private List<APICandle> candles;
 	
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
@@ -67,6 +69,7 @@ public class BinanceConnector implements SourceConnector
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
 		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
+		candles = new ArrayList<APICandle>();
 	}
 	
 	private void rateLimit() throws InterruptedException
@@ -162,7 +165,7 @@ public class BinanceConnector implements SourceConnector
 			usedWeight++;
 		return response.body();
 	}
-
+/*
 	@Override
 	public List<APICandle> getMonthCandles(String marketId, int granularity, YearMonth month)
 		throws InterruptedException
@@ -179,6 +182,29 @@ public class BinanceConnector implements SourceConnector
 			start = end.plusSeconds(1);
 		}
 		return candles;
-	}
+	}*/
+	
+	public List<APICandle> getThousandCandles(String marketId, int granularity, YearMonth month)
+			throws InterruptedException
+		{
+			List<APICandle> returnCandles = new ArrayList<APICandle>();
+			Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
+			Instant start = startMonth;
+			while (candles.size() < 1000) {
+				Instant end = start.plusSeconds(granularity * 60 * 1000);
+				List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
+				Collections.reverse(curCandles);
+				candles.addAll(curCandles);
+				start = end.plusSeconds(1);
+			}
+			
+			for(int i = 0; i < 1000; i++) {
+				returnCandles.add(i, candles.get(0));
+				candles.remove(0);
+			}
+			
+			
+			return returnCandles;
+		}
 
 }
