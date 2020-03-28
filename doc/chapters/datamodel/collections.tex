@@ -42,11 +42,9 @@ caption={\code{AuthTokens} collection example.}]{authtokens.json}
 
 Fields' description:
 \begin{description}
-	\item[\_id] \textit{(string)} Token hash (generated randomly);
+	\item[\_id] \textit{(string)} Token hash (generated randomly). Admin
+		tokens always start with a \code{0};
 	\item[username] \textit{(string)} User's username;
-	\item[isAdmin] \textit{(boolean, optional)} Specifies whether the user
-		is the administrator or not; if not present, is considered
-		\code{false};
 	\item[expireTime] \textit{(ISODate)} Token expire time.
 \end{description}
 
@@ -106,17 +104,21 @@ Fields' description:
 
 \subsection{MarketData}
 
-Market data is divided into multiple documents, where each document represents a
-month of data.
+Market data is bucketed into multiple documents.
 
 \lstinputlisting[language=json, label={lst:marketdatacollection},
 caption={\code{MarketData} collection example.}]{marketdata.json}
 
 Fields' description:
 \begin{description}
-	\item[\_id] \textit{(string)} Format:
-		\code{sourcename:marketname:YYYY-MM};
-	\item[data] \textit{(array)} Array of embedded documents where each
+	\item[\_id] \textit{(ObjectId)} Unique ID of the document;
+	\item[market] \textit{(string)} ID of the market. Format:
+		\code{sourcename:marketname};
+	\item[start] \textit{(ISODate)} The time (\code{t} field) of the first
+		candle;
+	\item[ncandles] \textit{(integer)} The number of candles in the
+		\code{candles} array;
+	\item[candles] \textit{(array)} Array of embedded documents where each
 		document represent a trading day (candle). The structure of
 		these documents is the following:
 		\begin{description}
@@ -133,11 +135,6 @@ Fields' description:
 				amount traded during the day}.
 		\end{description}
 \end{description}
-
-The \code{data} array is pre-filled with all candles that should be part of the
-month (even if not all candles are available). This improves performance when
-the scraper downloads the data from the source since it's a mutable document
-that otherwise it will need to be frequently re-allocated.
 
 \subsection{Strategies}
 
@@ -157,7 +154,7 @@ Fields' description:
 		list all the tests made by the users with this strategy. The
 		structure of these documents is the following:
 		\begin{description}
-			\item[id] \textit{(ObjectId)} An unique id of the run;
+			\item[id] \textit{(ObjectId)} Unique ID of the run;
 			\item[user] \textit{(string)} The user who launched the
 				run;
 			\item[parameters] \textit{(array)} Strategy's

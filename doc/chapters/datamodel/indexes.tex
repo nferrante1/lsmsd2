@@ -8,20 +8,6 @@ indexes may be changed, removed, or other indexes may be added. Those decisions
 will be guided by performance evaluations of the application on common
 workloads.
 
-\subsection{Users}
-
-We need to get a user by username (\code{\_id}) and \code{passwordHash}
-when the user performs login. So, a compound index as the following can support
-the query:
-
-\begin{lstlisting}[language=json]
-{"_id": 1, "passwordHash": 1}
-\end{lstlisting}
-
-Moreover, this also support queries on the username only since the \code{\_id}
-field is a prefix for the index (and this fields is also an unique index by
-default).
-
 \subsection{AuthTokens}
 
 Auth tokens are always retrieved by the token hash, which is saved in the
@@ -35,6 +21,12 @@ Additionally, the following \standout{TTL index} is defined:
 
 This will instruct \mongodb{} to automatically remove tokens when they expire.
 
+Note that in order to define a TTL index we can not save the auth tokens as
+embedded documents inside the \code{Users} collection since indexes in
+\mongodb{} are always \emph{collection-level} (so, setting a TTL index in an
+embedded document, will result in the deletion of the entire root document when
+the TTL expires).
+
 \subsection{Sources}
 
 We need to get a source, with all the markets, or a single market inside a
@@ -44,27 +36,35 @@ source. The following compound index can support both queries:
 {"_id": 1, "markets.id": 1}
 \end{lstlisting}
 
-We may use index intersection to fulfill the query that gets a single market,
-but since there is no need to get all the markets with a specific \code{id} from
-all sources (we always get a specific market in a specific source), we prefer to
-define a compound index in order to save \mongodb{} the need to access two
-indexes to perform the query.
+We may exploit the \mongodb's index intersection feature to support the query
+that gets a single market, but since there is no need to get all the markets
+with a specific \code{id} from all sources (we always get a specific market in a
+specific source), we prefer to define a compound index in order to save
+\mongodb{} the need to access two indexes to perform the query.
 
 \subsection{MarketData}
 
-We need to get market data by \code{\_id} during the execution of a strategy. In
-fact, when a strategy is run, the user specifies the source name, the market
-name and the application will start pulling data from the database
-month-by-month, so there are all elements to fully build the \code{\_id} field.
-The \code{\_id} field is already indexed, but we will define an \standout{hashed
-index} on it:
+We need to get market data by \code{market} during the execution of a strategy.
+We define an \standout{hashed index} on the \code{market} field:
 
 \begin{lstlisting}[language=json]
-{_id: "hashed"}
+{"market": "hashed"}
 \end{lstlisting}
 
 This is an hashed index since it will also be used as a shard key to shard the
 collection over multiple servers, as defined in \secref{sec:distributed}.
+
+Moreover, we need to sort documents based on the \code{start} field:
+
+\begin{lstlisting}[language=json]
+{"start": 1}
+\end{lstlisting}
+
+The \code{start} field is a redundancy since it has the same value of the
+\code{t} field of the first candle in the document (\code{candles.0.t}). The
+redundancy is added just to create this index to improve the sorting operation
+(we could have set an index on \code{candles.t}, but this would have caused the
+side effect of creating an index entry for each candle which is useless).
 
 \subsection{Strategies}
 
@@ -82,9 +82,8 @@ following:
 {"runs.id": 1}, {unique: true}
 \end{lstlisting}
 
-We can exploit the \mongodb's index intersection feature in order to support
-queries that specifies both the \code{name} or the \code{\_id} of a strategy and
-the \code{id} of the run.
+The uniqueness ensures that we can get a run using just its \code{id} and
+without specifying which strategy it belongs to.
 
 To allow the application to rapidly sort strategies by the net profit (commonly
 used to represent the overall performance of a strategy), we define the
