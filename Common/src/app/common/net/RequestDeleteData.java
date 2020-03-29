@@ -2,7 +2,7 @@ package app.common.net;
 
 import java.time.YearMonth;
 
-import app.datamodel.AuthToken;
+import app.datamodel.pojos.AuthToken;
 
 public class RequestDeleteData extends RequestMessage {
 	

@@ -20,7 +20,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import app.datamodel.Candle;
+import app.datamodel.pojos.Candle;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;
@@ -144,8 +144,11 @@ public class BinanceConnector implements SourceConnector
 		Map<String, String> options = new HashMap<String, String>();
 		
 		options.put("symbol", marketId);
-		options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
-		options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
+		if(start == null)
+			options.put("startTime", "0");
+		else
+			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
+		//options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
 		options.put("interval", getIntervalString(granularity));
 		options.put("limit", "1000");
 		
@@ -184,36 +187,11 @@ public class BinanceConnector implements SourceConnector
 		return candles;
 	}*/
 	
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, boolean forward)
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start)
 			throws InterruptedException
 		{
-			List<APICandle> returnCandles = new ArrayList<APICandle>();
-			while (candles.size() < 1000) {
-				Instant end;
-				List<APICandle> curCandles;
-				if(forward) {
-					end = start.plusSeconds(granularity * 60 * 1000);
-					curCandles = getCandles(marketId, granularity, start, end);
-					start = end.plusSeconds(1);
-				}
-				else {
-					 end = start.minusSeconds(1);
-					 start = start.minusSeconds(granularity * 60 * 1000);
-					 curCandles = getCandles(marketId, granularity, start, end);
-				}
-				
-				Collections.reverse(curCandles);
-				candles.addAll(curCandles);
-				
-			}
-			
-			for(int i = 0; i < 1000; i++) {
-				returnCandles.add(i, candles.get(0));
-				candles.remove(0);
-			}
-			
-			
-			return returnCandles;
+			return getCandles(marketId, granularity, start, Instant.now());
 		}
+
 
 }

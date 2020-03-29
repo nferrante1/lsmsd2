@@ -1,6 +1,6 @@
 package app.common.net;
 
-import app.datamodel.AuthToken;
+import app.datamodel.pojos.AuthToken;
 /**
  * Represents a request message, sent from the client to the server.
  */

@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -14,8 +14,6 @@ import org.bson.types.ObjectId;
 
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.Embedded;
-import app.datamodel.mongo.Pojo;
-import app.datamodel.mongo.PojoManager;
 
 @CollectionName("MarketData")
 public class MarketData extends Pojo

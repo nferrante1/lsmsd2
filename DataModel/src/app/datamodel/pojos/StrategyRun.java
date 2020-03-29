@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import app.datamodel.mongo.EmbeddedPojoManager;
 
 @CollectionName("Strategies")
 @Embedded(value = Strategy.class, nestedName = "runs", list=true)
-public class StrategyRun extends EmbeddedPojo {
+public class StrategyRun extends Pojo {
 	@BsonId
 	protected ObjectId id;
 	protected String user;

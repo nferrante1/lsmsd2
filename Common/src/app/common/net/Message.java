@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
-import app.datamodel.AuthToken;
+import app.datamodel.pojos.AuthToken;
 
 /**
  * Represent a message exchanged between server and client.

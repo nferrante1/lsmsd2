@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import app.datamodel.DataSource;
-import app.datamodel.mongo.DBManager;
-import app.datamodel.mongo.PojoCursor;
-import app.datamodel.mongo.PojoManager;
+import app.datamodel.pojos.DataSource;
+import app.datamodel.pojos.mongo.DBManager;
+import app.datamodel.pojos.mongo.PojoCursor;
+import app.datamodel.pojos.mongo.PojoManager;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;

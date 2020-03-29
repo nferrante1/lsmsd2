@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.time.Instant;
 import java.time.YearMonth;
@@ -14,8 +14,6 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Pojo;
-import app.datamodel.mongo.PojoManager;
 
 @CollectionName("MarketData")
 public class DataRange  extends Pojo {

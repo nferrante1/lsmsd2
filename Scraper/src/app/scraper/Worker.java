@@ -6,13 +6,12 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.datamodel.Candle;
-import app.datamodel.DataRange;
-import app.datamodel.DataSource;
-import app.datamodel.Market;
-import app.datamodel.MarketData;
-import app.datamodel.mongo.PojoManager;
-
+import app.datamodel.pojos.Candle;
+import app.datamodel.pojos.DataRange;
+import app.datamodel.pojos.DataSource;
+import app.datamodel.pojos.Market;
+import app.datamodel.pojos.MarketData;
+import app.datamodel.pojos.mongo.PojoManager;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -89,13 +88,13 @@ final class Worker extends Thread
 				DataRange range = market.getRange();
 				Instant start;
 				if(range == null) 
-					start = Instant.now();
-				else if(market.isFilled())
-					start = range.end;
+					start = null;
 				else 
-					start = range.start;
-				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start, market.isFilled());
+					start = range.end;
+				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start);
+				
 				List<Candle> candles = new ArrayList<Candle>();
+				
 				for(APICandle candle : sourceCandles)
 					candles.add(new Candle(
 							candle.getTime(), 

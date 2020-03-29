@@ -2,7 +2,7 @@ package app.common.net;
 
 import java.util.HashMap;
 
-import app.datamodel.AuthToken;
+import app.datamodel.pojos.AuthToken;
 
 public class RequestBrowse extends RequestMessage{
 	

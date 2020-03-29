@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,6 @@ import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Pojo;
-import app.datamodel.mongo.PojoManager;
 
 @CollectionName("Strategies")
 public class Strategy extends Pojo {

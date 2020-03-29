@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import app.datamodel.mongo.CollectionName;
 import app.datamodel.mongo.Embedded;
@@ -7,7 +7,7 @@ import app.datamodel.mongo.EmbeddedPojoManager;
 
 @CollectionName("Strategies")
 @Embedded(value = StrategyRun.class, nestedName = "report")
-public class Report extends EmbeddedPojo {
+public class Report extends Pojo {
 	protected double netProfit;
 	protected double grossProfit;
 	protected double grossLoss;

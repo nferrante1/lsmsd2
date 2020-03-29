@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.time.Instant;
 
@@ -11,7 +11,7 @@ import app.datamodel.mongo.EmbeddedPojoManager;
 
 @CollectionName("MarketData")
 @Embedded(value = MarketData.class, nestedName = "candles")
-public class Candle extends EmbeddedPojo
+public class Candle extends Pojo
 {
 	//AAAAA
 	@SerializedName(value = "t")

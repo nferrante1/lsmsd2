@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.time.Instant;
 
@@ -7,8 +7,6 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import com.google.gson.annotations.SerializedName;
 
 import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Pojo;
-import app.datamodel.mongo.PojoManager;
 
 @CollectionName("AuthTokens")
 public class AuthToken extends Pojo {

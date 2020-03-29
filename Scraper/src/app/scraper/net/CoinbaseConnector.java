@@ -151,12 +151,12 @@ public class CoinbaseConnector implements SourceConnector
 		return candles;
 	}
 	*/
-	public List<APICandle> getThousandCandles(String marketId, int granularity, YearMonth month)
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start)
 		throws InterruptedException
 	{
 		List<APICandle> returnCandles = new ArrayList<APICandle>();
-		Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
-		Instant start = startMonth;
+		if(start == null)
+			start = findFirstInstant(marketId, granularity);
 		while (candles.size() < 1000) {
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
@@ -173,6 +173,26 @@ public class CoinbaseConnector implements SourceConnector
 		
 		return returnCandles;
 	}
-
-
+	
+	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException {
+		Instant start = Instant.ofEpochSecond(1437428220);
+		List<APICandle> curCandles = new ArrayList<APICandle>();
+		while (curCandles.size() == 0) {
+			Instant end = start.plusSeconds(86400 * 60 * 300);
+			curCandles = getCandles(marketId, 86400, start, end);
+			start = end.plusSeconds(1);
+		}
+		
+		start = curCandles.get(curCandles.size()-1).getTime();
+		curCandles.clear();
+		
+		while (curCandles.size() == 0) {
+			Instant end = start.plusSeconds(granularity * 60 * 300);
+			curCandles = getCandles(marketId, granularity, start, end);
+			start = end.plusSeconds(1);
+		}
+		
+		return curCandles.get(curCandles.size()-1).getTime();	 
+	} 
+	
 }

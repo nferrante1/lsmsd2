@@ -1,4 +1,4 @@
-package app.datamodel;
+package app.datamodel.pojos;
 
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -15,23 +15,22 @@ import app.datamodel.mongo.Embedded;
 import app.datamodel.mongo.EmbeddedId;
 import app.datamodel.mongo.EmbeddedPojo;
 import app.datamodel.mongo.EmbeddedPojoManager;
-import app.datamodel.mongo.PojoManager;
 
 import org.bson.BsonNull;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @CollectionName("Sources")
 @Embedded(value = DataSource.class, nestedName = "markets", list=true)
-public class Market extends EmbeddedPojo
+public class Market extends Pojo
 {
 	@EmbeddedId
+	
 	public String id;
 	protected String baseCurrency;
 	protected String quoteCurrency;
 	protected int granularity;
 	protected boolean selectable;
 	protected boolean sync;
-	protected boolean filled;
 	protected transient MarketData data;
 	protected transient DataRange range;
 	
@@ -92,7 +91,7 @@ public class Market extends EmbeddedPojo
 			range = new PojoManager<DataRange>(DataRange.class).aggregateOne(
 					Arrays.asList(
 							Aggregates.match(
-									Filters.eq("market", "COINBASE:BTC-USD")), 
+									Filters.eq("market", getId())), 
 							Aggregates.sort(
 									Sorts.ascending("start")), 
 							Aggregates.group(new BsonNull(), 
@@ -150,12 +149,13 @@ public class Market extends EmbeddedPojo
 	{
 		updateField("selectable", selectable);
 	}
-
+	
+	@BsonIgnore
 	public MarketData getData()
 	{
 		return this.data;
 	}
-
+	
 	public void flushData()
 	{
 		this.data = null;

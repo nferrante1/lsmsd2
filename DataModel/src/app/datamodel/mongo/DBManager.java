@@ -133,7 +133,7 @@ public class DBManager implements Closeable
 		return instance;
 	}
 	
-	synchronized MongoDatabase getDatabase()
+	synchronized public MongoDatabase getDatabase()
 	{
 		if (instance == null)
 			throw new IllegalStateException("Called getDatabase() on a uninitialized instance.");

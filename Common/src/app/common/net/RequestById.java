@@ -1,6 +1,6 @@
 package app.common.net;
 
-import app.datamodel.AuthToken;
+import app.datamodel.pojos.AuthToken;
 
 public class RequestById extends RequestMessage {
 	
