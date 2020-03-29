@@ -69,3 +69,87 @@ The following \standout{Aggregation Pipelines} has been defined:
 Note that, during the development of the application, the above pipelines may be
 implemented in some other way \exgratia{different stages or in different order}
 in order to improve the performance of the queries.
+
+\subsection{Indicators}
+
+The following aggregation pipelines has been defined to compute some indicators
+that are commonly used in technical analysis of financial market.
+
+\begin{itemize}
+	\item Simple Moving Average (SMA): arithmetic moving average calculated
+		by adding recent closing prices and then dividing that by the
+		number of time periods in the calculation average. The following
+		pipeline on the \code{MarketData} collection is defined:
+		\begin{enumerate}
+			\item \code{\$match} stage selects all documents for a
+				specific market;
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{start};
+			\item \code{\$group} and \code{\$addFields} stages to
+				put together all the candles of a given market.
+			\item \code{\$addFields} to compute the SMA on the whole
+				array using \code{\$map} and \code{\$reduce}
+				operators.
+		\end{enumerate}
+	\item Exponential Moving Average (EMA): a type of moving average that
+		places a greater weight and significance on the most recent data
+		points. The following pipeline on the \code{MarketData}
+		collection is defined:
+		\begin{enumerate}
+			\item \code{\$match} stage selects all documents for a
+				specific market;
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{start};
+			\item \code{\$group} and \code{\$addFields} stages to
+				put together all the candles of a given market.
+			\item \code{\$addFields} to compute the EMA on the whole
+				array using \code{\$map} and \code{\$reduce}
+				operators.
+			\item \code{\$unwind} and \code{\$replaceRoot} to format
+				the document in a more manageable way.
+		\end{enumerate}
+	\item Relative Strength (RS):a momentum indicator that measures the
+		magnitude of recent price changes to evaluate overbought or
+		oversold conditions in the price of a stock or other asset. The
+		following pipeline on the \code{MarketData} collection is
+		defined:
+		\begin{enumerate}
+			\item \code{\$match} stage selects all documents for a
+				specific market;
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{start};
+			\item \code{\$group} and \code{\$addFields} stages to
+				put together all the candles of a given market.
+			\item \code{\$addFields} to compute the RS on the whole
+				array using \code{\$map} and \code{\$reduce}
+				operators.
+			\item \code{\$unwind} and \code{\$replaceRoot} to format
+				the document in a more manageable way.
+		\end{enumerate}
+	\item Momentum (MOM): the rate of acceleration of asset's price, the
+		speed at which the price is changing. The following pipeline on
+		the \code{MarketData} collection is defined:
+		\begin{enumerate}
+			\item \code{\$match} stage selects all documents for a
+				specific market;
+			\item \code{\$project} stage to extract only the
+				\code{\_id} field, since the \code{data} field
+				is not needed;
+			\item \code{\$sort} stage to sort all documents by
+				\code{start};
+			\item \code{\$group} and \code{\$addFields} stages to
+				put together all the candles of a given market.
+			\item \code{\$addFields} to compute the MOM on the whole
+				array using \code{\$map} and \code{\$reduce}
+				operators.
+		\end{enumerate}
+\end{itemize}
