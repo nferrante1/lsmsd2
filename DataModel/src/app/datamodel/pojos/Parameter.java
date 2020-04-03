@@ -1,6 +1,6 @@
 package app.datamodel.pojos;
 
-import app.datamodel.mongo.EmbeddedPojo;
+
 
 public class Parameter<T> extends Pojo {
 	private String name;

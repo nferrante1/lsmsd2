@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
 public class Pojo {
 	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
 	protected transient PojoState state;
@@ -19,6 +21,7 @@ public class Pojo {
 		this.state = state;
 	}
 	
+	@BsonIgnore
 	public HashMap<String,Object> getUpdatedFields()
 	{
 		return updatedFields;
@@ -58,11 +61,13 @@ public class Pojo {
 		updatedFields.put(name, value);		
 	}
 
+	@BsonIgnore
 	public PojoState getState()
 	{
 		return state;
 	}
-
+	
+	@BsonIgnore
 	public void setState(PojoState state)
 	{
 		if(state == PojoState.COMMITTED)

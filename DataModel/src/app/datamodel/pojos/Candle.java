@@ -4,27 +4,14 @@ import java.time.Instant;
 
 import com.google.gson.annotations.SerializedName;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Embedded;
-import app.datamodel.mongo.EmbeddedPojo;
-import app.datamodel.mongo.EmbeddedPojoManager;
-
-@CollectionName("MarketData")
-@Embedded(value = MarketData.class, nestedName = "candles")
 public class Candle extends Pojo
 {
-	//AAAAA
-	@SerializedName(value = "t")
+
 	protected Instant time;
-	@SerializedName(value = "o")
 	protected double open;
-	@SerializedName(value = "h")
 	protected double high;
-	@SerializedName(value = "l")
 	protected double low;
-	@SerializedName(value = "c")
 	protected double close;
-	@SerializedName(value = "v")
 	protected double volume;
 	
 	

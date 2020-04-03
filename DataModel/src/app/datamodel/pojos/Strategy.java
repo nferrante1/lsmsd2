@@ -10,11 +10,8 @@ import org.bson.conversions.Bson;
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
-import app.datamodel.mongo.CollectionName;
 
-@CollectionName("Strategies")
 public class Strategy extends Pojo {
-	@SerializedName("_id")
 	@BsonId
 	protected String id;
 	protected String name;

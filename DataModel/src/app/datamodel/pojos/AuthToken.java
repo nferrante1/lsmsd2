@@ -6,12 +6,9 @@ import org.bson.codecs.pojo.annotations.BsonId;
 
 import com.google.gson.annotations.SerializedName;
 
-import app.datamodel.mongo.CollectionName;
 
-@CollectionName("AuthTokens")
 public class AuthToken extends Pojo {
 	
-	@SerializedName("_id")
 	@BsonId
 	protected String id;
 	protected String username;

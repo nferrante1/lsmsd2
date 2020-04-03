@@ -1,12 +1,5 @@
 package app.datamodel.pojos;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Embedded;
-import app.datamodel.mongo.EmbeddedPojo;
-import app.datamodel.mongo.EmbeddedPojoManager;
-
-@CollectionName("Strategies")
-@Embedded(value = StrategyRun.class, nestedName = "report")
 public class Report extends Pojo {
 	protected double netProfit;
 	protected double grossProfit;
@@ -19,7 +12,7 @@ public class Report extends Pojo {
 	protected double avgAmount;
 	protected double avgDuration;
 	protected double maxDrawdown;
-	private static transient EmbeddedPojoManager<Report> manager;
+
 	
 	public Report(double np, double gp, double gl, double hp, int tt, int ot, int wt, int mcl, double aa, double ad, double md)
 	{
@@ -36,12 +29,6 @@ public class Report extends Pojo {
 		maxDrawdown = md;
 	}
 	
-	public static EmbeddedPojoManager<Report> getManager() 
-	{
-		if (manager == null)
-			manager = new EmbeddedPojoManager<Report>(Report.class);
-		return manager;
-	}
 	
 	public void setNetProfit(double netProfit)
 	{

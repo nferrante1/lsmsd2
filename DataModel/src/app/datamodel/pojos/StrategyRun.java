@@ -5,14 +5,7 @@ import java.util.List;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Embedded;
-import app.datamodel.mongo.EmbeddedPojo;
-import app.datamodel.mongo.EmbeddedPojoManager;
 
-
-@CollectionName("Strategies")
-@Embedded(value = Strategy.class, nestedName = "runs", list=true)
 public class StrategyRun extends Pojo {
 	@BsonId
 	protected ObjectId id;

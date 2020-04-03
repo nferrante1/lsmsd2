@@ -36,18 +36,40 @@ public class SourcesManager {
 		return getDB().getCollection("Sources", DataSource.class);
 	}
 	
+	public void save(DataSource dataSource)
+	{
+		switch(dataSource.getState())
+		{
+		case STAGED:
+			insert(dataSource);
+			return;
+		case COMMITTED:
+			update(dataSource);
+			return;
+		case REMOVED:
+			delete(dataSource);
+			return;
+		default:
+		}
+	}
+	
 	public void insert(DataSource dataSource)
 	{
 		getCollection().insertOne(dataSource);
+		dataSource.setState(PojoState.COMMITTED);
 	}
 	
 	public void insert(List<DataSource> dataSources) 
 	{
 		getCollection().insertMany(dataSources);
+		for(DataSource ds : dataSources) {
+			ds.setState(PojoState.COMMITTED);
+		}
 	}
 	
 	public boolean delete(DataSource dataSource)
 	{
+		dataSource.setState(PojoState.REMOVED);
 		return getCollection().deleteOne(Filters.eq("_id", dataSource.getName())).wasAcknowledged();
 	}
 	
@@ -109,7 +131,8 @@ public class SourcesManager {
 		
 		//AGGIUNGERE GESTIONE RIMOZIONE MARKETDATA
 		
-		options.arrayFilters(arrayFilters);		
+		options.arrayFilters(arrayFilters);
+		dataSource.setState(PojoState.COMMITTED);
 		return getCollection().updateOne(Filters.eq("_id", dataSource.getName()), updateDocument, options).wasAcknowledged();
 	}
 	

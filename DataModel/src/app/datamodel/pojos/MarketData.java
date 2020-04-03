@@ -12,10 +12,7 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Embedded;
 
-@CollectionName("MarketData")
 public class MarketData extends Pojo
 {
 	@BsonId
@@ -23,7 +20,6 @@ public class MarketData extends Pojo
 	protected String market;
 	protected int ncandles;
 	protected Instant start;
-	@Embedded(value = MarketData.class, nestedName = "candles")
 	protected List<Candle> candles = new ArrayList<Candle>();
 		
 	private MarketData() 

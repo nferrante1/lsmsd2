@@ -6,12 +6,13 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.datamodel.SourcesManager;
 import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
 import app.datamodel.pojos.MarketData;
-import app.datamodel.pojos.mongo.PojoManager;
+import app.datamodel.pojos.PojoState;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -51,24 +52,25 @@ final class Worker extends Thread
 			Market market = source.getMarket(curMarket.getId());
 			if(market == null) 
 				source.addMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
-			else
-				source.updateMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
+			else {
+				market.setBaseCurrency(curMarket.getBaseCurrency());
+				market.setQuoteCurrency(curMarket.getQuoteCurrency());
+			}
+			
 		}
-		
-		List<Market> sourceMarket = new ArrayList<Market>(source.getMarkets());
-		
-		OuterLoop: for(Market sm : sourceMarket) 
+			
+		OuterLoop: for(Market sm : source.getMarkets()) 
 		{
 			for(APIMarket m: markets) {
 				if (sm.getId().equals(m.getId()))
 					continue OuterLoop;
 			}
-			source.removeMarket(sm.getId());
+			sm.setState(PojoState.REMOVED);
 		}
 		
 		
-		PojoManager<DataSource> manager = new PojoManager<DataSource>(DataSource.class);
-		manager.save(source);
+		SourcesManager manager = new SourcesManager();
+		manager.update(source);
 		
 		if (!source.isEnabled())
 		{
@@ -78,9 +80,14 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarkets = source.getMarkets();
 		
-		PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
+		for(Market m: sourceMarkets)
+		{
+			System.out.println(m.getId() + " " + m.getBaseCurrency() + " " + m.getQuoteCurrency());
+		}
 		
-		while(true) {
+		//PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
+		
+		/*while(true) {
 			for(Market market: sourceMarkets) {				
 				if (!market.isSyncEnabled())
 					continue;
@@ -111,12 +118,10 @@ final class Worker extends Thread
 //				else
 				marketDataManager.insert(marketData);
 				
-				market.flushData();
-				
 				Thread.yield();
 			}
 		}
-		
+		*/
 		
 		//System.out.println(getName() + ": Exiting...");
 	}

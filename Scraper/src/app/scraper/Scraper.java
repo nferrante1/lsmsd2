@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import app.datamodel.pojos.DataSource;
-import app.datamodel.pojos.mongo.DBManager;
-import app.datamodel.pojos.mongo.PojoCursor;
-import app.datamodel.pojos.mongo.PojoManager;
+import app.datamodel.mongo.DBManager;
+import app.datamodel.PojoCursor;
+import app.datamodel.SourcesManager;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;
@@ -60,7 +60,7 @@ public class Scraper
 	
 	private static void createWorkers()
 	{
-		PojoManager<DataSource> manager = new PojoManager<DataSource>(DataSource.class);
+		SourcesManager manager = new SourcesManager();
 		List<DataSource> sources;
 		try (PojoCursor<DataSource> cursor = manager.find()) {
 			sources = cursor.toList();

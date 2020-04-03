@@ -10,21 +10,14 @@ import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.Embedded;
-import app.datamodel.mongo.EmbeddedId;
-import app.datamodel.mongo.EmbeddedPojo;
-import app.datamodel.mongo.EmbeddedPojoManager;
+import app.datamodel.MarketDataManager;
 
 import org.bson.BsonNull;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-@CollectionName("Sources")
-@Embedded(value = DataSource.class, nestedName = "markets", list=true)
+
 public class Market extends Pojo
-{
-	@EmbeddedId
-	
+{	
 	public String id;
 	protected String baseCurrency;
 	protected String quoteCurrency;
@@ -81,30 +74,11 @@ public class Market extends Pojo
 		return sync;
 	}
 	
-	public boolean isFilled()
-	{
-		return filled;
-	}
-	
+	@BsonIgnore	
 	public DataRange getRange() {
 		if(range == null) {
-			range = new PojoManager<DataRange>(DataRange.class).aggregateOne(
-					Arrays.asList(
-							Aggregates.match(
-									Filters.eq("market", getId())), 
-							Aggregates.sort(
-									Sorts.ascending("start")), 
-							Aggregates.group(new BsonNull(), 
-									Accumulators.first(
-											"start", "$start"), 
-									Accumulators.last("last", 
-											Filters.eq("$arrayElemAt", 
-													Arrays.asList("$candles.t", -1L)
-													)
-											)
-									)
-							)
-					);
+			MarketDataManager marketDataManager = new MarketDataManager();
+			range = marketDataManager.getRange(getId());
 		}
 		return range;
 	}
@@ -118,12 +92,6 @@ public class Market extends Pojo
 	{
 		updateField("quoteCurrency", quoteCurrency);
 	}
-	
-	public void setFilled(boolean filled)
-	{
-		updateField("filled", filled);
-	}
-	
 	
 	public boolean isSync()
 	{
@@ -154,11 +122,5 @@ public class Market extends Pojo
 	public MarketData getData()
 	{
 		return this.data;
-	}
-	
-	public void flushData()
-	{
-		this.data = null;
-		
 	}
 }

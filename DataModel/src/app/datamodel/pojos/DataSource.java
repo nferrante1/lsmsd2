@@ -50,7 +50,6 @@ public class DataSource extends Pojo
 	}
 
 	@BsonIgnore
-	
 	public Market getMarket(String marketId)
 	{
 		for (Market market: markets)
@@ -97,6 +96,7 @@ public class DataSource extends Pojo
 //			}
 //	}
 	
+	@BsonIgnore
 	public ListIterator<Market> getMarketsIterator()
 	{
 		return markets.listIterator();
