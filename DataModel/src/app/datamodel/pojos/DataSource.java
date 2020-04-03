@@ -66,7 +66,6 @@ public class DataSource extends Pojo
 	public void addMarket(Market market)
 	{
 		markets.add(market);
-		market.setState(PojoState.STAGED);
 	}
 	
 //	public void removeMarket(String marketId)
@@ -100,5 +99,11 @@ public class DataSource extends Pojo
 	public ListIterator<Market> getMarketsIterator()
 	{
 		return markets.listIterator();
+	}
+	public void setMarkets(List<Market> markets)
+	{
+		this.markets = markets;
+		for(Market market : this.markets)
+			market.setState(PojoState.COMMITTED);
 	}
 }

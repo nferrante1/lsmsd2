@@ -70,7 +70,7 @@ final class Worker extends Thread
 		
 		
 		SourcesManager manager = new SourcesManager();
-		manager.update(source);
+		manager.save(source);
 		
 		if (!source.isEnabled())
 		{
@@ -80,11 +80,11 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarkets = source.getMarkets();
 		
-		for(Market m: sourceMarkets)
-		{
-			System.out.println(m.getId() + " " + m.getBaseCurrency() + " " + m.getQuoteCurrency());
-		}
-		
+//		for(Market m: sourceMarkets)
+//		{
+//			System.out.println(m.getId() + " " + m.getBaseCurrency() + " " + m.getQuoteCurrency());
+//		}
+//		
 		//PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
 		
 		/*while(true) {

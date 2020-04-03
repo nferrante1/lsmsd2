@@ -1,15 +1,23 @@
 package app.datamodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.bson.BsonDocument;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.pojo.Conventions;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -85,7 +93,7 @@ public class SourcesManager {
 	public boolean update(DataSource dataSource) 
 	{
 		
-		Bson updateDocument = new Document();
+		List<Bson> updateDocument = new ArrayList<Bson>();
 		UpdateOptions options = new UpdateOptions();
 		List<Bson> arrayFilters = new ArrayList<Bson>();
 		List<Market> addedMarkets = new ArrayList<Market>();
@@ -95,7 +103,7 @@ public class SourcesManager {
 		
 		HashMap<String, Object> updatedFields = dataSource.getUpdatedFields();
 		for(Map.Entry<String, Object> entry : updatedFields.entrySet())
-			updateDocument =Updates.combine(updateDocument, Updates.set(entry.getKey(), entry.getValue()));
+			updateDocument.add(Updates.set(entry.getKey(), entry.getValue()));
 		ListIterator<Market> iterator = dataSource.getMarketsIterator();
 		
 		while(iterator.hasNext()) {
@@ -119,21 +127,32 @@ public class SourcesManager {
 			String filterName = "f" + filterNumber;
 			arrayFilters.add(Filters.eq(filterName + ".id", market.getId()));
 			for(Map.Entry<String, Object> entry : updatedFields.entrySet()) {
-				updateDocument = Updates.combine(updateDocument, Updates.set("markets.$["+filterName+"]."+entry.getKey(), entry.getValue()));
+				updateDocument.add(Updates.set("markets.$["+filterName+"]."+entry.getKey(), entry.getValue()));
 			}
 			filterNumber++;
 		}
 		
 		if(!addedMarkets.isEmpty())
-			updateDocument = Updates.combine(updateDocument, Updates.pushEach("markets", addedMarkets));
+			//updateDocument.add(Updates.pushEach("markets", addedMarkets));
+			getCollection().updateOne(Filters.eq("_id", dataSource.getName()), Updates.pushEach("markets", addedMarkets));
 		if(!removedMarkets.isEmpty())
-			updateDocument = Updates.combine(updateDocument, Updates.pullAll("markets", removedMarkets));			
+			//updateDocument.add(Updates.pullAll("markets", removedMarkets));			
+			getCollection().updateOne(Filters.eq("_id", dataSource.getName()), Updates.pullAll("markets", removedMarkets));
 		
 		//AGGIUNGERE GESTIONE RIMOZIONE MARKETDATA
+		if(!arrayFilters.isEmpty())
+			options.arrayFilters(arrayFilters);
 		
-		options.arrayFilters(arrayFilters);
 		dataSource.setState(PojoState.COMMITTED);
-		return getCollection().updateOne(Filters.eq("_id", dataSource.getName()), updateDocument, options).wasAcknowledged();
+		
+		if(updateDocument.isEmpty())
+			return false;
+		
+		System.out.println(Updates.combine(updateDocument).toBsonDocument(BsonDocument.class,CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()))).toJson());
+
+		System.out.println(options.toString());
+		return getCollection().updateOne(Filters.eq("_id", dataSource.getName()), Updates.combine(updateDocument), options).wasAcknowledged();
 	}
 	
 	public long update(List<DataSource> dataSources) 

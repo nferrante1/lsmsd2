@@ -34,7 +34,7 @@ public class Market extends Pojo
 
 	public Market(String id, String base, String quote )
 	{
-		super();
+		super(PojoState.STAGED);
 		this.id = id;
 		this.baseCurrency = base;
 		this.quoteCurrency = quote;
