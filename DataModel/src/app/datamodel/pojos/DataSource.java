@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 import com.google.gson.annotations.SerializedName;
 
-import app.datamodel.mongo.CollectionName;
-import app.datamodel.mongo.EmbeddedPojoManager;
-
-@CollectionName("Sources")
 public class DataSource extends Pojo
 {
 	@BsonId
@@ -27,19 +24,10 @@ public class DataSource extends Pojo
 	}
 	public DataSource(String name)
 	{
-		super();
+		super(PojoState.STAGED);
 		this.name = name;
 		enabled = true;
 	}
-	
-	
-	/*@Override
-	protected void postLoad()
-	{
-		super.postLoad();
-		for (Market market: markets)
-			market.setContainer(this);
-	}*/
 	
 	public String getName()
 	{
@@ -50,16 +38,10 @@ public class DataSource extends Pojo
 	{
 		this.name = name;
 	}
+	
 	public void setEnabled(boolean enabled)
 	{
 		this.enabled = enabled;
-	}
-
-	public void setMarkets(List<Market> markets)
-	{
-		for(Market market: markets)
-			market.setContainer(this);
-		this.markets = markets;
 	}
 
 	public boolean isEnabled()
@@ -84,37 +66,39 @@ public class DataSource extends Pojo
 	
 	public void addMarket(Market market)
 	{
-		market.setContainer(this);
 		markets.add(market);
-		EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
-		manager.insert(market);
-		
+		market.setState(PojoState.STAGED);
 	}
 	
-	public void removeMarket(String marketId)
-	{
-		Iterator<Market> marketsIterator = markets.iterator();
-		while (marketsIterator.hasNext()) {
-			Market market = marketsIterator.next();
-			if (market.getId().equals(marketId)) {
-				marketsIterator.remove();
-				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
-				manager.delete(market);
-				break;
-			}
-		}
-	}
+//	public void removeMarket(String marketId)
+//	{
+//		Iterator<Market> marketsIterator = markets.iterator();
+//		while (marketsIterator.hasNext()) {
+//			Market market = marketsIterator.next();
+//			if (market.getId().equals(marketId)) {
+//				marketsIterator.remove();
+//				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
+//				manager.delete(market);
+//				break;
+//			}
+//		}
+//	}
 	
-	public void updateMarket(Market updMarket)
+//	public void updateMarket(Market updMarket)
+//	{
+//		for (Market market: markets)
+//			if (market.getId().equals(updMarket.getId())) {
+//				market.setBaseCurrency(updMarket.getBaseCurrency());
+//				market.setQuoteCurrency(updMarket.getQuoteCurrency());
+//				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
+//				manager.update(market);
+//				break;
+//				
+//			}
+//	}
+	
+	public ListIterator<Market> getMarketsIterator()
 	{
-		for (Market market: markets)
-			if (market.getId().equals(updMarket.getId())) {
-				market.setBaseCurrency(updMarket.getBaseCurrency());
-				market.setQuoteCurrency(updMarket.getQuoteCurrency());
-				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
-				manager.update(market);
-				break;
-				
-			}
+		return markets.listIterator();
 	}
 }

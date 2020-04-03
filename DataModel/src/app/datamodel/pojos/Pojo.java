@@ -7,8 +7,19 @@ import java.util.List;
 
 public class Pojo {
 	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
+	protected transient PojoState state;
 	
-	HashMap<String,Object> getUpdatedFields()
+	public Pojo() 
+	{
+		this(PojoState.FETCHING);
+	}
+	
+	public Pojo(PojoState state)
+	{
+		this.state = state;
+	}
+	
+	public HashMap<String,Object> getUpdatedFields()
 	{
 		return updatedFields;
 	}
@@ -42,6 +53,20 @@ public class Pojo {
 
 	private void registerUpdate(String name, Object value)
 	{
+		if(state != PojoState.COMMITTED) return;
+		
 		updatedFields.put(name, value);		
+	}
+
+	public PojoState getState()
+	{
+		return state;
+	}
+
+	public void setState(PojoState state)
+	{
+		if(state == PojoState.COMMITTED)
+			updatedFields.clear();
+		this.state = state;
 	}
 }
