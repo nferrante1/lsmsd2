@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCursor;
 
 import app.datamodel.pojos.Pojo;
 import app.datamodel.pojos.PojoState;
+import app.datamodel.pojos.User;
 
 public class PojoCursor<T extends Pojo> implements AutoCloseable {
 	private MongoCursor<T> cursor;
@@ -40,5 +41,12 @@ public class PojoCursor<T extends Pojo> implements AutoCloseable {
 			list.add(pojo);
 		}
 		return list;
+	}
+
+	public T first()
+	{
+		if(cursor.hasNext())
+			return cursor.next();
+		return null;
 	}
 }
