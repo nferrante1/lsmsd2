@@ -130,34 +130,15 @@ public class CoinbaseConnector implements SourceConnector
 		}
 		return response.body();
 	}
-/*
-	@Override
-	public List<APICandle> getMonthCandles(String marketId, int granularity, YearMonth month)
+
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, int count)
 		throws InterruptedException
 	{
-		List<APICandle> candles = new ArrayList<APICandle>();
-		Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
-		Instant lastMonth = (month.equals(YearMonth.now())) ? Instant.now() : month.atEndOfMonth().atTime(23, 59, 59, 999999999).atZone(ZoneId.of("UTC")).toInstant();
-		Instant start = startMonth;
-		while (start.isBefore(lastMonth)) {
-			Instant end = start.plusSeconds(granularity * 60 * 300);
-			if (end.isAfter(lastMonth))
-				end = lastMonth;
-			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
-			Collections.reverse(curCandles);
-			candles.addAll(curCandles);
-			start = end.plusSeconds(1);
-		}
-		return candles;
-	}
-	*/
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start)
-		throws InterruptedException
-	{
+		count = (count <= 0)? 1000 : count;
 		List<APICandle> returnCandles = new ArrayList<APICandle>();
 		if(start == null)
 			start = findFirstInstant(marketId, granularity);
-		while (candles.size() < 1000) {
+		while (candles.size() < count) {
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
 			Collections.reverse(curCandles);
@@ -165,7 +146,7 @@ public class CoinbaseConnector implements SourceConnector
 			start = end.plusSeconds(1);
 		}
 		
-		for(int i = 0; i < 1000; i++) {
+		for(int i = 0; i < count; i++) {
 			returnCandles.add(i, candles.get(0));
 			candles.remove(0);
 		}
@@ -176,13 +157,15 @@ public class CoinbaseConnector implements SourceConnector
 	
 	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException {
 		Instant start = Instant.ofEpochSecond(1437428220);
-		List<APICandle> curCandles = new ArrayList<APICandle>();
-		while (curCandles.size() == 0) {
-			Instant end = start.plusSeconds(86400 * 60 * 300);
+		List<APICandle> curCandles = null;
+		while (curCandles == null || curCandles.isEmpty()) {
+			if(start.isAfter(Instant.now()))
+				return Instant.now();
+			Instant end = start.plusSeconds(86400 * 300);
 			curCandles = getCandles(marketId, 86400, start, end);
 			start = end.plusSeconds(1);
 		}
-		
+	
 		start = curCandles.get(curCandles.size()-1).getTime();
 		curCandles.clear();
 		

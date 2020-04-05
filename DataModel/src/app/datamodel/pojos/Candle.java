@@ -17,6 +17,7 @@ public class Candle extends Pojo
 	
 	public Candle(Instant time, double open, double high, double low, double close, double volume)
 	{
+		super(PojoState.STAGED);
 		this.time = time;
 		this.open = open;
 		this.high = high;
@@ -27,22 +28,7 @@ public class Candle extends Pojo
 	
 	public Candle()
 	{
-		this.time = null;
-		this.open = 0;
-		this.high = 0;
-		this.low = 0;
-		this.close = 0;
-		this.volume = 0;
-	}
-	
-	public Candle(Instant time)
-	{
-		this.time = time;
-		this.open = 0;
-		this.high = 0;
-		this.low = 0;
-		this.close = 0;
-		this.volume = 0;
+		super();
 	}
 	
 	public void setTime(Instant time)

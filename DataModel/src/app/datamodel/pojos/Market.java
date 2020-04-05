@@ -24,8 +24,8 @@ public class Market extends Pojo
 	protected int granularity;
 	protected boolean selectable;
 	protected boolean sync;
-	protected transient MarketData data;
 	protected transient DataRange range;
+	protected transient int lastNCandles;
 	
 	public Market()
 	{
@@ -83,6 +83,16 @@ public class Market extends Pojo
 		return range;
 	}
 	
+	@BsonIgnore	
+	public int getLastMarketDataCandles() {
+		if(lastNCandles <= 0) {
+			MarketDataManager marketDataManager = new MarketDataManager();
+			lastNCandles = marketDataManager.lastMarketDataCandles(getId());
+		}
+		return lastNCandles;
+	}
+	
+	
 	public void setBaseCurrency(String baseCurrency)
 	{
 		updateField("baseCurrency", baseCurrency);
@@ -116,11 +126,5 @@ public class Market extends Pojo
 	public void setSelectable(boolean selectable)
 	{
 		updateField("selectable", selectable);
-	}
-	
-	@BsonIgnore
-	public MarketData getData()
-	{
-		return this.data;
 	}
 }

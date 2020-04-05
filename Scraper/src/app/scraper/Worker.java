@@ -6,6 +6,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.datamodel.MarketDataManager;
 import app.datamodel.SourcesManager;
 import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.DataRange;
@@ -80,49 +81,37 @@ final class Worker extends Thread
 		
 		List<Market> sourceMarkets = source.getMarkets();
 		
-//		for(Market m: sourceMarkets)
-//		{
-//			System.out.println(m.getId() + " " + m.getBaseCurrency() + " " + m.getQuoteCurrency());
-//		}
-//		
-		//PojoManager<MarketData> marketDataManager = new PojoManager<MarketData>(MarketData.class);
+		MarketDataManager marketDataManager = new MarketDataManager();
 		
-		/*while(true) {
+		while(true) 
+		{
 			for(Market market: sourceMarkets) {				
 				if (!market.isSyncEnabled())
 					continue;
-			
+				
 				DataRange range = market.getRange();
-				Instant start;
-				if(range == null) 
-					start = null;
-				else 
-					start = range.end;
-				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start);
+				Instant start = range.end;
+				int ncandles = market.getLastMarketDataCandles();
 				
+				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start, 1000-ncandles);
 				List<Candle> candles = new ArrayList<Candle>();
-				
-				for(APICandle candle : sourceCandles)
-					candles.add(new Candle(
-							candle.getTime(), 
-							candle.getOpen(), 
-							candle.getHigh(), 
-							candle.getLow(), 
-							candle.getClose(), 
-							candle.getVolume()
-					));
-				
-				MarketData marketData = new MarketData(market.getId(), candles);
-//				if(month.equals(YearMonth.now()))
-//					marketDataManager.update(market.getData());
-//				else
-				marketDataManager.insert(marketData);
+				for(APICandle c : sourceCandles) 
+					candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
+			
+				if(ncandles == 1000) 
+				{
+					marketDataManager.insert(new MarketData(market.getId(), candles));
+				}
+				else
+				{
+					marketDataManager.insert(market.getId(), candles);
+				}
 				
 				Thread.yield();
+				
 			}
+			
+			
 		}
-		*/
-		
-		//System.out.println(getName() + ": Exiting...");
 	}
 }

@@ -36,12 +36,12 @@ public class DataSource extends Pojo
 	
 	public void setName(String name)
 	{
-		this.name = name;
+		updateField("name", name);
 	}
 	
 	public void setEnabled(boolean enabled)
 	{
-		this.enabled = enabled;
+		updateField("enabled", enabled);
 	}
 
 	public boolean isEnabled()

@@ -29,7 +29,7 @@ public class MarketData extends Pojo
 	
 	public MarketData(String marketName, List<Candle> candles) 
 	{
-		super();
+		super(PojoState.STAGED);
 		this.market = marketName;
 		this.start = candles.get(0).getTime();
 		this.candles = candles;
@@ -51,10 +51,38 @@ public class MarketData extends Pojo
 		return this.candles;
 	}
 	
-	/*@Override
-	protected void postLoad() 
+	public int getNCandles() 
 	{
-		for(Candle candle : candles) 
-			candle.setContainer(this);
-	}*/
+		return this.ncandles;
+	}
+	
+	public String getMarket() 
+	{
+		return market;
+	}
+
+	public void setMarket(String market) 
+	{
+		updateField("market", market);
+	}
+
+	public void setNcandles(int ncandles) 
+	{
+		updateField("ncandles", ncandles);
+	}
+
+	public Instant getStart() 
+	{
+		return start;
+	}
+
+	public void setStart(Instant start) 
+	{
+		updateField("start", start);
+	}
+
+	public void setCandles(List<Candle> candles) 
+	{
+		this.candles = candles;
+	}
 }

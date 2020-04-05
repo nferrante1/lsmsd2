@@ -45,8 +45,8 @@ public class Scraper
 	{
 		DBManager.setHostname("127.0.0.1");
 		DBManager.setPort(27017);
-		 DBManager.setUsername("root");
-		DBManager.setPassword("rootpass");
+		// DBManager.setUsername("root");
+		//DBManager.setPassword("rootpass");
 		DBManager.setDatabase("mydb");
 	}
 	

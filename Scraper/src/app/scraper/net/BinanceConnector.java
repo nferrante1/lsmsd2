@@ -135,11 +135,12 @@ public class BinanceConnector implements SourceConnector
 
 	protected List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
-		return getCandles(marketId, granularity, start, start.plusSeconds(granularity * 60 * 1000));
+		return getCandles(marketId, granularity, start, start.plusSeconds(granularity * 60 * 1000), 1000);
 	}
 
-	public List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end) throws InterruptedException
+	public List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end, int count) throws InterruptedException
 	{
+		count = (count <= 0)? 1000 : count;
 		rateLimit();
 		Map<String, String> options = new HashMap<String, String>();
 		
@@ -150,7 +151,7 @@ public class BinanceConnector implements SourceConnector
 			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
 		//options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
 		options.put("interval", getIntervalString(granularity));
-		options.put("limit", "1000");
+		options.put("limit", Integer.toString(count));
 		
 		Call<List<APICandle>> call = apiInterface.getCandles(options);
 		
@@ -168,29 +169,12 @@ public class BinanceConnector implements SourceConnector
 			usedWeight++;
 		return response.body();
 	}
-/*
-	@Override
-	public List<APICandle> getMonthCandles(String marketId, int granularity, YearMonth month)
-		throws InterruptedException
-	{
-		List<APICandle> candles = new ArrayList<APICandle>();
-		Instant startMonth = month.atDay(1).atStartOfDay(ZoneId.of("UTC")).toInstant();
-		Instant lastMonth = (month.equals(YearMonth.now())) ? Instant.now() : month.atEndOfMonth().atTime(23, 59, 59, 999999999).atZone(ZoneId.of("UTC")).toInstant();
-		Instant start = startMonth;
-		while (start.isBefore(lastMonth)) {
-			Instant end = start.plusSeconds(granularity * 60 * 1000);
-			if (end.isAfter(lastMonth))
-				end = lastMonth;
-			candles.addAll(getCandles(marketId, granularity, start, end));
-			start = end.plusSeconds(1);
-		}
-		return candles;
-	}*/
+
 	
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start)
+	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, int count)
 			throws InterruptedException
 		{
-			return getCandles(marketId, granularity, start, Instant.now());
+			return getCandles(marketId, granularity, start, Instant.now(), count);
 		}
 
 
