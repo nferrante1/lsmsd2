@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.bson.BsonDocument;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -19,81 +17,80 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-
 import com.mongodb.client.model.Updates;
 
 import app.datamodel.mongo.DBManager;
-
+import app.datamodel.pojos.AuthToken;
 import app.datamodel.pojos.PojoState;
-import app.datamodel.pojos.User;
+import app.datamodel.pojos.AuthToken;
 
-public class UsersManager {
-	
+public class AuthTokenManager {
+
 	protected static MongoDatabase getDB()
 	{
 		return DBManager.getInstance().getDatabase();
 	}
 
-	protected MongoCollection<User> getCollection()
+	protected MongoCollection<AuthToken> getCollection()
 	{
-		return getDB().getCollection("Users", User.class);
+		return getDB().getCollection("AuthToken", AuthToken.class);
 	}
 	
-	public void save(User user)
+	public void save(AuthToken token)
 	{
-		switch(user.getState())
+		switch(token.getState())
 		{
 		case STAGED:
-			insert(user);
+			insert(token);
 			return;
 		case COMMITTED:
-			update(user);
+			update(token);
 			return;
 		case REMOVED:
-			delete(user);
+			delete(token);
 			return;
 		default:
 		}
 	}
 	
-	public void insert(User user) 
+	public void insert(AuthToken token) 
 	{
-		getCollection().insertOne(user);
-		user.setState(PojoState.COMMITTED);
+		getCollection().insertOne(token);
+		token.setState(PojoState.COMMITTED);
 	}
 	
-	public void insert(List<User> users)
+	public void insert(List<AuthToken> tokens)
 	{
-		getCollection().insertMany(users);
-		for(User u : users) {
-			u.setState(PojoState.COMMITTED);
+		getCollection().insertMany(tokens);
+		for(AuthToken t : tokens) {
+			t.setState(PojoState.COMMITTED);
 		}
 	}
 	
-	public boolean delete(User user)
+	public boolean delete(AuthToken token)
 	{
-		user.setState(PojoState.REMOVED);
-		return getCollection().deleteOne(Filters.eq("_id", user.getUsername())).wasAcknowledged();		
+		token.setState(PojoState.REMOVED);
+		return getCollection().deleteOne(Filters.eq("_id", token.getId())).wasAcknowledged();		
 	}
 	
-	public long delete(List<User> users) 
+	public long delete(List<AuthToken> tokens) 
 	{
 		long result = 0;
-		for(User user : users)
-			if(delete(user))
+		for(AuthToken token : tokens)
+			if(delete(token))
 				result++;
 		return result;
 	}
 	
-	public boolean update(User user) 
+	public boolean update(AuthToken token) 
 	{
 		List<Bson> updateDocument = new ArrayList<Bson>();
 
-		HashMap<String, Object> updatedFields = user.getUpdatedFields();
+		HashMap<String, Object> updatedFields = token.getUpdatedFields();
 		for(Map.Entry<String, Object> entry : updatedFields.entrySet())
 			updateDocument.add(Updates.set(entry.getKey(), entry.getValue()));
 		
-		user.setState(PojoState.COMMITTED);
+		token.setState(PojoState.COMMITTED);
 		
 		if(updateDocument.isEmpty())
 			return false;
@@ -102,45 +99,39 @@ public class UsersManager {
 		System.out.println(Updates.combine(updateDocument).toBsonDocument(BsonDocument.class,CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()))).toJson());
 
-		return getCollection().updateOne(Filters.eq("_id", user.getUsername()), Updates.combine(updateDocument)).wasAcknowledged();
+		return getCollection().updateOne(Filters.eq("_id", token.getId()), Updates.combine(updateDocument)).wasAcknowledged();
 
 	}
 
-	public long update(List<User> users) 
+	public long update(List<AuthToken> tokens) 
 	{
 		long result = 0;
-		for(User user : users)
-			if(update(user))
+		for(AuthToken token : tokens)
+			if(update(token))
 				result++;
 		return result;
 	}
 	
-	public PojoCursor<User> find(String username, boolean partial)
+	public PojoCursor<AuthToken> find(String fieldName, String value)
 	{
-		FindIterable<User> cursor;
+		FindIterable<AuthToken> cursor;
+		if(value.isEmpty()) return null;
 		
-		if(username.isEmpty())
-			cursor = getCollection().find();
+		if(fieldName.isEmpty())
+			cursor = getCollection().find(Filters.eq("_id", value));
 		else 
 		{
-			if(partial)
-				cursor = getCollection().find(Filters.regex("_id", Pattern.compile(username , Pattern.CASE_INSENSITIVE)));
-			else
-				cursor = getCollection().find(Filters.eq("_id", username));
+			cursor = getCollection().find(Filters.eq(fieldName, value));
 		}
 			
-		return new PojoCursor<User>(cursor.cursor());
-	}
-	public User find(String username) 
-	{
-		PojoCursor<User> cursor = find(username, false);
-		return cursor.next();
+		return new PojoCursor<AuthToken>(cursor.cursor());
 	}
 	
-	public PojoCursor<User> find()
+	public AuthToken find(String id) 
 	{
-		return find("", false);
+		return find("_id", id).first();
 	}
+	
 	
 	public void drop() 
 	{

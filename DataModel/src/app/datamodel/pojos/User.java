@@ -6,17 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 public class User extends Pojo {
 	
 	@BsonId
 	protected String username;
-	
 	protected String passwordHash;
-	
 	protected boolean admin;
-	
-	protected transient AuthToken token;
 	
 	public User() 
 	{
@@ -36,8 +33,7 @@ public class User extends Pojo {
 //		token =  new AuthToken(username, isAdmin);
 //	}
 
-	@BsonId
-	public String getName()
+	public String getUsername()
 	{
 		return this.username;
 	}
@@ -140,5 +136,28 @@ public class User extends Pojo {
 	public boolean isAdmin() 
 	{
 		return this.admin;
+	}
+
+
+	public void setUsername(String username)
+	{
+		updateField("username", username);
+	}
+
+	public void setPasswordHash(String passwordHash)
+	{
+		updateField("passwordHash",hashPassword(passwordHash));
+	}
+	
+//	@BsonIgnore
+//	public void setPassword(String passwordHash)
+//	{
+//		this.passwordHash = hashPassword(passwordHash);
+//	}
+	
+
+	public void setAdmin(boolean admin)
+	{
+		updateField("admin", admin);
 	}
 }
