@@ -22,7 +22,7 @@ public class MarketData extends Pojo
 	protected Instant start;
 	protected List<Candle> candles = new ArrayList<Candle>();
 		
-	private MarketData() 
+	public MarketData() 
 	{
 		super();
 	}
@@ -51,7 +51,7 @@ public class MarketData extends Pojo
 		return this.candles;
 	}
 	
-	public int getNCandles() 
+	public int getNcandles() 
 	{
 		return this.ncandles;
 	}

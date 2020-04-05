@@ -161,8 +161,8 @@ public class CoinbaseConnector implements SourceConnector
 		while (curCandles == null || curCandles.isEmpty()) {
 			if(start.isAfter(Instant.now()))
 				return Instant.now();
-			Instant end = start.plusSeconds(86400 * 300);
-			curCandles = getCandles(marketId, 86400, start, end);
+			Instant end = start.plusSeconds(1440 * 60 * 300);
+			curCandles = getCandles(marketId, 1440, start, end);
 			start = end.plusSeconds(1);
 		}
 	

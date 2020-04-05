@@ -2,16 +2,24 @@ package app.datamodel.pojos;
 
 import java.time.Instant;
 
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Candle extends Pojo
 {
 
+	@BsonProperty("t")
 	protected Instant time;
+	@BsonProperty("o")
 	protected double open;
+	@BsonProperty("h")
 	protected double high;
+	@BsonProperty("l")
 	protected double low;
+	@BsonProperty("c")
 	protected double close;
+	@BsonProperty("v")
 	protected double volume;
 	
 	

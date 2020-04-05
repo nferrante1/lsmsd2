@@ -51,7 +51,7 @@ public class MarketDataManager {
 						Aggregates.group(new BsonNull(), 
 								Accumulators.first(
 										"start", "$start"), 
-								Accumulators.last("last", 
+								Accumulators.last("end", 
 										Filters.eq("$arrayElemAt", 
 												Arrays.asList("$candles.t", -1L)
 												)
@@ -74,7 +74,7 @@ public class MarketDataManager {
 	public int lastMarketDataCandles(String marketId) {
 		
 		MarketData market = getCollection().find(Filters.eq("market", marketId)).sort(Sorts.descending("start")).projection(Projections.include("ncandles")).first();
-		return (market == null)? 1000 : market.getNCandles();
+		return (market == null)? 1000 : market.getNcandles();
 	}
 	
 	public MarketData find(ObjectId marketDataId) 

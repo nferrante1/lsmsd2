@@ -106,6 +106,9 @@ final class Worker extends Thread
 				{
 					marketDataManager.insert(market.getId(), candles);
 				}
+				if(range.start == null)
+					range.start = candles.get(0).getTime();
+				range.end = candles.get(candles.size() -1).getTime();
 				
 				Thread.yield();
 				
