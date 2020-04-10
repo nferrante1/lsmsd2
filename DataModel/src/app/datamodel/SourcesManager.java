@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.bson.BsonDocument;
 import org.bson.Document;
@@ -31,6 +32,7 @@ import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
 import app.datamodel.pojos.PojoState;
+import app.datamodel.pojos.User;
 
 public class SourcesManager {
 	
@@ -187,8 +189,10 @@ public class SourcesManager {
 		return find(true);
 	}
 	
-	//SE SERVE
-	//public Market findMarket(String id) {return null;}
+	public Market findMarket() 
+	{
+		return null;
+	}
 	//public boolean deleteMarket(Market market) {}
 	//public long deleteMarkets(List<Market> markets) {}	
 }
