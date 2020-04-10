@@ -15,6 +15,12 @@ public class ResponseMessage extends Message
 		this.success = true;
 		this.errorMsg = "";
 	}
+	
+	public ResponseMessage(ActionRequest type, boolean success)
+	{
+		this(type, success, "");
+	}
+	
 	public ResponseMessage(ActionRequest type, boolean success, String errorMsg)
 	{
 		super(type);

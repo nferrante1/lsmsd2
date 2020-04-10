@@ -7,25 +7,25 @@ import app.datamodel.pojos.AuthToken;
 public class RequestMessage extends Message
 {
 	
-	protected AuthToken authToken;
+	protected String authToken;
 
 	/**
 	 * Creates a new request message, with optional entities attached.
 	 * @param action The type of action requested.
 	 * @param entities The list of entities to attach.
 	 */
-	public RequestMessage(ActionRequest action, AuthToken authToken)
+	public RequestMessage(ActionRequest action, String authToken)
 	{
 		super(action);
 		this.authToken = authToken;
 	}
 
-	public AuthToken getAuthToken()
+	public String getAuthToken()
 	{
 		return authToken;
 	}
 
-	public void setAuthToken(AuthToken authToken)
+	public void setAuthToken(String authToken)
 	{
 		this.authToken = authToken;
 	}
