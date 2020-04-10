@@ -88,12 +88,17 @@ computation of two indicators (EMA and RS).}]{pipelineoutput.json}
 
 \subsubsection{Simple Moving Average}
 
-The Simple Moving Average (SMA) is defined as follows:
+The Simple Moving Average (\(\sma\)), over a time period of \(n\) trading days,
+is defined as follows:
 
 \begin{equation}\label{eq:sma}
+	\sma_n = \frac{\sum_{i = 0}^n C_i}{n}
 \end{equation}
 
-We can compute the SMA with the following aggregation pipeline:
+Where \(C_i\) is the closing price of the \(i\)-th candle in the current moving
+window (composed by the last \(n\) candles).
+
+We can compute the \(\sma\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -101,12 +106,19 @@ We can compute the SMA with the following aggregation pipeline:
 
 \subsubsection{Exponential Moving Average}
 
-The Exponential Moving Average (EMA) is defined as follows:
+The Exponential Moving Average (\(\ema\)) is defined as follows:
 
 \begin{equation}\label{eq:ema}
+	\begin{cases}
+		\ema_{\alpha}(0) = C_0\\
+		\ema_{\alpha}(t) = C_t\times\alpha +
+		\ema_{\alpha}(t-1)\times(1-\alpha)
+	\end{cases}
 \end{equation}
 
-We can compute the EMA with the following aggregation pipeline:
+Where \(\alpha\) is a parameter chosen in the range \(\interval{0}{1}\).
+
+We can compute the \(\ema\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -114,20 +126,27 @@ We can compute the EMA with the following aggregation pipeline:
 
 \subsubsection{Relative Strength Index}
 
-The Relative Strength Index (RSI) is defined as follows:
+The Relative Strength Index (\(\rsi\)) is defined as follows:
 
 \begin{equation}\label{eq:rsi}
+	\rsi_n = 100 - \frac{100}{1 + \rs_n}
 \end{equation}
 
-The RSI is a derived indicator that depends on the Relative Strength (RS)
-indicator that is defined as follows:
+The \(\rsi\) is a derived indicator that depends on the Relative Strength
+(\(\rs\)) indicator that is defined as follows:
 
 \begin{equation}\label{eq:rs}
+	\rs_n = \frac{\sma(U,n)}{\sma(D,n)}
 \end{equation}
 
-We can compute the RS with the following aggregation pipeline (the RSI can then
-be computed by the server application applying the~\eqref{eq:rsi} to the RS
-value):
+Where \(\sma(U,n)\) is the \(\sma\) of the increment (\(C_i - O_i\)) in price of
+all rising candles in the last \(n\) days, and \(\sma(D,n)\) is the \(\sma\) of
+the decrement (\(O_i - C_i\)) in price of all falling candles in the last \(n\)
+days.
+
+We can compute the \(\rs\) with the following aggregation pipeline (the \(\rsi\)
+can then be computed by the server application applying the~\eqref{eq:rsi} to
+the \(\rs\) value):
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -135,12 +154,13 @@ value):
 
 \subsubsection{Momentum Indicator}
 
-The Momentum Indicator (MOM) is defined as follows:
+The Momentum Indicator (\(\mom\)) is defined as follows:
 
 \begin{equation}\label{eq:mom}
+	\mom_n = C_n - C_0
 \end{equation}
 
-We can compute the MOM with the following aggregation pipeline:
+We can compute the \(\mom\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
