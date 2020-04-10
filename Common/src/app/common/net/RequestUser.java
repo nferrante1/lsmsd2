@@ -6,7 +6,7 @@ public class RequestUser extends RequestMessage {
 	private String username;
 	private String password;
 	
-	public RequestUser(ActionRequest action,AuthToken token, String username, String password)
+	public RequestUser(ActionRequest action,String token, String username, String password)
 	{
 		super(action, token);
 		this.username = username;

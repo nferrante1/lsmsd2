@@ -23,6 +23,7 @@ import app.datamodel.SourcesManager;
 import app.datamodel.UsersManager;
 import app.datamodel.pojos.AuthToken;
 import app.datamodel.pojos.DataSource;
+import app.datamodel.pojos.StringWrapper;
 import app.datamodel.pojos.User;
 
 
@@ -178,9 +179,9 @@ public class Client extends Thread
 	}
 	
 	ResponseMessage handleBrowseMarket(RequestBrowse reqMsg) {
-		
+		int pageSize = 20;
 		SourcesManager marketMan = new SourcesManager();
-		PojoCursor<DataSource> cursor = marketMan.find(true);
+		PojoCursor<StringWrapper> cursor = marketMan.findMarketName(reqMsg.getNumPage()*pageSize, pageSize);
 		
 		return null;
 		

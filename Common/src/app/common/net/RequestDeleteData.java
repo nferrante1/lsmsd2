@@ -2,7 +2,7 @@ package app.common.net;
 
 import java.time.YearMonth;
 
-import app.datamodel.pojos.AuthToken;
+
 
 public class RequestDeleteData extends RequestMessage {
 	
@@ -12,7 +12,7 @@ public class RequestDeleteData extends RequestMessage {
 		public String name;
 		
 		
-		public RequestDeleteData(AuthToken token, YearMonth start, YearMonth end, String name) 
+		public RequestDeleteData(String token, YearMonth start, YearMonth end, String name) 
 		{
 			super(ActionRequest.DELETE_DATA, token);
 			this.start = start;
@@ -20,17 +20,17 @@ public class RequestDeleteData extends RequestMessage {
 			this.name = name;
 		}
 		
-		public RequestDeleteData(AuthToken token, YearMonth start, YearMonth end) 
+		public RequestDeleteData(String token, YearMonth start, YearMonth end) 
 		{
 			this(token,start,end,null);
 		}
 		
-		public RequestDeleteData(AuthToken token,String name) 
+		public RequestDeleteData(String token,String name) 
 		{
 			this(token,null,null,name);
 		}
 		
-		public RequestDeleteData(AuthToken token) 
+		public RequestDeleteData(String token) 
 		{
 			this(token,null,null,null);
 		}

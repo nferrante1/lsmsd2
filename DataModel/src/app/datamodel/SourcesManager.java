@@ -16,12 +16,14 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
@@ -29,9 +31,11 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 
 import app.datamodel.mongo.DBManager;
+import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
 import app.datamodel.pojos.PojoState;
+import app.datamodel.pojos.StringWrapper;
 import app.datamodel.pojos.User;
 
 public class SourcesManager {
@@ -173,6 +177,10 @@ public class SourcesManager {
 		getCollection().drop();
 	}
 	
+	public MongoCollection<StringWrapper> getStringCollection(){
+		return getDB().getCollection("Sources", StringWrapper.class);
+	}
+	
 	public PojoCursor<DataSource> find(boolean getMarket) //Se false, non si prende i mercati
 	{	
 		if(!getMarket) {
@@ -189,9 +197,16 @@ public class SourcesManager {
 		return find(true);
 	}
 	
-	public Market findMarket() 
+	public PojoCursor<StringWrapper> findMarketName(int limit, int skip) 
 	{
-		return null;
+		List<Bson> stages = Arrays.asList(Aggregates.unwind("$markets"), Aggregates.match(Filters.regex("markets.id", "ETH")), Aggregates.project(Projections.fields(Projections.excludeId(), Projections.computed("value", Filters.eq("$concat", Arrays.asList("$_id", ":", "$markets.id"))))));
+		if(skip != 0)
+			stages.add(Aggregates.skip(skip));
+		if(limit != 0)
+			stages.add(Aggregates.limit(limit));
+		AggregateIterable<StringWrapper> markets =  getStringCollection().aggregate(stages);
+		MongoCursor<StringWrapper> cursor = markets.cursor();
+		return new PojoCursor<StringWrapper>(cursor);
 	}
 	//public boolean deleteMarket(Market market) {}
 	//public long deleteMarkets(List<Market> markets) {}	

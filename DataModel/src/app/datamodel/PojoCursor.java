@@ -49,4 +49,5 @@ public class PojoCursor<T extends Pojo> implements AutoCloseable {
 			return cursor.next();
 		return null;
 	}
+	
 }

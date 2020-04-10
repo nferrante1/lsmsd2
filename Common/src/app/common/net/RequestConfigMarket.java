@@ -10,7 +10,7 @@ public class RequestConfigMarket extends RequestMessage {
 	public boolean selectable;
 	
 	
-	public RequestConfigMarket(AuthToken token, String marketName, int granularity, boolean dataSync, boolean selectable) {
+	public RequestConfigMarket(String token, String marketName, int granularity, boolean dataSync, boolean selectable) {
 		super(ActionRequest.CONFIG_MARKET, token);
 		this.marketName = marketName;
 		this.granularity = granularity;
