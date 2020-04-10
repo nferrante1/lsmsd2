@@ -7,7 +7,7 @@ queries.}}\label{sec:aggregations}
 At the start, the scraper needs to know the last date for which data is
 available for a specific market, in order to determine at what date should start
 downloading the data for that market. To accomplish this, the following
-aggregation pipeline has been defined:
+aggregation pipeline is defined:
 \begin{enumerate}
 	\item \code{\$match} stage to get only the documents for the specific
 		\code{market}. This stage includes the entire shard key, so the
@@ -18,6 +18,23 @@ aggregation pipeline has been defined:
 	\item \code{\$group} stage to get the \code{start} field of the first
 		document and the \code{candles.t} field of the last candle of
 		the last document.
+\end{enumerate}
+
+Sometimes it's useful to get paginated results of embedded documents
+\exgratia{during the \emph{Browse Markets} use case to get the list of markets}.
+To accomplish this, the following aggregation pipeline can be used:
+\begin{enumerate}
+	\item \textit{(Optional)} \code{\$match} stage to match the documents
+		that contains relevant data;
+	\item \code{\$unwind} stage to \emph{explode} the embedded documents
+		array;
+	\item \textit{(Optional)} \code{\$match} stage to filter documents based
+		on some search criteria;
+	\item \code{\$sort} stage to sort documents based on some sorting
+		criteria;
+	\item \code{\$skip} and \code{\$limit} stages to paginate the result;
+	\item \textit{(Optional)} additional stages to reformat the output in a
+		manageable structure.
 \end{enumerate}
 
 \subsection{Queries on MarketData}
