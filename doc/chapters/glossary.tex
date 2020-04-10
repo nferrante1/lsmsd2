@@ -1,6 +1,6 @@
 \chapter{Glossary}\label{appendix:glossary}
 
-The following terms are used throughout this document.
+The following terms are used throughout the document.
 
 \begin{description}
 	\item[Asset] Something with a value. In the context of our application,
@@ -132,6 +132,10 @@ The following terms are used throughout this document.
 		implementing a method that is called iteratively for each
 		\textit{trading day} and places trades using some
 		library-provided methods.
+	\item[Technical Analysis] (or \textbf{TA}) An analysis methodology for
+		forecasting the \textit{price action} of a \textit{market}
+		through the study of past \textit{market data}, often making use
+		of \textit{indicators}.
 	\item[Tick] The smallest \textit{movement of a price}.
 	\item[Trade] A couple of \textit{orders}, a \textit{buy order} and a
 		\textit{sell order}, with the same \textit{amount}. Opening a
@@ -161,13 +165,11 @@ The following terms are used throughout this document.
 		equivalent to a \emph{solar day}. A trading day may, for
 		example, last for some minutes, hours or even weeks (this is a
 		parameter chosen by the trader).
-		\begin{figure}[b]
+		\begin{figure}[ht]
 			\centering
-			\includegraphics{candlesticks}
+			\includegraphics[scale=0.99]{candlesticks}
 			\caption{Example of a rising (left) and a falling
-				(right) japanese candlestick, commonly used in
-				trading to aggregate market
-				data.}\label{fig:candlesticks}
+			(right) japanese candlestick.}\label{fig:candlesticks}
 		\end{figure}
 	\item[Volume] The amount traded during a \textit{trading day} in a
 		\textit{market} by all the traders that operated in the market,
