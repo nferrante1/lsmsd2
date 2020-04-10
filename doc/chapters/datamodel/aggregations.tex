@@ -1,155 +1,130 @@
-\section{Aggregation Pipelines}\label{sec:aggregations}
+\section[Aggregation Pipelines]{Aggregation Pipelines\footnote{Note that, during
+the development of the application, the pipelines designed in this section may
+be implemented in some other way \exgratia{different stages or in different
+order} in order to improve the performance of the
+queries.}}\label{sec:aggregations}
 
-The following \standout{Aggregation Pipelines} has been defined:
+At the start, the scraper needs to know the last date for which data is
+available for a specific market, in order to determine at what date should start
+downloading the data for that market. To accomplish this, the following
+aggregation pipeline has been defined:
+\begin{enumerate}
+	\item \code{\$match} stage to get only the documents for the specific
+		\code{market}. This stage includes the entire shard key, so the
+		query is irected only to the specific server where the shard
+		containing the documents is saved;
+	\item \code{\$sort} stage to order the documents ascending by the
+		\code{start} field;
+	\item \code{\$group} stage to get the \code{start} field of the first
+		document and the \code{candles.t} field of the last candle of
+		the last document.
+\end{enumerate}
 
-\begin{itemize}
-	\item To obtain a larger granularity on the data present in a given
-		market, when we apply a strategy, we can aggregate the
-		documents contained in the \code{data} array in the
-		\code{MarketData} collection:
-		\begin{enumerate}
-			\item \code{\$match} stage to get the document
-				containing the data for the specific market and
-				the current month. This stage includes the
-				entire shard key, so it is directed only to the
-				specific server where the shard containing the
-				document is saved;
-			\item \code{\$project} stage to exclude the \code{\_id}
-				field, no longer needed;
-			\item \code{\$unwind} stage to extract the documents in
-				the \code{data} field;
-			\item \code{\$bucket} stage to aggregate multiple
-				documents based on ranges of the \code{t} field.
-		\end{enumerate}
-	\item The server needs to know what is the first month for which data is
-		available for a specific market, in order to run a query on that
-		market. The following pipeline on the \code{MarketData}
-		collection is defined:
-		\begin{enumerate}
-			\item \code{\$match} stage selects all documents for a
-				specific market;
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed;
-			\item \code{\$sort} stage to sort all documents by
-				\code{\_id};
-			\item \code{\$group} stage to get the value of the
-				\code{\_id} field of the first document.
-		\end{enumerate}
-	\item At the start, the scraper needs to know the
-		first and last month for which data is available for each
-		market, in order to determine the range of data already
-		available and restart downloading the data that is outside of
-		this range. The following pipeline on the \code{MarketData}
-		collection, similar to the previous one, is defined:
-		\begin{enumerate}
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed. Moreover, in this stage, the
-				\code{\_id} field is split into two fields: the
-				first (\code{market}) contains the source name
-				concatenated with the market name; the second
-				(\code{month}) contains the string representing
-				the year and the month;
-			\item \code{\$sort} stage to sort all documents by
-				\code{month};
-			\item \code{\$group} stage to aggregate all documents
-				by the same \code{market} and get the first and
-				last document for each market;
-			\item \code{\$poject} stage to output only the needed
-				values (the first and last month).
-		\end{enumerate}
-	\item Further aggregations may be defined in future. In particular,
-		other aggregations probably may be needed during the development
-		of the functions used by strategies to get statistics over the
-		market data. Moreover, during the development of the
-		application, the need for other aggregations may arise.
-\end{itemize}
+\subsection{Queries on MarketData}
 
-Note that, during the development of the application, the above pipelines may be
-implemented in some other way \exgratia{different stages or in different order}
-in order to improve the performance of the queries.
+When the server queries the database for market data \exgratia{when running a
+strategy}, it may need:
+\begin{enumerate}
+	\item\label{itm:granularity} to get a larger granularity of the data
+		present in a given market \idest{a strategy may be run with a
+		larger granularity than the granularity of the downloaded data};
+	\item\label{itm:indicators} to compute some statistical indicators over
+		the market data \idest{a strategy may ask the system to provide
+		him some statistics about the data};
+\end{enumerate}
 
-\subsection{Indicators}
+To accomplish (\ref{itm:granularity}) the following aggregation pipeline has
+been defined:
+\begin{enumerate}
+	\item \ldots TODO \ldots
+\end{enumerate}
 
-The following aggregation pipelines has been defined to compute some indicators
-that are commonly used in technical analysis of financial market.
+The above aggregation returns the market data in the format shown in
+\lstref{lst:pipelinegranularity}.
 
-\begin{itemize}
-	\item Simple Moving Average (SMA): arithmetic moving average calculated
-		by adding recent closing prices and then dividing that by the
-		number of time periods in the calculation average. The following
-		pipeline on the \code{MarketData} collection is defined:
-		\begin{enumerate}
-			\item \code{\$match} stage selects all documents for a
-				specific market;
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed;
-			\item \code{\$sort} stage to sort all documents by
-				\code{start};
-			\item \code{\$group} and \code{\$addFields} stages to
-				put together all the candles of a given market.
-			\item \code{\$addFields} to compute the SMA on the whole
-				array using \code{\$map} and \code{\$reduce}
-				operators.
-		\end{enumerate}
-	\item Exponential Moving Average (EMA): a type of moving average that
-		places a greater weight and significance on the most recent data
-		points. The following pipeline on the \code{MarketData}
-		collection is defined:
-		\begin{enumerate}
-			\item \code{\$match} stage selects all documents for a
-				specific market;
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed;
-			\item \code{\$sort} stage to sort all documents by
-				\code{start};
-			\item \code{\$group} and \code{\$addFields} stages to
-				put together all the candles of a given market.
-			\item \code{\$addFields} to compute the EMA on the whole
-				array using \code{\$map} and \code{\$reduce}
-				operators.
-			\item \code{\$unwind} and \code{\$replaceRoot} to format
-				the document in a more manageable way.
-		\end{enumerate}
-	\item Relative Strength (RS):a momentum indicator that measures the
-		magnitude of recent price changes to evaluate overbought or
-		oversold conditions in the price of a stock or other asset. The
-		following pipeline on the \code{MarketData} collection is
-		defined:
-		\begin{enumerate}
-			\item \code{\$match} stage selects all documents for a
-				specific market;
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed;
-			\item \code{\$sort} stage to sort all documents by
-				\code{start};
-			\item \code{\$group} and \code{\$addFields} stages to
-				put together all the candles of a given market.
-			\item \code{\$addFields} to compute the RS on the whole
-				array using \code{\$map} and \code{\$reduce}
-				operators.
-			\item \code{\$unwind} and \code{\$replaceRoot} to format
-				the document in a more manageable way.
-		\end{enumerate}
-	\item Momentum (MOM): the rate of acceleration of asset's price, the
-		speed at which the price is changing. The following pipeline on
-		the \code{MarketData} collection is defined:
-		\begin{enumerate}
-			\item \code{\$match} stage selects all documents for a
-				specific market;
-			\item \code{\$project} stage to extract only the
-				\code{\_id} field, since the \code{data} field
-				is not needed;
-			\item \code{\$sort} stage to sort all documents by
-				\code{start};
-			\item \code{\$group} and \code{\$addFields} stages to
-				put together all the candles of a given market.
-			\item \code{\$addFields} to compute the MOM on the whole
-				array using \code{\$map} and \code{\$reduce}
-				operators.
-		\end{enumerate}
-\end{itemize}
+\lstinputlisting[language=json, label={lst:pipelinegranularity},
+caption={Example of output of the aggregation pipeline used to get market data
+at larger granularity.}]{pipelinegranularity.json}
+
+To accomplish (\ref{itm:indicators}) we can define an aggregation pipeline for
+each indicator supported by the application. These aggregation pipeline should
+be applied to the result of the above aggregation pipeline (the one that
+produces the output shown in~\lstref{lst:pipelinegranularity}). Multiple
+aggregation pipeline that compute different indicators may be appended to a
+single pipeline with a \code{\$facet} stage, so that with just one pipeline we
+can return the full list of candles of the market at the requested granularity
+along with the values of the requested indicators for each candle.
+
+In the following we define some indicators that are frequently used in technical
+analysis of financial markets along with the aggregation pipeline used to
+compute them. In the final implementation, a lot indicators may be defined and
+implemented. Here we will define only some of them just to give an idea of how
+it works.
+
+At the end, the final output of the complete aggregation pipeline (including the
+\code{\$facet} stage with the pipelines for the requested indicators) will be
+something like the output shown in~\lstref{lst:pipelineoutput}.
+
+\lstinputlisting[language=json, label={lst:pipelineoutput},
+caption={Example of output of the complete aggregation pipeline with the
+computation of two indicators (EMA and RS).}]{pipelineoutput.json}
+
+\subsubsection{Simple Moving Average}
+
+The Simple Moving Average (SMA) is defined as follows:
+
+\begin{equation}\label{eq:sma}
+\end{equation}
+
+We can compute the SMA with the following aggregation pipeline:
+
+\begin{enumerate}
+	\item \ldots TODO \ldots
+\end{enumerate}
+
+\subsubsection{Exponential Moving Average}
+
+The Exponential Moving Average (EMA) is defined as follows:
+
+\begin{equation}\label{eq:ema}
+\end{equation}
+
+We can compute the EMA with the following aggregation pipeline:
+
+\begin{enumerate}
+	\item \ldots TODO \ldots
+\end{enumerate}
+
+\subsubsection{Relative Strength Index}
+
+The Relative Strength Index (RSI) is defined as follows:
+
+\begin{equation}\label{eq:rsi}
+\end{equation}
+
+The RSI is a derived indicator that depends on the Relative Strength (RS)
+indicator that is defined as follows:
+
+\begin{equation}\label{eq:rs}
+\end{equation}
+
+We can compute the RS with the following aggregation pipeline (the RSI can then
+be computed by the server application applying the~\eqref{eq:rsi} to the RS
+value):
+
+\begin{enumerate}
+	\item \ldots TODO \ldots
+\end{enumerate}
+
+\subsubsection{Momentum Indicator}
+
+The Momentum Indicator (MOM) is defined as follows:
+
+\begin{equation}\label{eq:mom}
+\end{equation}
+
+We can compute the MOM with the following aggregation pipeline:
+
+\begin{enumerate}
+	\item \ldots TODO \ldots
+\end{enumerate}
