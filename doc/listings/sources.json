@@ -7,16 +7,14 @@
 		"quoteCurrency": "USD",
 		"granularity": 5,
 		"selectable": true,
-		"sync": true,
-		"filled": false
+		"sync": true
 	},
 	{
 		"id": "BTC-EUR",
 		"baseCurrency": "BTC",
 		"quoteCurrency": "EUR",
 		"granularity": 15,
-		"selectable": true,
-		"filled": true
+		"selectable": true
 	},
 	...
 	]

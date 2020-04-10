@@ -81,24 +81,7 @@ Fields' description:
 				market with the data that it downloads from the
 				source. If not present, is considered
 				\code{false}. If \code{enabled} is \code{false},
-				this is considered \code{false};
-			\item[filled] \textit{(boolean, optional)} Specifies if
-				the scraper has finished the download of old
-				data for this market or not. This field is
-				necessary only for some data sources
-				\exgratia{Coinbase} that does not offer the
-				possibility to determine which is the first time
-				for which data is available and so data must be
-				downloaded in reversed order (from most recent
-				data to older data). If not present, means that
-				it is not necessary and so it is not
-				used\footnote{Note that we may decide, in order
-					to simplify the development of the
-					scraper, that the data from \emph{all}
-					sources will be downloaded in reversed
-					order. In such case, the \code{filled}
-					field will be used for all markets saved
-					in the database.}.
+				this is considered \code{false}.
 		\end{description}
 \end{description}
 
