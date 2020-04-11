@@ -88,12 +88,15 @@ computation of two indicators (EMA and RS).}]{pipelineoutput.json}
 
 \subsubsection{Simple Moving Average}
 
-The Simple Moving Average (SMA) is defined as follows:
+The Simple Moving Average (\(\sma\)), computed on the closing price of the
+candles (\(C\)), at a particular trading day \(t\), over a time period of \(n\)
+trading days, is defined as follows:
 
 \begin{equation}\label{eq:sma}
+	\sma_n(C,t) = \frac{\sum_{i = n - t}^n C_i}{n}
 \end{equation}
 
-We can compute the SMA with the following aggregation pipeline:
+We can compute the \(\sma\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -101,12 +104,21 @@ We can compute the SMA with the following aggregation pipeline:
 
 \subsubsection{Exponential Moving Average}
 
-The Exponential Moving Average (EMA) is defined as follows:
+The Exponential Moving Average (\(\ema\)), computed on the closing price of the
+candles (\(C\)), is defined with the following recursive function over the
+trading day \(t\):
 
 \begin{equation}\label{eq:ema}
+	\begin{cases}
+		\ema_{\alpha}(C,0) = C_0\\
+		\ema_{\alpha}(C,t) = C_t\times\alpha +
+		\ema_{\alpha}(t-1)\times(1-\alpha)
+	\end{cases}
 \end{equation}
 
-We can compute the EMA with the following aggregation pipeline:
+Where \(\alpha\) is a parameter chosen in the range \(\interval{0}{1}\).
+
+We can compute the \(\ema\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -114,20 +126,32 @@ We can compute the EMA with the following aggregation pipeline:
 
 \subsubsection{Relative Strength Index}
 
-The Relative Strength Index (RSI) is defined as follows:
+The Relative Strength Index (\(\rsi\)), at a particular trading day \(t\), over
+a time period of \(n\) trading days, is defined as follows:
 
 \begin{equation}\label{eq:rsi}
+	\rsi_n(t) = 100 - \frac{100}{1 + \rs_n(t)}
 \end{equation}
 
-The RSI is a derived indicator that depends on the Relative Strength (RS)
-indicator that is defined as follows:
+The \(\rsi\) is a derived indicator that depends on the Relative Strength
+(\(\rs\)) indicator.
+
+The Relative Strength (\(\rs\)) indicator, at a particular trading day \(t\),
+over a time period of \(n\) trading days, is defined as follows:
 
 \begin{equation}\label{eq:rs}
+	\rs_n(t) = \frac{\sma_{n_U}(U,t)}{\sma_{n_D}(D,t)}
 \end{equation}
 
-We can compute the RS with the following aggregation pipeline (the RSI can then
-be computed by the server application applying the~\eqref{eq:rsi} to the RS
-value):
+Where \(\sma_{n_U}(U,t)\) is the \(\sma\) of the increment (\(C_t - O_t\)) in
+price of all rising candles in the last \(n\) days, and \(\sma_{n_D}(D,t)\) is
+the \(\sma\) of the decrement (\(O_t - C_t\)) in price of all falling candles in
+the last \(n\) days. \(n_U\) is the number of rising candles while \(n_D\) is
+the number of falling candles.
+
+We can compute the \(\rs\) with the following aggregation pipeline (the \(\rsi\)
+can then be computed by the server application applying the~\eqref{eq:rsi} to
+the \(\rs\) value):
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
@@ -135,12 +159,15 @@ value):
 
 \subsubsection{Momentum Indicator}
 
-The Momentum Indicator (MOM) is defined as follows:
+The Momentum Indicator (\(\mom\)), computed on the closing price of the candles
+(\(C\)), at a particular trading day \(t\), over a time period of \(n\) trading
+days, is defined as follows:
 
 \begin{equation}\label{eq:mom}
+	\mom_n(C,t) = C_t - C_{n-t}
 \end{equation}
 
-We can compute the MOM with the following aggregation pipeline:
+We can compute the \(\mom\) with the following aggregation pipeline:
 
 \begin{enumerate}
 	\item \ldots TODO \ldots
