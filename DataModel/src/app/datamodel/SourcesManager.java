@@ -34,6 +34,7 @@ import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
+import app.datamodel.pojos.Pojo;
 import app.datamodel.pojos.PojoState;
 import app.datamodel.pojos.StringWrapper;
 import app.datamodel.pojos.User;
@@ -48,6 +49,11 @@ public class SourcesManager {
 	protected MongoCollection<DataSource> getCollection()
 	{
 		return getDB().getCollection("Sources", DataSource.class);
+	}
+	
+	protected MongoCollection<Market> getMarketCollection()
+	{
+		return getDB().getCollection("Sources", Market.class);
 	}
 	
 	public void save(DataSource dataSource)
@@ -197,17 +203,27 @@ public class SourcesManager {
 		return find(true);
 	}
 	
-	public PojoCursor<StringWrapper> findMarketName(int limit, int skip) 
+	public List<Market> findMarketName(String marketName, int limit, int skip, boolean admin) 
 	{
-		List<Bson> stages = Arrays.asList(Aggregates.unwind("$markets"), Aggregates.match(Filters.regex("markets.id", "ETH")), Aggregates.project(Projections.fields(Projections.excludeId(), Projections.computed("value", Filters.eq("$concat", Arrays.asList("$_id", ":", "$markets.id"))))));
+		//CAMBIARE PIPELINE
+		List<Market> markets = new ArrayList<Market>();
+		
+		List<Bson> projections = Arrays.asList(Projections.excludeId(), Projections.computed("value", Filters.eq("$concat", Arrays.asList("$_id", ":", "$markets.id"))), Projections.computed("granularity", "$markets.granularity"));
+		
+		if(admin)
+			projections.addAll(Arrays.asList(Projections.computed("sync", "$markets.sync"), Projections.computed("selectable", "$markets.selectable")));
+		List<Bson> stages = Arrays.asList(Aggregates.unwind("$markets"), Aggregates.match(Filters.regex("markets.id", marketName)), Aggregates.project(Projections.fields(projections)));
 		if(skip != 0)
 			stages.add(Aggregates.skip(skip));
 		if(limit != 0)
 			stages.add(Aggregates.limit(limit));
-		AggregateIterable<StringWrapper> markets =  getStringCollection().aggregate(stages);
-		MongoCursor<StringWrapper> cursor = markets.cursor();
-		return new PojoCursor<StringWrapper>(cursor);
+		AggregateIterable<Market> aggregates =  getMarketCollection().aggregate(stages);
+		MongoCursor<Market> cursor = aggregates.cursor();
+		while(cursor.hasNext())
+			markets.add(cursor.next());
+		return markets;		
 	}
+	
 	//public boolean deleteMarket(Market market) {}
 	//public long deleteMarkets(List<Market> markets) {}	
 }

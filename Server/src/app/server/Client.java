@@ -15,8 +15,11 @@ import app.common.net.RequestBrowse;
 import app.common.net.RequestById;
 import app.common.net.RequestLogin;
 import app.common.net.RequestMessage;
+import app.common.net.ResponseList;
 import app.common.net.ResponseLogin;
 import app.common.net.ResponseMessage;
+import app.common.net.entities.Market;
+import app.datamodel.AggregationManager;
 import app.datamodel.AuthTokenManager;
 import app.datamodel.PojoCursor;
 import app.datamodel.SourcesManager;
@@ -65,7 +68,7 @@ public class Client extends Thread
 
 	private void process()
 	{
-		RequestMessage reqMsg = (RequestMessage)Message.receive(inputStream);
+		RequestMessage reqMsg = (RequestMessage) Message.receive(inputStream);
 		if (reqMsg == null) {
 			Logger.getLogger(Client.class.getName()).warning(getName() + ": failure in receiving message. Client probably terminated.");
 			Thread.currentThread().interrupt();
@@ -81,15 +84,31 @@ public class Client extends Thread
 		
 		Logger.getLogger(Client.class.getName()).info(getName() +
 			": received " + reqMsg.getMessageType() + " request.");
-
+		ResponseMessage resMsg = null;
+		
 		if(reqMsg.getMessageType() != ActionRequest.LOGIN) {
 			AuthTokenManager authMan = new AuthTokenManager();
 			authToken = authMan.find(reqMsg.getAuthToken());
+			
 			if(authToken == null) {
-				ResponseMessage resMsg= new ResponseMessage(reqMsg.getMessageType(), false, "not authorized");
+				resMsg= new ResponseMessage(reqMsg.getMessageType(), false, "not authorized");
+				resMsg.send(outputStream);
+				return;
 			}
 		}
-		ResponseMessage resMsg = null;
+		
+		
+		
+		switch(reqMsg.getMessageType()) {
+			case ADD_USER:
+			case BROWSE_DATA_SOURCE:
+				if(!authToken.isAdmin())
+					resMsg = new ResponseMessage(reqMsg.getMessageType(), false, "not authorized");
+					resMsg.send(outputStream);
+					return;
+			default:
+		}
+		
 		switch (reqMsg.getMessageType()) {
 		case LOGIN:
 				resMsg = handleLogin((RequestLogin)reqMsg);
@@ -125,10 +144,10 @@ public class Client extends Thread
 	
 			break;
 		case BROWSE_MARKET:
-	
+			resMsg = handleBrowseMarket((RequestBrowse) reqMsg);
 			break;
 		case BROWSE_DATA_SOURCE:
-
+			resMsg = handleBrowseDataSource((RequestBrowse) reqMsg);
 			break;
 		case ENABLE_DATA_SOURCE:
 		
@@ -157,6 +176,8 @@ public class Client extends Thread
 
 		Logger.getLogger(Client.class.getName()).info(getName() +
 			": sending response.");
+		resMsg.send(outputStream);
+		
 	}
 	
 	ResponseMessage handleLogin(RequestLogin reqLogin) {
@@ -180,11 +201,21 @@ public class Client extends Thread
 	
 	ResponseMessage handleBrowseMarket(RequestBrowse reqMsg) {
 		int pageSize = 20;
-		SourcesManager marketMan = new SourcesManager();
-		PojoCursor<StringWrapper> cursor = marketMan.findMarketName(reqMsg.getNumPage()*pageSize, pageSize);
-		
-		return null;
-		
+		List<app.datamodel.pojos.Market> markets = new SourcesManager().findMarketName(reqMsg.getFilter(), pageSize, reqMsg.getNumPage()*pageSize, authToken.isAdmin());
+		ResponseList<Market> response = new ResponseList<Market>();
+		for(app.datamodel.pojos.Market market: markets)
+			response.add(new app.common.net.entities.Market(source.getName(), source.isEnabled()));
+		return response;
+	}
+	
+	ResponseMessage handleBrowseDataSource() 
+	{
+		SourcesManager manager = new SourcesManager();
+		List<DataSource> sources = manager.find(false).toList();
+		ResponseList<app.common.net.entities.DataSource> response = new ResponseList<app.common.net.entities.DataSource> ();
+		for(DataSource source: sources)
+			response.add(new app.common.net.entities.DataSource(source.getName(), source.isEnabled()));
+		return response;
 	}
 
 }

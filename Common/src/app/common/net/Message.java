@@ -10,16 +10,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.NullPermission;
+import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
 import app.datamodel.pojos.AuthToken;
+import app.common.net.Message;
 
 /**
  * Represent a message exchanged between server and client.
  */
-public abstract class Message
+public class Message implements Serializable
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2948263922164031956L;
 	protected ActionRequest messageType;
 	
 	public Message() 
@@ -32,33 +40,36 @@ public abstract class Message
 		this.messageType = type;
 	}
 
-	public String toJson()
+	protected String toXML()
 	{
-		Gson gson = new Gson();
-		return gson.toJson(this);
+		XStream xs = new XStream();
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xs.toXML(this);
 	}
 
-	public static Message fromJson(String json, Type T)
+	protected static Message fromXML(String xml)
 	{
-		Gson gson = new Gson();
-		return gson.fromJson(json, T);
+		XStream xs = new XStream();
+		xs.addPermission(NoTypePermission.NONE);
+		xs.addPermission(NullPermission.NULL);
+		xs.addPermission(PrimitiveTypePermission.PRIMITIVES);
+		xs.allowTypeHierarchy(Collection.class);
+		xs.allowTypesByWildcard(new String[] {
+			"app.common.net.entities.**",
+			"app.common.net.**"
+		});
+		return (Message)xs.fromXML(xml);
 	}
-	
 
-	public static Message fromJson(String json)
-	{
-		Gson gson = new Gson();
-		return gson.fromJson(json, Message.class);
-	}
-	
-	
+	/**
+	 * Sends the XML-serialized message through the specified output stream.
+	 * @param output The output stream.
+	 */
 	public void send(DataOutputStream output)
 	{
-		Gson gson = new Gson();
-		String json = this.toJson();
-		Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": SENDING\n" + json);
+		String xml = this.toXML();
+		Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": SENDING\n" + xml);
 		try {
-			output.writeUTF(json);
+			output.writeUTF(xml);
 		} catch (IOException ex) {
 			Logger.getLogger(Message.class.getName()).warning("Failure in sending message.");
 		}
@@ -71,11 +82,11 @@ public abstract class Message
 	 */
 	public static Message receive(DataInputStream input)
 	{
-		String json;
+		String xml;
 		try {
-			json = input.readUTF();
-			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + json);
-			return fromJson(json);
+			xml = input.readUTF();
+			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + xml);
+			return fromXML(xml);
 		} catch (IOException ex) {
 			Logger.getLogger(Message.class.getName()).warning("Failure in receiving message. Probably counterpart terminated.");
 			return null;

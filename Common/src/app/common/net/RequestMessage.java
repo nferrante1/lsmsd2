@@ -7,7 +7,7 @@ import app.datamodel.pojos.AuthToken;
 public class RequestMessage extends Message
 {
 	
-	protected String authToken;
+	protected String authToken = null;
 
 	/**
 	 * Creates a new request message, with optional entities attached.
@@ -18,6 +18,11 @@ public class RequestMessage extends Message
 	{
 		super(action);
 		this.authToken = authToken;
+	}
+	
+	public RequestMessage(ActionRequest action)
+	{
+		super(action);
 	}
 
 	public String getAuthToken()

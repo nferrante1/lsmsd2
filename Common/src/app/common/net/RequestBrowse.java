@@ -1,9 +1,15 @@
 package app.common.net;
 
+import java.io.Serializable;
+
 import app.datamodel.pojos.AuthToken;
 
 public class RequestBrowse extends RequestMessage{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7848764684997776122L;
 	protected int numPage;
 	protected String filter;
 

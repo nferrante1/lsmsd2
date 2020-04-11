@@ -1,5 +1,7 @@
 package app.common.net;
 
+import java.io.Serializable;
+
 import app.datamodel.pojos.AuthToken;
 
 public class RequestById extends RequestMessage {

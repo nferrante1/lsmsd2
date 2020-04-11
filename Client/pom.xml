@@ -59,14 +59,10 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<dependency>
-		    <groupId>xstream</groupId>
-		    <artifactId>xstream</artifactId>
-		    <version>1.2.2</version>
-		</dependency>
-		<dependency>
-  		<groupId>DataModel</groupId>
-  		<artifactId>DataModel</artifactId>
+		
+  		<dependency>
+  		<groupId>Common</groupId>
+  		<artifactId>Common</artifactId>
   		<version>1.0.0</version>
   		<scope>compile</scope>
   	</dependency>

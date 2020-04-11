@@ -1,13 +1,15 @@
 package app.common.net;
 
-public class RequestLogin extends RequestMessage {
+import java.io.Serializable;
+
+public class RequestLogin extends RequestMessage implements Serializable{
 	
 	protected String username;
 	protected String password;
 	
-	public RequestLogin(ActionRequest action, String token, String username, String password) {
+	public RequestLogin(ActionRequest action, String username, String password) {
 		
-		super(action,token);
+		super(action);
 		this.username =username;
 		this.password = password;
 	}

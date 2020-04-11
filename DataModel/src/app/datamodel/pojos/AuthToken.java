@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -86,5 +87,11 @@ public class AuthToken extends Pojo {
 	public void setExpireTime(Instant expireTime)
 	{
 		updateField("expireTime", expireTime);
-	}	
+	}
+	
+	@BsonIgnore
+	public boolean isAdmin()
+	{
+		return (id.charAt(0) == '0');
+	}
 }

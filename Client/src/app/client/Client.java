@@ -15,32 +15,40 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import app.client.config.Configuration;
+import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.LoginMenu;
+import app.common.net.ResponseList;
+import app.datamodel.pojos.Market;
 
 public class Client
 {
 	public static void main(String[] args)
 	{
-		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
-
-		Options options = createOptions();
-		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = null;
-		try {
-			cmd = parser.parse(options, args);
-			parseOptions(cmd, options);
-		} catch (ParseException ex) {
-			Logger.getLogger(Client.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
-		}
-
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		Configuration config = Configuration.getConfig();
-
-		if (cmd == null || !cmd.hasOption("log-level"))
-			setLogLevel(config.getLogLevel());
-
-		launchCLI(args);
+		
+		ResponseList<Market> message = (ResponseList<Market>)Protocol.getInstance().browseMarket("ETH", 0);
+		
+		for(Market m : message.getList())
+			System.out.println(m.getId());
+//		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
+//
+//		Options options = createOptions();
+//		CommandLineParser parser = new DefaultParser();
+//		CommandLine cmd = null;
+//		try {
+//			cmd = parser.parse(options, args);
+//			parseOptions(cmd, options);
+//		} catch (ParseException ex) {
+//			Logger.getLogger(Client.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
+//		}
+//
+//		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+//		Configuration config = Configuration.getConfig();
+//
+//		if (cmd == null || !cmd.hasOption("log-level"))
+//			setLogLevel(config.getLogLevel());
+//
+//		launchCLI(args);
 	}
 
 	private static Options createOptions()

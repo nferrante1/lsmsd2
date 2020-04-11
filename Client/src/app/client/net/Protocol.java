@@ -7,6 +7,15 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 import app.client.config.Configuration;
+import app.common.net.ActionRequest;
+import app.common.net.Message;
+import app.common.net.RequestBrowse;
+import app.common.net.RequestLogin;
+import app.common.net.RequestMessage;
+import app.common.net.ResponseList;
+import app.common.net.ResponseLogin;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.Market;
 
 public class Protocol implements AutoCloseable
 {
@@ -14,14 +23,15 @@ public class Protocol implements AutoCloseable
 	private DataInputStream inputStream = null;
 	private DataOutputStream outputStream = null;
 	private static Protocol instance = null;
+	protected static String authToken = null;
 
 	private Protocol() throws IOException
 	{
 		Configuration config = Configuration.getConfig();
-		this.socket = new Socket(config.getServerIp(), config.getServerPort());
+		this.socket = new Socket("127.0.0.1", 8888);//config.getServerIp(), config.getServerPort());
 		inputStream = new DataInputStream(socket.getInputStream());
 		outputStream = new DataOutputStream(socket.getOutputStream());
-		Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
+		//Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
 
 	public static Protocol getInstance()
@@ -37,106 +47,40 @@ public class Protocol implements AutoCloseable
 	}
 
 
-	public ResponseMessage performLogin(User user)
+	public ResponseMessage performLogin(String username, String password)
 	{
-		return sendRequest(ActionRequest.LOGIN, user);
+		RequestLogin request = new RequestLogin(ActionRequest.LOGIN, username, password);
+		request.send(outputStream);
+		ResponseLogin response = (ResponseLogin) Message.receive(inputStream);
+		if(response.isSuccess())
+			authToken = response.getAuthToken();
+		return response;
 	}
 
 	public ResponseMessage performLogout()
 	{
-		return sendRequest(ActionRequest.LOGOUT);
+		RequestMessage request = new RequestMessage(ActionRequest.LOGOUT, authToken);
+		request.send(outputStream);
+		ResponseMessage response = (ResponseMessage) Message.receive(inputStream);
+		authToken = null;
+		return response;
 	}
 
-	public ResponseMessage registerUser(Customer customer)
+	public ResponseMessage browseMarket(String filter, int numPage)
 	{
-		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, customer);
-		if (resMsg.isSuccess() && !(resMsg.getEntity() instanceof Customer))
-			return getProtocolErrorMessage();
-		return resMsg;
+		RequestBrowse request = new RequestBrowse(ActionRequest.BROWSE_MARKET, authToken, filter, numPage);
+		request.send(outputStream);
+		ResponseList<Market> response = (ResponseList<Market>) Message.receive(inputStream);
+		return response;
 	}
 
-	public ResponseMessage registerUser(Owner owner, Restaurant restaurant)
-	{
-		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, owner, restaurant);
-		if (resMsg.isSuccess() && !(resMsg.getEntity() instanceof Owner))
-			return getProtocolErrorMessage();
-		return resMsg;
-	}
-
-	public ResponseMessage getOwnRestaurant()
-	{
-		return sendRequest(ActionRequest.GET_OWN_RESTAURANT);
-	}
-
-	public ResponseMessage editRestaurant(Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.EDIT_RESTAURANT, restaurant);
-	}
-
-	public ResponseMessage deleteRestaurant(Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.DELETE_RESTAURANT, restaurant);
-	}
-
-	public ResponseMessage getOwnActiveReservations()
-	{
-		return sendRequest(ActionRequest.LIST_OWN_RESERVATIONS);
-	}
-
-	public ResponseMessage editReservation(Reservation reservation)
-	{
-		return sendRequest(ActionRequest.EDIT_RESERVATION, reservation);
-	}
-
-	public ResponseMessage getRestaurants()
-	{
-		return sendRequest(ActionRequest.LIST_RESTAURANTS);
-	}
-
-	public ResponseMessage getRestaurants(Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.LIST_RESTAURANTS, restaurant);
-	}
-
-	public ResponseMessage reserve(Reservation reservation, Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.RESERVE, reservation, restaurant);
-	}
-
-	public ResponseMessage deleteReservation(Reservation reservation)
-	{
-		return sendRequest(ActionRequest.DELETE_RESERVATION, reservation);
-	}
-
-	public ResponseMessage getReservations(Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.LIST_RESERVATIONS, restaurant);
-	}
-
-	public ResponseMessage checkSeats(Reservation reservation, Restaurant restaurant)
-	{
-		return sendRequest(ActionRequest.CHECK_SEATS, reservation, restaurant);
-	}
-
-	public ResponseMessage checkSeats(Reservation reservation)
-	{
-		return sendRequest(ActionRequest.CHECK_SEATS, reservation);
-	}
-
-	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
-	{
-		Logger.getLogger(Protocol.class.getName()).entering(Protocol.class.getName(), "sendRequest", entities);
-		new RequestMessage(actionRequest, entities).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		Logger.getLogger(Protocol.class.getName()).exiting(Protocol.class.getName(), "sendRequest", entities);
-		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
-	}
-
-	private ResponseMessage getProtocolErrorMessage()
-	{
-		Logger.getLogger(Protocol.class.getName()).warning("Received an invalid response from server.");
-		return new ResponseMessage("Invalid response from server.");
-	}
+	
+	
+//	private ResponseMessage getProtocolErrorMessage()
+//	{
+//		Logger.getLogger(Protocol.class.getName()).warning("Received an invalid response from server.");
+//		return new ResponseMessage("Invalid response from server.");
+//	}
 
 	public void close() throws IOException
 	{

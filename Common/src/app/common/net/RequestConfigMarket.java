@@ -1,8 +1,10 @@
 package app.common.net;
 
+import java.io.Serializable;
+
 import app.datamodel.pojos.AuthToken;
 
-public class RequestConfigMarket extends RequestMessage {
+public class RequestConfigMarket extends RequestMessage  {
 	
 	public String marketName;
 	public int granularity;
