@@ -1,0 +1,50 @@
+[{$match: {
+  market: "ETH-EUR"
+}}, {$sort: {
+  start: 1
+}}, {$unwind: {
+  path: "$candles"
+}}, {$replaceRoot: {
+  newRoot: "$candles"
+}}, {$addFields: {
+  n: {$floor: {$divide: [{$subtract:["$t", Date("1970-01-01")]}, 1200000]}}
+}}, {$group: {
+  _id: "$n",
+  t: {
+    $first: "$t"
+  },
+  o: {
+    $first: "$o"
+  },
+  h: {
+    $max: "$h"
+  },
+  l: {
+    $min: "$l"
+  },
+  c: {
+    $last: "$c"
+  },
+  v: {
+    $sum: "$v"
+  }
+}}, {$facet: {
+  candles: [{$project: {_id: 0}}],
+  RS: [{$project: {_id: 0, t:1}} ],
+  SMA: [{$project: {c:1}}] 
+}}, {$project: {
+  candles: {$map: {
+   input: {$range:[0,{$subtract:[{$size:"$candles"}, 1]}]},
+    as: "z",
+    in: {
+      t: {$arrayElemAt: ["$candles.t", "$$z"]},
+
+            rs: {$arrayElemAt: ["$RS.t", "$$z"]}
+
+          }
+  }}
+}}, {$unwind: {
+  path: "$candles"
+}}, {$replaceRoot: {
+  newRoot: "$candles"
+}}]
