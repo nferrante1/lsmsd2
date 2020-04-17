@@ -684,9 +684,14 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	
 	public boolean isPresent(T pojo)
 	{
+		return isPresent(getIdFilter(pojo));
+	}
+	
+	public boolean isPresent(Bson filter)
+	{
 		if (isNested())
 			throw new IllegalStateException("Can not check presence of a nested Pojo just by having it.");
-		return count(getIdFilter(pojo)) == 1;
+		return count(filter) == 1;
 	}
 	
 	public boolean isPresent(Bson parentFilter, T pojo, String prefix)

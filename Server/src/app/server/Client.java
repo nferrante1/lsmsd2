@@ -4,29 +4,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import app.common.net.ActionRequest;
-import app.common.net.Message;
-import app.common.net.RequestBrowse;
-import app.common.net.RequestById;
-import app.common.net.RequestLogin;
 import app.common.net.RequestMessage;
-import app.common.net.ResponseList;
-import app.common.net.ResponseLogin;
 import app.common.net.ResponseMessage;
-import app.common.net.entities.Market;
-import app.datamodel.AggregationManager;
-import app.datamodel.AuthTokenManager;
-import app.datamodel.PojoCursor;
-import app.datamodel.SourcesManager;
-import app.datamodel.UsersManager;
+import app.common.net.entities.AuthTokenInfo;
+import app.common.net.entities.LoginInfo;
+import app.datamodel.StorablePojoCursor;
+import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
-import app.datamodel.pojos.DataSource;
-import app.datamodel.pojos.StringWrapper;
 import app.datamodel.pojos.User;
 
 
@@ -37,17 +23,15 @@ public class Client extends Thread
 	private DataOutputStream outputStream;
 	
 	private AuthToken authToken;
+
 	Client(Socket clientSocket)
 	{
-		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
-			clientSocket.getRemoteSocketAddress() + "." +
-			"Request handled by " + this.getName() + ".");
 		socket = clientSocket;
 		try {
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
 		} catch (IOException ex) {
-			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -56,62 +40,55 @@ public class Client extends Thread
 	{
 		while (!Thread.currentThread().isInterrupted())
 			process();
-		Logger.getLogger(Client.class.getName()).warning(getName() + ": interrupted. Exiting...");
 		try {
 			inputStream.close();
 			outputStream.close();
 			socket.close();
 		} catch (IOException ex) {
-			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 	}
 
 	private void process()
 	{
-		RequestMessage reqMsg = (RequestMessage) Message.receive(inputStream);
+		RequestMessage reqMsg = RequestMessage.receive(inputStream);
 		if (reqMsg == null) {
-			Logger.getLogger(Client.class.getName()).warning(getName() + ": failure in receiving message. Client probably terminated.");
 			Thread.currentThread().interrupt();
 			return;
 		}
-		/*if (!reqMsg.isValid()) {
-			Logger.getLogger(Client.class.getName()).warning(getName() +
-				": received an invalid request" +
-				(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
+		if (!reqMsg.isValid()) {
 			new ResponseMessage("Invalid request.").send(outputStream);
 			return;
-		}*/
+		}
 		
-		Logger.getLogger(Client.class.getName()).info(getName() +
-			": received " + reqMsg.getMessageType() + " request.");
-		ResponseMessage resMsg = null;
-		
-		if(reqMsg.getMessageType() != ActionRequest.LOGIN) {
-			AuthTokenManager authMan = new AuthTokenManager();
-			authToken = authMan.find(reqMsg.getAuthToken());
+		if(reqMsg.getAction() != ActionRequest.LOGIN) {
+			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
 			
-			if(authToken == null) {
-				resMsg= new ResponseMessage(reqMsg.getMessageType(), false, "not authorized");
-				resMsg.send(outputStream);
+			if(!cursor.hasNext()) {
+				new ResponseMessage("User not authenticated.").send(outputStream);
 				return;
 			}
+			authToken = cursor.next();
 		}
 		
 		
 		
-		switch(reqMsg.getMessageType()) {
-			case ADD_USER:
-			case BROWSE_DATA_SOURCE:
-				if(!authToken.isAdmin())
-					resMsg = new ResponseMessage(reqMsg.getMessageType(), false, "not authorized");
-					resMsg.send(outputStream);
-					return;
-			default:
+		switch(reqMsg.getAction()) {
+		case ADD_USER:
+		case BROWSE_DATA_SOURCE:
+			if(!authToken.isAdmin()) {
+				new ResponseMessage("This action requires admin privileges.").send(outputStream);
+				return;
+			}
+		default:
 		}
-		
-		switch (reqMsg.getMessageType()) {
+
+		ResponseMessage resMsg = null;
+		//TODO: call handler by reflection
+		switch (reqMsg.getAction()) {
 		case LOGIN:
-				resMsg = handleLogin((RequestLogin)reqMsg);
+				resMsg = handleLogin(reqMsg);
 			break;
 		case LOGOUT:
 				resMsg = handleLogout();
@@ -144,10 +121,10 @@ public class Client extends Thread
 	
 			break;
 		case BROWSE_MARKET:
-			resMsg = handleBrowseMarket((RequestBrowse) reqMsg);
+			//resMsg = handleBrowseMarket(reqMsg); //TODO
 			break;
 		case BROWSE_DATA_SOURCE:
-			resMsg = handleBrowseDataSource((RequestBrowse) reqMsg);
+			//resMsg = handleBrowseDataSource(reqMsg); //TODO
 			break;
 		case ENABLE_DATA_SOURCE:
 		
@@ -174,32 +151,38 @@ public class Client extends Thread
 
 		}
 
-		Logger.getLogger(Client.class.getName()).info(getName() +
-			": sending response.");
 		resMsg.send(outputStream);
 		
 	}
 	
-	ResponseMessage handleLogin(RequestLogin reqLogin) {
-		
-		UsersManager usMan = new UsersManager();
-		User u = usMan.find(reqLogin.getUsername());
-		if(!u.checkPassword(reqLogin.getPassword())) {
-			return new ResponseMessage(reqLogin.getMessageType(), false, "ssssss");
-		}
-		AuthToken auth = new AuthToken(u.getUsername(), u.isAdmin());
-		AuthTokenManager authMan = new AuthTokenManager();
-		authMan.save(auth);
-		return new ResponseLogin(auth.getId());	
+	private ResponseMessage handleLogin(RequestMessage reqMsg)
+	{
+		LoginInfo userInfo = (LoginInfo)reqMsg.getEntity(0);
+		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
+		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
+		if (!cursor.hasNext())
+			return new ResponseMessage("User not registered.");
+		User user = cursor.next();
+		if(!user.checkPassword(userInfo.getPassword()))
+			return new ResponseMessage("Invalid password.");
+		StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+		AuthToken authToken = new AuthToken(user.getUsername(), user.isAdmin());
+		authTokenManager.save(authToken);
+		return new ResponseMessage(new AuthTokenInfo(authToken.getId()));
 	}
 	
-	ResponseMessage handleLogout() {
-		AuthTokenManager authMan = new AuthTokenManager();
-		authMan.delete(authToken);
-		return new ResponseMessage(ActionRequest.LOGOUT, true);
+	private ResponseMessage handleLogout()
+	{
+		StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+		authToken.delete();
+		authTokenManager.save(authToken);
+		authToken = null;
+		return new ResponseMessage();
 	}
 	
-	ResponseMessage handleBrowseMarket(RequestBrowse reqMsg) {
+	/* TODO: use new [Storable]PojoManager
+	private ResponseMessage handleBrowseMarket(RequestMessage reqMsg)
+	{
 		int pageSize = 20;
 		List<app.datamodel.pojos.Market> markets = new SourcesManager().findMarketName(reqMsg.getFilter(), pageSize, reqMsg.getNumPage()*pageSize, authToken.isAdmin());
 		ResponseList<Market> response = new ResponseList<Market>();
@@ -208,7 +191,7 @@ public class Client extends Thread
 		return response;
 	}
 	
-	ResponseMessage handleBrowseDataSource() 
+	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
 	{
 		SourcesManager manager = new SourcesManager();
 		List<DataSource> sources = manager.find(false).toList();
@@ -217,5 +200,6 @@ public class Client extends Thread
 			response.add(new app.common.net.entities.DataSource(source.getName(), source.isEnabled()));
 		return response;
 	}
+	*/
 
 }

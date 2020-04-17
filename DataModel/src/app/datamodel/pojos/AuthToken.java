@@ -9,11 +9,12 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 
 @CollectionName("AuthTokens")
-public class AuthToken extends StorablePojo {
-	
+public class AuthToken extends StorablePojo
+{
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	@BsonId
-	protected SecureString id;
+	protected String id;
+	//protected SecureString id;
 	protected String username;
 	protected Instant expireTime;
 	
@@ -30,7 +31,8 @@ public class AuthToken extends StorablePojo {
 		this.id = generateToken(isAdmin);
 	}
 	
-	private static SecureString generateToken(boolean isAdmin)
+	//private static SecureString generateToken(boolean isAdmin)
+	private static String generateToken(boolean isAdmin)
 	{
 		byte[] bytes = new byte[16];
 		SecureRandom random;
@@ -54,15 +56,18 @@ public class AuthToken extends StorablePojo {
 				i++;
 			hexChars[0] = hexChars[i] == 0 ? '1' : hexChars[i];
 		}
-		return new SecureString(hexChars);
+		//return new SecureString(hexChars);
+		return new String(hexChars);
 	}
 	
-	public SecureString getId()
+	//public SecureString getId()
+	public String getId()
 	{
 		return id;
 	}
 	
-	public void setId(SecureString id)
+	//public void setId(SecureString id)
+	public void setId(String id)
 	{
 		updateField("id", id);
 	}

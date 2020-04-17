@@ -9,8 +9,8 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @CollectionName("Users")
-public class User extends StorablePojo {
-	
+public class User extends StorablePojo
+{
 	@BsonId
 	protected String username;
 	protected String passwordHash;
@@ -23,16 +23,11 @@ public class User extends StorablePojo {
 	
 	public User(String username, String password)
 	{
-		super(StorablePojoState.STAGED);
+		super(StorablePojoState.UNTRACKED);
 		this.username = username;
 		this.passwordHash = hashPassword(password);
-		//MANCA INIZIALIZZARE AUTHTOKEN
 	}
 
-//	private void createAuthToken()
-//	{
-//		token =  new AuthToken(username, isAdmin);
-//	}
 
 	public String getUsername()
 	{
@@ -59,7 +54,6 @@ public class User extends StorablePojo {
 				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 			passwordHash = sb.toString();
 		} catch (NoSuchAlgorithmException ex) {
-			Logger.getLogger(User.class.getName()).log(Level.SEVERE, "This Java installation does not support SHA-256 hashing algorithm (required for password hashing).", ex);
 			passwordHash = "";
 		}
 		return passwordHash;

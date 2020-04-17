@@ -1,5 +1,7 @@
 package app.common.net;
 
+import java.io.DataInputStream;
+
 import app.common.net.entities.Entity;
 
 /**
@@ -66,6 +68,11 @@ public class ResponseMessage extends Message
 		default:
 			return true;
 		}
+	}
+
+	public static ResponseMessage receive(DataInputStream input)
+	{
+		return (ResponseMessage)Message.receive(input);
 	}
 
 	/**

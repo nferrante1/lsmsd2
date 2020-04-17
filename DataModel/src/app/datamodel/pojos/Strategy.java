@@ -12,7 +12,8 @@ import com.mongodb.client.model.Filters;
 
 
 @CollectionName("Strategies")
-public class Strategy extends StorablePojo {
+public class Strategy extends StorablePojo
+{
 	@BsonId
 	protected String id;
 	protected String name;
@@ -21,7 +22,7 @@ public class Strategy extends StorablePojo {
 	
 	public Strategy(String name, String username, byte[] file)
 	{
-		super();
+		super(StorablePojoState.UNTRACKED);
 		this.name = name;
 		this.username = username;
 		this.id = "STRATEGIONA"; 

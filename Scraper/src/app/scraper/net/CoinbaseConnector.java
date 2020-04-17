@@ -3,10 +3,7 @@ package app.scraper.net;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.Instant;
-import java.time.YearMonth;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +121,6 @@ public class CoinbaseConnector implements SourceConnector
 
 	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
-		List<APICandle> returnCandles = new ArrayList<APICandle>();
 		if(start == null)
 			start = findFirstInstant(marketId, granularity);
 		if (!start.isBefore(Instant.now()))

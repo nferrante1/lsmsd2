@@ -3,8 +3,6 @@ package app.server;
 
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -19,12 +17,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import app.datamodel.AuthTokenManager;
-import app.datamodel.PojoCursor;
-import app.datamodel.UsersManager;
 import app.datamodel.mongo.DBManager;
-import app.datamodel.pojos.AuthToken;
-import app.datamodel.pojos.User;
 
 
 public class Server {

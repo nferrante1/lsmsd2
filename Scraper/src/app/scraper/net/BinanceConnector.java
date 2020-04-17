@@ -3,14 +3,9 @@ package app.scraper.net;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.Instant;
-import java.time.LocalTime;
-import java.time.YearMonth;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -21,7 +16,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import app.datamodel.pojos.Candle;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;

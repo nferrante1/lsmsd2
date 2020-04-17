@@ -1,5 +1,8 @@
 package app.common.net;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+
 import app.common.net.entities.Entity;
 
 /**
@@ -10,16 +13,23 @@ public class RequestMessage extends Message
 	private static final long serialVersionUID = 6989601732466426604L;
 
 	protected final ActionRequest action;
+	protected final String authToken;
 
 	/**
 	* Creates a new request message, with optional entities attached.
 	* @param action The type of action requested.
 	* @param entities The list of entities to attach.
 	*/
-	public RequestMessage(ActionRequest action, Entity... entities)
+	public RequestMessage(ActionRequest action, String authToken, Entity... entities)
 	{
 		super(entities);
+		this.authToken = authToken;
 		this.action = action;
+	}
+
+	public RequestMessage(ActionRequest action, Entity... entities)
+	{
+		this(action, null, entities);
 	}
 
 	/**
@@ -29,6 +39,16 @@ public class RequestMessage extends Message
 	public ActionRequest getAction()
 	{
 		return action;
+	}
+	
+	public String getAuthToken()
+	{
+		return authToken;
+	}
+
+	public static RequestMessage receive(DataInputStream input)
+	{
+		return (RequestMessage)Message.receive(input);
 	}
 
 	/**

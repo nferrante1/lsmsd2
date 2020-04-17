@@ -15,15 +15,19 @@ import app.common.net.RequestMessage;
 import app.common.net.ResponseList;
 import app.common.net.ResponseLogin;
 import app.common.net.ResponseMessage;
+import app.common.net.entities.AuthTokenInfo;
+import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
+import app.common.net.entities.LoginInfo;
 import app.common.net.entities.Market;
 
 public class Protocol implements AutoCloseable
 {
-	private Socket socket = null;
-	private DataInputStream inputStream = null;
-	private DataOutputStream outputStream = null;
-	private static Protocol instance = null;
-	protected static String authToken = null;
+	private Socket socket;
+	private DataInputStream inputStream;
+	private DataOutputStream outputStream;
+	private static Protocol instance;
+	private String authToken;
 
 	private Protocol() throws IOException
 	{
@@ -31,7 +35,6 @@ public class Protocol implements AutoCloseable
 		this.socket = new Socket("127.0.0.1", 8888);//config.getServerIp(), config.getServerPort());
 		inputStream = new DataInputStream(socket.getInputStream());
 		outputStream = new DataOutputStream(socket.getOutputStream());
-		//Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
 
 	public static Protocol getInstance()
@@ -40,47 +43,59 @@ public class Protocol implements AutoCloseable
 			try {
 				instance = new Protocol();
 			} catch (IOException ex) {
-				Logger.getLogger(Protocol.class.getName()).severe("Unhable to connect to server: " + ex.getMessage());
+				ex.printStackTrace();
 				System.exit(1);
 			}
 		return instance;
 	}
 
-
 	public ResponseMessage performLogin(String username, String password)
 	{
-		RequestLogin request = new RequestLogin(ActionRequest.LOGIN, username, password);
-		request.send(outputStream);
-		ResponseLogin response = (ResponseLogin) Message.receive(inputStream);
-		if(response.isSuccess())
-			authToken = response.getAuthToken();
-		return response;
+		return performLogin(new LoginInfo(username, password));
+	}
+
+	public ResponseMessage performLogin(LoginInfo loginInfo)
+	{
+		ResponseMessage resMsg = sendRequest(ActionRequest.LOGIN, loginInfo);
+		if(resMsg.isSuccess())
+			authToken = ((AuthTokenInfo)resMsg.getEntity(0)).getAuthToken();
+		resMsg.getEntities().clear();
+		return resMsg;
 	}
 
 	public ResponseMessage performLogout()
 	{
-		RequestMessage request = new RequestMessage(ActionRequest.LOGOUT, authToken);
-		request.send(outputStream);
-		ResponseMessage response = (ResponseMessage) Message.receive(inputStream);
+		ResponseMessage resMsg = sendRequest(ActionRequest.LOGOUT);
 		authToken = null;
-		return response;
+		return resMsg;
 	}
 
-	public ResponseMessage browseMarket(String filter, int numPage)
+	public ResponseMessage browseMarkets(String filter, int page)
 	{
-		RequestBrowse request = new RequestBrowse(ActionRequest.BROWSE_MARKET, authToken, filter, numPage);
-		request.send(outputStream);
-		ResponseList<Market> response = (ResponseList<Market>) Message.receive(inputStream);
-		return response;
+		return browseMarkets(new BrowseInfo(filter, page));
 	}
 
-	
-	
-//	private ResponseMessage getProtocolErrorMessage()
-//	{
-//		Logger.getLogger(Protocol.class.getName()).warning("Received an invalid response from server.");
-//		return new ResponseMessage("Invalid response from server.");
-//	}
+	public ResponseMessage browseMarkets(int page)
+	{
+		return browseMarkets(new BrowseInfo(page));
+	}
+
+	public ResponseMessage browseMarkets(BrowseInfo browseInfo)
+	{
+		return sendRequest(ActionRequest.BROWSE_MARKET, browseInfo);
+	}
+
+	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
+	{
+		new RequestMessage(actionRequest, authToken, entities).send(outputStream);
+		ResponseMessage resMsg = ResponseMessage.receive(inputStream);
+		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
+	}
+
+	private ResponseMessage getProtocolErrorMessage()
+	{
+		return new ResponseMessage("Invalid response from server.");
+	}
 
 	public void close() throws IOException
 	{

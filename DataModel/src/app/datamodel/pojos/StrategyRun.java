@@ -6,8 +6,9 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 
 @CollectionName("Strategies")
-public class StrategyRun extends StorablePojo {
-	@BsonId
+public class StrategyRun extends StorablePojo
+{
+	@PojoId
 	protected ObjectId id;
 	protected String user;
 	protected List<Parameter<?>> config;
@@ -16,6 +17,7 @@ public class StrategyRun extends StorablePojo {
 	
 	public StrategyRun(String user, List<Parameter<?>> config, Report report)
 	{
+		super(StorablePojoState.UNTRACKED);
 		this.id = new ObjectId();
 		this.user = user;
 		this.config = config;

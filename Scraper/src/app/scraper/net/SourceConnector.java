@@ -1,7 +1,6 @@
 package app.scraper.net;
 
 import java.time.Instant;
-import java.time.YearMonth;
 import java.util.List;
 
 import app.scraper.net.data.APICandle;

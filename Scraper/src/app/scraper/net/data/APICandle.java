@@ -2,8 +2,6 @@ package app.scraper.net.data;
 
 import java.time.Instant;
 
-import com.sun.source.util.TreePathScanner;
-
 public class APICandle
 {
 	protected Instant time;
