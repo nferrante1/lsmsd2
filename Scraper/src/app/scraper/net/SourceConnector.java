@@ -10,6 +10,5 @@ import app.scraper.net.data.APIMarket;
 public interface SourceConnector
 {
 	public List<APIMarket> getMarkets() throws InterruptedException;
-	public List<APICandle> getLastCandles(String marketId, int granularity, Instant start) throws InterruptedException;
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, int count) throws InterruptedException;
+	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException;
 }

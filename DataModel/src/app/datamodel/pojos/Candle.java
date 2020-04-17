@@ -6,9 +6,10 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Candle extends Pojo
+@CollectionName("MarketData")
+public class Candle extends StorablePojo
 {
-
+	@PojoId
 	@BsonProperty("t")
 	protected Instant time;
 	@BsonProperty("o")
@@ -22,10 +23,9 @@ public class Candle extends Pojo
 	@BsonProperty("v")
 	protected double volume;
 	
-	
 	public Candle(Instant time, double open, double high, double low, double close, double volume)
 	{
-		super(PojoState.STAGED);
+		super(StorablePojoState.UNTRACKED);
 		this.time = time;
 		this.open = open;
 		this.high = high;

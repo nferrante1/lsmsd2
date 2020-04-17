@@ -13,7 +13,7 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
 
-public class MarketData extends Pojo
+public class MarketData extends StorablePojo
 {
 	@BsonId
 	protected ObjectId id;
@@ -29,9 +29,10 @@ public class MarketData extends Pojo
 	
 	public MarketData(String marketName, List<Candle> candles) 
 	{
-		super(PojoState.STAGED);
+		super(StorablePojoState.UNTRACKED);
 		this.market = marketName;
-		this.start = candles.get(0).getTime();
+		if (!candles.isEmpty())
+			this.start = candles.get(0).getTime();
 		this.candles = candles;
 		this.ncandles = candles.size();
 	}
@@ -49,6 +50,18 @@ public class MarketData extends Pojo
 	public List<Candle> getCandles()
 	{
 		return this.candles;
+	}
+
+	@BsonIgnore
+	public Candle getCandle(int index)
+	{
+		return candles.get(index);
+	}
+	
+	public void setCandles(List<Candle> candles)
+	{
+		this.candles = candles;
+		setNcandles(candles.size());
 	}
 	
 	public int getNcandles() 
@@ -80,9 +93,10 @@ public class MarketData extends Pojo
 	{
 		updateField("start", start);
 	}
-
-	public void setCandles(List<Candle> candles) 
+	
+	@BsonIgnore
+	public Instant getEnd()
 	{
-		this.candles = candles;
+		return getCandle(ncandles - 1).getTime();
 	}
 }

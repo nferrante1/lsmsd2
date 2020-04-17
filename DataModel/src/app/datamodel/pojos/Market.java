@@ -16,8 +16,10 @@ import org.bson.BsonNull;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 
-public class Market extends Pojo
+@CollectionName("Sources")
+public class Market extends StorablePojo
 {	
+	@PojoId
 	public String id;
 	protected String baseCurrency;
 	protected String quoteCurrency;
@@ -25,26 +27,32 @@ public class Market extends Pojo
 	protected boolean selectable;
 	protected boolean sync;
 	protected transient DataRange range;
-	protected transient int lastNCandles;
+	protected transient int lastCandlesCount = -1;
 	
 	public Market()
 	{
 		super();
 	}
 
-	public Market(String id, String base, String quote )
+	public Market(String id, String base, String quote)
 	{
-		super(PojoState.STAGED);
+		super(StorablePojoState.UNTRACKED);
 		this.id = id;
 		this.baseCurrency = base;
 		this.quoteCurrency = quote;
-		this.granularity = 5;		
+		this.granularity = 5;
 	}
 	
 
 	public String getId()
 	{
 		return id;
+	}
+	
+	@BsonIgnore
+	public String getMarketName()
+	{
+		return getBaseCurrency() + "/" + getQuoteCurrency();
 	}
 	
 	public String getBaseCurrency()
@@ -74,22 +82,26 @@ public class Market extends Pojo
 		return sync;
 	}
 	
-	@BsonIgnore	
+	@BsonIgnore
 	public DataRange getRange() {
-		if(range == null) {
-			MarketDataManager marketDataManager = new MarketDataManager();
-			range = marketDataManager.getRange(getId());
-		}
 		return range;
 	}
 	
-	@BsonIgnore	
-	public int getLastMarketDataCandles() {
-		if(lastNCandles <= 0) {
-			MarketDataManager marketDataManager = new MarketDataManager();
-			lastNCandles = marketDataManager.lastMarketDataCandles(getId());
-		}
-		return lastNCandles;
+	@BsonIgnore
+	public int getLastCandlesCount() {
+		return lastCandlesCount;
+	}
+	
+	@BsonIgnore
+	public void setRange(DataRange range)
+	{
+		this.range = range;
+	}
+	
+	@BsonIgnore
+	public void setLastCandlesCount(int lastCandlesCount)
+	{
+		this.lastCandlesCount = lastCandlesCount;
 	}
 	
 	

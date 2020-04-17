@@ -32,11 +32,10 @@ public class CoinbaseConnector implements SourceConnector
 {
 	private Retrofit retrofit;
 	private CoinbaseInterface apiInterface;
-	private long lastRequestMillis = 0;
+	/*private long lastRequestMillis = 0;
 	private final int maxRequestsPerSecond = 3;
 	private final double requestMargin = 0.25;
-	private boolean additionalRateLimit;
-	private List<APICandle> candles;
+	private boolean additionalRateLimit;*/
 	
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
@@ -59,25 +58,26 @@ public class CoinbaseConnector implements SourceConnector
 	
 	public CoinbaseConnector()
 	{
+		//TODO: remove the following 3 lines and the client from below
 		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
 		interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
 		retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(CoinbaseInterface.class);
-		candles = new ArrayList<APICandle>();
 	}
 	
 	private void rateLimit() throws InterruptedException
 	{
 		Thread.sleep(3000);
-		if(lastRequestMillis == 0) return;
+		/*if(lastRequestMillis == 0) return;
 		long curMillis = System.currentTimeMillis();
 		double waitTime = (curMillis - lastRequestMillis) - 1/(maxRequestsPerSecond * (1 - requestMargin));
 		if (waitTime > 0)
 			Thread.sleep((long)Math.ceil(waitTime) + (additionalRateLimit ? 1000 : 0));
 		additionalRateLimit = false;
-		lastRequestMillis = curMillis;
+		lastRequestMillis = curMillis;*/
 	}
 
 	@Override
@@ -94,21 +94,11 @@ public class CoinbaseConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
+		//TODO: check response code
 		return response.body();
 		
 	}
 
-	@Override
-	public List<APICandle> getLastCandles(String marketId, int granularity, Instant start) throws InterruptedException
-	{
-		return getCandles(marketId, granularity, start);
-	}
-
-	protected List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
-	{
-		return getCandles(marketId, granularity, start, start.plusSeconds(granularity * 60 * 300));
-	}
-	
 	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end) throws InterruptedException
 	{
 		rateLimit();
@@ -128,34 +118,45 @@ public class CoinbaseConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
+		//TODO: check response code
 		return response.body();
 	}
 
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, int count)
-		throws InterruptedException
+	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
-		count = (count <= 0)? 1000 : count;
 		List<APICandle> returnCandles = new ArrayList<APICandle>();
 		if(start == null)
 			start = findFirstInstant(marketId, granularity);
-		while (candles.size() < count) {
-			Instant end = start.plusSeconds(granularity * 60 * 300);
-			List<APICandle> curCandles = getCandles(marketId, granularity, start, end);
-			Collections.reverse(curCandles);
-			candles.addAll(curCandles);
-			start = end.plusSeconds(1);
+		if (!start.isBefore(Instant.now()))
+			return new ArrayList<APICandle>();
+		Instant end = start.plusSeconds(granularity * 60 * 300);
+		if (end.isAfter(Instant.now()))
+			end = Instant.now();
+		List<APICandle> retCandles = getCandles(marketId, granularity, start, end);
+		if (retCandles == null || retCandles.isEmpty())
+			return new ArrayList<APICandle>();
+
+		List<APICandle> candles = new ArrayList<APICandle>();
+		int index = candles.size() - 1;
+		for (Instant curTime = start; curTime.isAfter(end); curTime = curTime.plusSeconds(granularity * 60)) {
+			APICandle curCandle = retCandles.get(Math.min(index, 0));
+			Instant curCandleTime = curCandle.getTime();
+			if (curCandleTime.isBefore(curTime))
+				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
+			if (curCandleTime.isAfter(curTime)) {
+				double value = index < 0 ? curCandle.getClose() : curCandle.getOpen();
+				candles.add(new APICandle(curTime, value));
+				continue;
+			}
+			candles.add(curCandle);
+			index--;
 		}
 		
-		for(int i = 0; i < count; i++) {
-			returnCandles.add(i, candles.get(0));
-			candles.remove(0);
-		}
-		
-		
-		return returnCandles;
+		return candles;
 	}
 	
-	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException {
+	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException
+	{
 		Instant start = Instant.ofEpochSecond(1437428220);
 		List<APICandle> curCandles = null;
 		while (curCandles == null || curCandles.isEmpty()) {

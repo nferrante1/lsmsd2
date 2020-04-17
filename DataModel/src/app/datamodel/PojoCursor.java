@@ -5,27 +5,35 @@ import java.util.List;
 
 import com.mongodb.client.MongoCursor;
 
-import app.datamodel.pojos.Pojo;
-import app.datamodel.pojos.PojoState;
-import app.datamodel.pojos.User;
-
-public class PojoCursor<T extends Pojo> implements AutoCloseable {
+public class PojoCursor<T extends Object> implements AutoCloseable {
 	private MongoCursor<T> cursor;
 	
 	public PojoCursor(MongoCursor<T> cursor)
 	{
-		//super();
 		this.cursor = cursor;
+	}
+	
+	public PojoCursor(PojoCursor<T> cursor)
+	{
+		this.cursor = cursor.getCursor();
+	}
+	
+	private MongoCursor<T> getCursor()
+	{
+		return cursor;
 	}
 	
 	public T next()
 	{
-		if(!cursor.hasNext()) return null;
-		T pojo = cursor.next();
-		pojo.setState(PojoState.COMMITTED);
-		return pojo;
+		return cursor.tryNext();
 	}
 	
+	public boolean hasNext()
+	{
+		return cursor.hasNext();
+	}
+	
+	@Override
 	public void close()
 	{
 		cursor.close();
@@ -34,20 +42,8 @@ public class PojoCursor<T extends Pojo> implements AutoCloseable {
 	public List<T> toList() 
 	{
 		List<T> list = new ArrayList<T>();
-		while(true) 
-		{
-			T pojo = next();
-			if(pojo == null) break;
+		for (T pojo = next(); pojo != null; pojo = next())
 			list.add(pojo);
-		}
 		return list;
 	}
-
-	public T first()
-	{
-		if(cursor.hasNext())
-			return cursor.next();
-		return null;
-	}
-	
 }

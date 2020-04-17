@@ -1,6 +1,7 @@
 package app.datamodel.pojos;
 
-public class Report extends Pojo {
+@CollectionName("Strategies")
+public class Report extends StorablePojo {
 	protected double netProfit;
 	protected double grossProfit;
 	protected double grossLoss;

@@ -1,31 +1,7 @@
 package app.datamodel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.BsonDocument;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.pojo.Conventions;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
-
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-
-import app.datamodel.mongo.DBManager;
-import app.datamodel.pojos.AuthToken;
-import app.datamodel.pojos.PojoState;
-import app.datamodel.pojos.AuthToken;
-
 public class AuthTokenManager {
-
+/*
 	protected static MongoDatabase getDB()
 	{
 		return DBManager.getInstance().getDatabase();
@@ -35,7 +11,7 @@ public class AuthTokenManager {
 	{
 		return getDB().getCollection("AuthToken", AuthToken.class);
 	}
-	
+	// done
 	public void save(AuthToken token)
 	{
 		switch(token.getState())
@@ -52,27 +28,27 @@ public class AuthTokenManager {
 		default:
 		}
 	}
-	
+	 //done
 	public void insert(AuthToken token) 
 	{
 		getCollection().insertOne(token);
-		token.setState(PojoState.COMMITTED);
+		token.setState(StorablePojoState.COMMITTED);
 	}
-	
+	//done
 	public void insert(List<AuthToken> tokens)
 	{
 		getCollection().insertMany(tokens);
 		for(AuthToken t : tokens) {
-			t.setState(PojoState.COMMITTED);
+			t.setState(StorablePojoState.COMMITTED);
 		}
 	}
-	
+	//done
 	public boolean delete(AuthToken token)
 	{
-		token.setState(PojoState.REMOVED);
+		token.setState(StorablePojoState.REMOVED);
 		return getCollection().deleteOne(Filters.eq("_id", token.getId())).wasAcknowledged();		
 	}
-	
+	//done
 	public long delete(List<AuthToken> tokens) 
 	{
 		long result = 0;
@@ -81,7 +57,7 @@ public class AuthTokenManager {
 				result++;
 		return result;
 	}
-	
+	//done
 	public boolean update(AuthToken token) 
 	{
 		List<Bson> updateDocument = new ArrayList<Bson>();
@@ -90,7 +66,7 @@ public class AuthTokenManager {
 		for(Map.Entry<String, Object> entry : updatedFields.entrySet())
 			updateDocument.add(Updates.set(entry.getKey(), entry.getValue()));
 		
-		token.setState(PojoState.COMMITTED);
+		token.setState(StorablePojoState.COMMITTED);
 		
 		if(updateDocument.isEmpty())
 			return false;
@@ -102,7 +78,7 @@ public class AuthTokenManager {
 		return getCollection().updateOne(Filters.eq("_id", token.getId()), Updates.combine(updateDocument)).wasAcknowledged();
 
 	}
-
+	//done
 	public long update(List<AuthToken> tokens) 
 	{
 		long result = 0;
@@ -111,7 +87,7 @@ public class AuthTokenManager {
 				result++;
 		return result;
 	}
-	
+	//done find + generateFilter
 	public PojoCursor<AuthToken> find(String fieldName, String value)
 	{
 		FindIterable<AuthToken> cursor;
@@ -126,15 +102,16 @@ public class AuthTokenManager {
 			
 		return new PojoCursor<AuthToken>(cursor.cursor());
 	}
-	
+	//done find
 	public AuthToken find(String id) 
 	{
 		return find("_id", id).first();
 	}
 	
-	
+	//done
 	public void drop() 
 	{
 		getCollection().drop();
 	}
+	*/
 }

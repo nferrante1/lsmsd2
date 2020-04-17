@@ -2,7 +2,8 @@ package app.datamodel.pojos;
 
 import java.time.Instant;
 
-public class DataRange  extends Pojo {
+@CollectionName("MarketData")
+public class DataRange {
 	
 	public Instant start;
 	public Instant end;

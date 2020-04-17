@@ -5,8 +5,8 @@ import java.util.List;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
 
-
-public class StrategyRun extends Pojo {
+@CollectionName("Strategies")
+public class StrategyRun extends StorablePojo {
 	@BsonId
 	protected ObjectId id;
 	protected String user;

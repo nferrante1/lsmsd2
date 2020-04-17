@@ -11,7 +11,8 @@ import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
 
-public class Strategy extends Pojo {
+@CollectionName("Strategies")
+public class Strategy extends StorablePojo {
 	@BsonId
 	protected String id;
 	protected String name;

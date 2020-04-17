@@ -2,6 +2,8 @@ package app.scraper.net.data;
 
 import java.time.Instant;
 
+import com.sun.source.util.TreePathScanner;
+
 public class APICandle
 {
 	protected Instant time;
@@ -20,7 +22,12 @@ public class APICandle
 		this.close = close;
 		this.volume = volume;
 	}
-
+	
+	public APICandle(Instant time, double price)
+	{
+		this(time, price, price, price, price, 0.0);
+	}
+	
 	public Instant getTime()
 	{
 		return time;

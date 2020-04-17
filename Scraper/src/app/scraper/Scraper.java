@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import app.datamodel.pojos.DataSource;
+import app.datamodel.StorablePojoCursor;
+import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
-import app.datamodel.PojoCursor;
-import app.datamodel.SourcesManager;
+import app.datamodel.pojos.DataSource;
 import app.scraper.net.BinanceConnector;
 import app.scraper.net.CoinbaseConnector;
 import app.scraper.net.SourceConnector;
@@ -25,12 +25,10 @@ public class Scraper
 	
 	public static void main(String[] args)
 	{
-		
 		setupDBManager();
 		setupListener();
 		
 		while(!Listener.getRunning()) {
-			
 			createWorkers();
 			for (Worker worker: workers)
 				worker.start();
@@ -38,7 +36,6 @@ public class Scraper
 			Listener.setRunning(true);
 			Thread.yield();
 		}
-		
 	}
 	
 	public static void setupDBManager()
@@ -60,9 +57,9 @@ public class Scraper
 	
 	private static void createWorkers()
 	{
-		SourcesManager manager = new SourcesManager();
+		StorablePojoManager<DataSource> manager = new StorablePojoManager<DataSource>(DataSource.class);
 		List<DataSource> sources;
-		try (PojoCursor<DataSource> cursor = manager.find()) {
+		try (StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)manager.find()) {
 			sources = cursor.toList();
 		}
 		
@@ -79,8 +76,7 @@ public class Scraper
 				connector = sourceConnector.getValue().getConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-				continue;
+				throw new RuntimeException(e);
 			}
 			workers.add(new Worker(source, connector));
 		}

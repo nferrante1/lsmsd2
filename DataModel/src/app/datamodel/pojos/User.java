@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-public class User extends Pojo {
+@CollectionName("Users")
+public class User extends StorablePojo {
 	
 	@BsonId
 	protected String username;
@@ -22,7 +23,7 @@ public class User extends Pojo {
 	
 	public User(String username, String password)
 	{
-		super(PojoState.STAGED);
+		super(StorablePojoState.STAGED);
 		this.username = username;
 		this.passwordHash = hashPassword(password);
 		//MANCA INIZIALIZZARE AUTHTOKEN

@@ -15,8 +15,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 
 import app.datamodel.mongo.DBManager;
-import app.datamodel.pojos.Market;
-import app.datamodel.pojos.StringWrapper;
 
 public class AggregationManager {
 	
@@ -30,6 +28,7 @@ public class AggregationManager {
 		return getDB().getCollection(collectionName, clazz);
 	}
 	
+	//done aggregate SingleValueManager (?) - NOT USED
 	public static <T> List<T> findMarketName(String marketName, int limit, int skip, boolean admin, Class<T> clazz) 
 	{
 		List<T> markets = new ArrayList<T>();

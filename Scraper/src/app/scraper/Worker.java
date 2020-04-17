@@ -2,18 +2,17 @@ package app.scraper;
 
 
 import java.time.Instant;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.datamodel.DataRangeManager;
 import app.datamodel.MarketDataManager;
-import app.datamodel.SourcesManager;
+import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
 import app.datamodel.pojos.MarketData;
-import app.datamodel.pojos.PojoState;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
@@ -51,26 +50,28 @@ final class Worker extends Thread
 		for(APIMarket curMarket: markets) 
 		{
 			Market market = source.getMarket(curMarket.getId());
-			if(market == null) 
+			if(market == null) {
 				source.addMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
-			else {
+			} else {
+				//market.setId(curMarket.getId());
 				market.setBaseCurrency(curMarket.getBaseCurrency());
 				market.setQuoteCurrency(curMarket.getQuoteCurrency());
 			}
 			
 		}
+
+		List<Market> sourceMarkets = source.getMarkets();
 			
-		OuterLoop: for(Market sm : source.getMarkets()) 
+		NextMarket: for(Market sm: sourceMarkets) 
 		{
-			for(APIMarket m: markets) {
+			for(APIMarket m: markets)
 				if (sm.getId().equals(m.getId()))
-					continue OuterLoop;
-			}
-			sm.setState(PojoState.REMOVED);
+					continue NextMarket;
+			sm.delete();
 		}
 		
 		
-		SourcesManager manager = new SourcesManager();
+		StorablePojoManager<DataSource> manager = new StorablePojoManager<DataSource>(DataSource.class);
 		manager.save(source);
 		
 		if (!source.isEnabled())
@@ -79,36 +80,70 @@ final class Worker extends Thread
 			return;
 		}
 		
-		List<Market> sourceMarkets = source.getMarkets();
-		
 		MarketDataManager marketDataManager = new MarketDataManager();
+		DataRangeManager dataRangeManager = new DataRangeManager();
 		
-		while(true) 
-		{
-			for(Market market: sourceMarkets) {				
-				if (!market.isSyncEnabled())
-					continue;
+		int marketsCount = sourceMarkets.size();
+		while(true) {
+			int disabledCount = 0;
+			for(Market market: sourceMarkets) {
+				if (!market.isSyncEnabled()) {
+					disabledCount++;
+					if (disabledCount < marketsCount)
+						continue;
+					System.out.println(getName() + ": All markets disabled! Exiting...");
+					return;
+				}
 				
 				DataRange range = market.getRange();
+				if (range == null) {
+					range = dataRangeManager.get(source.getName() + ":" + market.getId());
+					market.setRange(range);
+				}
 				Instant start = range.end;
-				int ncandles = market.getLastMarketDataCandles();
+				if (start != null)
+					start = start.plusSeconds(market.getGranularity() * 60);
+
+				List<APICandle> sourceCandles = connector.getCandles(market.getId(), market.getGranularity(), start);
+
+				int lastCandlesCount = market.getLastCandlesCount();
+				if (lastCandlesCount < 0) {
+					lastCandlesCount = marketDataManager.countLastCandles(source.getName() + ":" + market.getId());
+					market.setLastCandlesCount(lastCandlesCount);
+				}
 				
-				List<APICandle> sourceCandles = connector.getThousandCandles(market.getId(), market.getGranularity(), start, 1000-ncandles);
+				if (sourceCandles.isEmpty())
+					continue;
+
 				List<Candle> candles = new ArrayList<Candle>();
-				for(APICandle c : sourceCandles) 
+				int sourceCandlesCount = sourceCandles.size();
+				int toUpsert = lastCandlesCount == 0 ? 0 : 1000 - lastCandlesCount;
+				int index = 0;
+				for (toUpsert = Math.min(toUpsert, sourceCandlesCount); toUpsert > 0; toUpsert--) {
+					APICandle c = sourceCandles.get(index);
 					candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
-			
-				if(ncandles == 1000) 
-				{
-					marketDataManager.insert(new MarketData(market.getId(), candles));
+					index++;
 				}
-				else
-				{
-					marketDataManager.insert(market.getId(), candles);
+				marketDataManager.save(source.getName() + ":" + market.getId(), candles);
+
+				List<MarketData> marketDatas = new ArrayList<MarketData>();
+				int remainingCandles = sourceCandlesCount - index;
+				while (remainingCandles > 0) {
+					candles = new ArrayList<Candle>();
+					for (int i = 0; i < Math.max(remainingCandles, 1000); i++) {
+						APICandle c = sourceCandles.get(index + i);
+						candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
+					}
+					marketDatas.add(new MarketData(source.getName() + ":" + market.getId(), candles));
+					remainingCandles -= candles.size();
 				}
+				marketDataManager.save(marketDatas);
+
+				MarketData lastMarketData = marketDatas.get(marketDatas.size() - 1);
+				market.setLastCandlesCount(lastMarketData.getNcandles());
 				if(range.start == null)
-					range.start = candles.get(0).getTime();
-				range.end = candles.get(candles.size() -1).getTime();
+					range.start = lastMarketData.getStart();
+				range.end = lastMarketData.getEnd();
 				
 				Thread.yield();
 				

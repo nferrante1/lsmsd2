@@ -1,8 +1,8 @@
 package app.datamodel.pojos;
 
 
-
-public class Parameter<T> extends Pojo {
+@CollectionName("Strategies")
+public class Parameter<T> extends StorablePojo {
 	private String name;
 	private T value;
 	

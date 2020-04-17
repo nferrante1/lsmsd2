@@ -11,7 +11,8 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 import com.google.gson.annotations.SerializedName;
 
-public class DataSource extends Pojo
+@CollectionName("Sources")
+public class DataSource extends StorablePojo
 {
 	@BsonId
 	protected String name;
@@ -24,7 +25,7 @@ public class DataSource extends Pojo
 	}
 	public DataSource(String name)
 	{
-		super(PojoState.STAGED);
+		super(StorablePojoState.UNTRACKED);
 		this.name = name;
 		enabled = true;
 	}
@@ -68,42 +69,8 @@ public class DataSource extends Pojo
 		markets.add(market);
 	}
 	
-//	public void removeMarket(String marketId)
-//	{
-//		Iterator<Market> marketsIterator = markets.iterator();
-//		while (marketsIterator.hasNext()) {
-//			Market market = marketsIterator.next();
-//			if (market.getId().equals(marketId)) {
-//				marketsIterator.remove();
-//				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
-//				manager.delete(market);
-//				break;
-//			}
-//		}
-//	}
-	
-//	public void updateMarket(Market updMarket)
-//	{
-//		for (Market market: markets)
-//			if (market.getId().equals(updMarket.getId())) {
-//				market.setBaseCurrency(updMarket.getBaseCurrency());
-//				market.setQuoteCurrency(updMarket.getQuoteCurrency());
-//				EmbeddedPojoManager<Market> manager = new EmbeddedPojoManager<Market>(Market.class);
-//				manager.update(market);
-//				break;
-//				
-//			}
-//	}
-	
-	@BsonIgnore
-	public ListIterator<Market> getMarketsIterator()
-	{
-		return markets.listIterator();
-	}
 	public void setMarkets(List<Market> markets)
 	{
 		this.markets = markets;
-		for(Market market : this.markets)
-			market.setState(PojoState.COMMITTED);
 	}
 }

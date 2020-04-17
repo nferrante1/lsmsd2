@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -35,12 +36,11 @@ public class BinanceConnector implements SourceConnector
 {
 	private Retrofit retrofit;
 	private BinanceInterface apiInterface;
-	private int lastRequestMinute;
+	/*private int lastRequestMinute;
 	private int usedWeight;
 	private final int availableWeight = 1200;
 	private final double requestMargin = 0.25;
-	private int requestedWaitTime;
-	private List<APICandle> candles;
+	private int requestedWaitTime;*/
 	
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
@@ -63,19 +63,20 @@ public class BinanceConnector implements SourceConnector
 	
 	public BinanceConnector()
 	{
+		//TODO: remove the following 3 lines and client from below
 		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
 		interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
 		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
-		candles = new ArrayList<APICandle>();
 	}
 	
 	private void rateLimit() throws InterruptedException
 	{
 		Thread.sleep(3000);
-		LocalTime curTime = LocalTime.now();
+		/*LocalTime curTime = LocalTime.now();
 		int curMinute = curTime.getHour() * 60 + curTime.getMinute();
 		int remainingSeconds = 60 - curTime.getSecond();
 		if (lastRequestMinute == curMinute) {
@@ -86,7 +87,7 @@ public class BinanceConnector implements SourceConnector
 				Thread.sleep((long)Math.ceil(curAvailWeight / remainingSeconds));
 		}
 		if (requestedWaitTime > 0)
-			Thread.sleep(requestedWaitTime);
+			Thread.sleep(requestedWaitTime);*/
 	}
 	
 	@Override
@@ -102,11 +103,12 @@ public class BinanceConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
-		String weight = response.headers().get("x-mbx-used-weight-1m");
+		/*String weight = response.headers().get("x-mbx-used-weight-1m");
 		if (weight != null)
 			usedWeight = Integer.parseInt(weight);
 		else
-			usedWeight++;
+			usedWeight++;*/
+		//TODO: check response code
 		return response.body().getMarkets();
 	}
 	
@@ -127,20 +129,8 @@ public class BinanceConnector implements SourceConnector
 		return minutes + "m";
 	}
 
-	@Override
-	public List<APICandle> getLastCandles(String marketId, int granularity, Instant start) throws InterruptedException
+	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end) throws InterruptedException
 	{
-		return getCandles(marketId, granularity, start);
-	}
-
-	protected List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
-	{
-		return getCandles(marketId, granularity, start, start.plusSeconds(granularity * 60 * 1000), 1000);
-	}
-
-	public List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end, int count) throws InterruptedException
-	{
-		count = (count <= 0)? 1000 : count;
 		rateLimit();
 		Map<String, String> options = new HashMap<String, String>();
 		
@@ -149,9 +139,9 @@ public class BinanceConnector implements SourceConnector
 			options.put("startTime", "0");
 		else
 			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
-		//options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
+		options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
 		options.put("interval", getIntervalString(granularity));
-		options.put("limit", Integer.toString(count));
+		options.put("limit", "1000");
 		
 		Call<List<APICandle>> call = apiInterface.getCandles(options);
 		
@@ -162,20 +152,46 @@ public class BinanceConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
-		String weight = response.headers().get("x-mbx-used-weight-1m");
+		/*String weight = response.headers().get("x-mbx-used-weight-1m");
 		if (weight != null)
 			usedWeight = Integer.parseInt(weight);
 		else
-			usedWeight++;
+			usedWeight++;*/
+		//TODO: check response code
 		return response.body();
 	}
 
 	
-	public List<APICandle> getThousandCandles(String marketId, int granularity, Instant start, int count)
-			throws InterruptedException
-		{
-			return getCandles(marketId, granularity, start, Instant.now(), count);
+	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
+	{
+		if (start != null && !start.isBefore(Instant.now()))
+			return new ArrayList<APICandle>();
+		Instant end = start.plusSeconds(granularity * 60 * 1000);
+		if (end.isAfter(Instant.now()))
+			end = Instant.now();
+		List<APICandle> retCandles = getCandles(marketId, granularity, start, end);
+		if (retCandles == null || retCandles.isEmpty())
+			return new ArrayList<APICandle>();
+
+		List<APICandle> candles = new ArrayList<APICandle>();
+		int maxIndex = retCandles.size() - 1;
+		int index = 0;
+		for (Instant curTime = start; curTime.isAfter(end); curTime = curTime.plusSeconds(granularity * 60)) {
+			APICandle curCandle = retCandles.get(Math.max(index, maxIndex));
+			Instant curCandleTime = curCandle.getTime();
+			if (curCandleTime.isBefore(curTime))
+				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
+			if (curCandleTime.isAfter(curTime)) {
+				double value = index > maxIndex ? curCandle.getClose() : curCandle.getOpen();
+				candles.add(new APICandle(curTime, value));
+				continue;
+			}
+			candles.add(curCandle);
+			index++;
 		}
+		
+		return candles;
+	}
 
 
 }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.BsonNull;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.AggregateIterable;
@@ -25,115 +26,32 @@ import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.MarketData;
-import app.datamodel.pojos.PojoState;
+import app.datamodel.pojos.StorablePojoState;
 
-public class MarketDataManager {
-	
-	protected static MongoDatabase getDB()
+public class MarketDataManager extends StorablePojoManager<MarketData>
+{
+	public MarketDataManager()
 	{
-		return DBManager.getInstance().getDatabase();
+		super(MarketData.class);
 	}
-
-	protected MongoCollection<MarketData> getCollection()
+	
+	public int countLastCandles(String marketId)
 	{
-		return getDB().getCollection("MarketData", MarketData.class);
+		MarketData market = find(generateFilter("market", marketId), getIncludeProjection("ncandles"), generateAscSort("start")).next();
+		return (market == null) ? 1000 : market.getNcandles();
 	}
 	
-	public DataRange getRange(String marketId)
+	public void save(String marketId, List<Candle> candles)
 	{
-		
-		MongoCursor<DataRange> range = getDataRangeCollection().aggregate(
-				Arrays.asList(
-						Aggregates.match(
-								Filters.eq("market", marketId)), 
-						Aggregates.sort(
-								Sorts.ascending("start")), 
-						Aggregates.group(new BsonNull(), 
-								Accumulators.first(
-										"start", "$start"), 
-								Accumulators.last("end", 
-										Filters.eq("$arrayElemAt", 
-												Arrays.asList("$candles.t", -1L)
-												)
-										)
-								)
-						)
-				).cursor();
-	
-		if(range.hasNext())
-			return range.next();
-		
-		return new DataRange();
-	}
-	
-	public MongoCollection<DataRange> getDataRangeCollection()
-	{
-		return getDB().getCollection("MarketData", DataRange.class);
-	}
-	
-	public int lastMarketDataCandles(String marketId) {
-		
-		MarketData market = getCollection().find(Filters.eq("market", marketId)).sort(Sorts.descending("start")).projection(Projections.include("ncandles")).first();
-		return (market == null)? 1000 : market.getNcandles();
-	}
-	
-	public MarketData find(ObjectId marketDataId) 
-	{
-		return getCollection().find(Filters.eq("_id", marketDataId)).first();
-		
-	}
-	
-	public PojoCursor<MarketData> find(String marketId) 
-	{
-		FindIterable<MarketData> cursor = getCollection().find(Filters.eq("market", marketId)).sort(Sorts.ascending("start"));
-		return new PojoCursor<MarketData>(cursor.cursor());
-	}
-	
-	public void insert(MarketData marketData) 
-	{
-		getCollection().insertOne(marketData);
-		marketData.setState(PojoState.COMMITTED);
-	}
-	
-	public void insert(List<MarketData> marketDatas) 
-	{
-		getCollection().insertMany(marketDatas);
-		for(MarketData marketData : marketDatas )
-			marketData.setState(PojoState.COMMITTED);
-	}
-	
-	public void insert(String marketId, Candle candle) {
-		
+		int ncandles = candles.size();
+		if (ncandles == 0)
+			return;
+		Bson update = ncandles == 1 ? Updates.push("candles", candles.get(0)) : Updates.pushEach("candles", candles);
 		getCollection().updateOne(
-				Filters.and(Filters.eq("market", marketId), Filters.lt("ncandles", 1000)), 
-				Updates.combine(Updates.push("candles", candle), Updates.min("start", candle.getTime()), Updates.inc("ncandles", 1)), (new UpdateOptions()).upsert(true));
+				Filters.and(generateFilter("market", marketId), Filters.lte("ncandles", 1000 - ncandles)),
+				Updates.combine(update, Updates.min("start", candles.get(0).getTime()), Updates.inc("ncandles", ncandles)),
+				(new UpdateOptions()).upsert(true));
+		for (Candle candle: candles)
+			candle.commit();
 	}
-	
-	public void insert(String marketId, List<Candle> candles) {
-		
-		getCollection().updateOne(
-				Filters.and(Filters.eq("market", marketId), Filters.lt("ncandles", 1000)), 
-				Updates.combine(Updates.pushEach("candles", candles), Updates.min("start", candles.get(0).getTime()), Updates.inc("ncandles", candles.size())), (new UpdateOptions()).upsert(true));
-	}
-	
-	public boolean delete(MarketData marketData)
-	{
-		marketData.setState(PojoState.REMOVED);
-		return getCollection().deleteOne(Filters.eq("_id", marketData.getId())).wasAcknowledged();
-	}
-	
-	public long delete(String marketId)
-	{
-		return getCollection().deleteMany(Filters.eq("market", marketId)).getDeletedCount();
-	}
-	
-	public long delete(String marketId, Instant date)
-	{
-		return getCollection().deleteMany(Filters.and(Filters.eq("market", marketId), Filters.lte("start", date))).getDeletedCount();
-	}
-	
-	
-	
-	
-
 }

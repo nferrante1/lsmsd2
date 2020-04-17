@@ -4,40 +4,28 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.NullPermission;
 import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
-import app.datamodel.pojos.AuthToken;
-import app.common.net.Message;
+import app.common.net.entities.Entity;
 
-/**
- * Represent a message exchanged between server and client.
- */
 public class Message implements Serializable
 {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2948263922164031956L;
-	protected ActionRequest messageType;
-	
-	public Message() 
+	private static final long serialVersionUID = -5181705765357502182L;
+
+	protected final List<Entity> entities = new ArrayList<>();
+
+	protected Message(Entity... entities)
 	{
-		
-	}
-	
-	public Message(ActionRequest type) 
-	{
-		this.messageType = type;
+		if (entities != null)
+			for (Entity entity: entities)
+				this.entities.add(entity);
 	}
 
 	protected String toXML()
@@ -61,45 +49,85 @@ public class Message implements Serializable
 	}
 
 	/**
-	 * Sends the XML-serialized message through the specified output stream.
-	 * @param output The output stream.
-	 */
+	* Sends the XML-serialized message through the specified output stream.
+	* @param output The output stream.
+	*/
 	public void send(DataOutputStream output)
 	{
 		String xml = this.toXML();
-		Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": SENDING\n" + xml);
 		try {
 			output.writeUTF(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).warning("Failure in sending message.");
+			ex.printStackTrace();
 		}
 	}
 
 	/**
-	 * Receives an XML-serialized message from the specified input stream.
-	 * @param input The input stream.
-	 * @return An instance of Message representing the deserialized message.
-	 */
+	* Receives an XML-serialized message from the specified input stream.
+	* @param input The input stream.
+	* @return An instance of Message representing the deserialized message.
+	*/
 	public static Message receive(DataInputStream input)
 	{
 		String xml;
 		try {
 			xml = input.readUTF();
-			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + xml);
 			return fromXML(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).warning("Failure in receiving message. Probably counterpart terminated.");
+			ex.printStackTrace();
 			return null;
 		}
 	}
 
-	public ActionRequest getMessageType()
+	/**
+	* Returns the list of entities attached to the message.
+	* @return The list of entities attached to the message.
+	*/
+	public List<Entity> getEntities()
 	{
-		return messageType;
+		return entities;
 	}
 
-	public void setMessageType(ActionRequest messageType)
+	/**
+	* Returns the attached entity at the specified index inside the list.
+	* <p>
+	* NOTE: it's not guaranteed that entities' order is maintained after
+	* deserialization.
+	* </p>
+	* @param index The index of the entity.
+	* @return The entity.
+	*/
+	public Entity getEntity(int index)
 	{
-		this.messageType = messageType;
+		if (index < 0 || index >= getEntityCount())
+			return null;
+		return entities.get(index);
+	}
+
+	/**
+	* Returns the first attached entity.
+	* @return The entity.
+	*/
+	public Entity getEntity()
+	{
+		return getEntity(0);
+	}
+
+	/**
+	* Attach an entity to the message.
+	* @param entity The entity to attach.
+	*/
+	public void addEntity(Entity entity)
+	{
+		entities.add(entity);
+	}
+
+	/**
+	* Returns the number of entities attached to this message.
+	* @return The number of entities attached.
+	*/
+	public int getEntityCount()
+	{
+		return entities.size();
 	}
 }
