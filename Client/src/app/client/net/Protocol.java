@@ -94,6 +94,10 @@ public class Protocol implements AutoCloseable
 	{
 		return new ResponseMessage("Invalid response from server.");
 	}
+	
+	public boolean isAdmin() {
+		return authToken.getBytes()[0] == '0';
+	}
 
 	public void close() throws IOException
 	{

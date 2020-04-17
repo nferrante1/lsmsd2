@@ -26,31 +26,29 @@ public class Client
 {
 	public static void main(String[] args)
 	{
-		ResponseMessage message= Protocol.getInstance().performLogin("user", "pass");
+		//ResponseMessage message= Protocol.getInstance().performLogin("user", "pass");
 		
-		message = Protocol.getInstance().browseMarkets("ETH", 1);
+		//message = Protocol.getInstance().browseMarkets("ETH", 1);
+
+		//for(Entity m : message.getEntities())
+			//System.out.println(((MarketInfo) m).getId());
+		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
+
+		Options options = createOptions();
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+			parseOptions(cmd, options);
+		} catch (ParseException ex) {
+			Logger.getLogger(Client.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
+		}
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		//Configuration config = Configuration.getConfig();
+		//if (cmd == null || !cmd.hasOption("log-level"))
+			//setLogLevel(config.getLogLevel());
 		
-		for(Entity m : message.getEntities())
-			System.out.println(((MarketInfo) m).getId());
-//		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
-//
-//		Options options = createOptions();
-//		CommandLineParser parser = new DefaultParser();
-//		CommandLine cmd = null;
-//		try {
-//			cmd = parser.parse(options, args);
-//			parseOptions(cmd, options);
-//		} catch (ParseException ex) {
-//			Logger.getLogger(Client.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
-//		}
-//
-//		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-//		Configuration config = Configuration.getConfig();
-//
-//		if (cmd == null || !cmd.hasOption("log-level"))
-//			setLogLevel(config.getLogLevel());
-//
-//		launchCLI(args);
+		launchCLI(args);
 	}
 
 	private static Options createOptions()

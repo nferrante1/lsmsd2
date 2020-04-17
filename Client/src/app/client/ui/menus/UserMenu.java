@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.forms.UserForm;
 
@@ -15,7 +16,7 @@ public class UserMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "Find all strategies", this::handleBrowseStrategies));
 		menu.add(new MenuEntry(2, "Add a new strategy", this::handleAddStrategy));
-		if (loggedUser.isAdmin()) {
+		if (Protocol.getInstance().isAdmin()) {
 			menu.add(new MenuEntry(3, "Find all users", this::handleBrowseUsers));
 			menu.add(new MenuEntry(4, "Add a new user", this::handleAddUser));
 			menu.add(new MenuEntry(5, "Find all data sources", this::handleBrowseDataSource));
@@ -27,7 +28,8 @@ public class UserMenu extends Menu
 
 	private void handleLogout(MenuEntry entry)
 	{
-		//mandare logout al server
+		Protocol.getInstance().performLogout();
+		new LoginMenu().show();
 	}
 
 	private void handleBrowseStrategies(MenuEntry entry)
@@ -53,9 +55,7 @@ public class UserMenu extends Menu
 	
 	private void handleBrowseDataSource(MenuEntry entry)
 	{
-		// Richiesta di lista al server
-		// Stampo la lista
-		new DataSourceMenu(entry.getHandlerData()).show();
+
 	}
 	
 	private void handleDeleteData(MenuEntry entry)

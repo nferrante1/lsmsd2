@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import app.client.net.Protocol;
+import app.client.ui.Console;
 import app.client.ui.menus.forms.*;
+import app.common.net.ResponseMessage;
 
 public class LoginMenu extends Menu
 {
@@ -25,7 +28,13 @@ public class LoginMenu extends Menu
 
 	private void doLogin(String username, String password)
 	{
-		//mandare la login al server. Gestire errori
+		ResponseMessage resMsg = Protocol.getInstance().performLogin(username, password);
+		if(!resMsg.isSuccess()) {
+			Console.print("Invalid Login. Retry");
+			new LoginMenu().show();
+		}
+		
 		new UserMenu().show();
+		
 	}
 }
