@@ -4,7 +4,6 @@ import java.util.SortedSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.datamodel.User;
 
 public abstract class Menu
 {
@@ -12,7 +11,6 @@ public abstract class Menu
 	protected abstract SortedSet<MenuEntry> getMenu();
 	protected static int currentPage = 0;
 	protected static Protocol protocol = Protocol.getInstance();
-	protected static User loggedUser;
 
 	protected MenuEntry printMenu()
 	{
