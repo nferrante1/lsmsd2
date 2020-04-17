@@ -42,7 +42,7 @@ public abstract class TextForm
 
 	protected boolean validateUsername(String username)
 	{
-		if (!User.validateUsername(username)) {
+		if (! (username != null && username.matches("^[A-Za-z0-9]{3,32}$"))) {
 			Console.println("Invalid username.");
 			return false;
 		}
@@ -51,7 +51,7 @@ public abstract class TextForm
 
 	protected boolean validatePassword(String password)
 	{
-		if (!User.validatePassword(password)) {
+		if (!(password != null && password.length() > 7)) {
 			Console.println("Invalid password.");
 			return false;
 		}

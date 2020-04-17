@@ -70,16 +70,16 @@ public class Client extends Thread
 			return;
 		}
 		
-//		if(reqMsg.getAction() != ActionRequest.LOGIN) {
-//			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
-//			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
-//			
-//			if(!cursor.hasNext()) {
-//				new ResponseMessage("User not authenticated.").send(outputStream);
-//				return;
-//			}
-//			authToken = cursor.next();
-//		}
+		if(reqMsg.getAction() != ActionRequest.LOGIN) {
+			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
+			
+			if(!cursor.hasNext()) {
+				new ResponseMessage("User not authenticated.").send(outputStream);
+				return;
+			}
+			authToken = cursor.next();
+		}
 		
 		
 		
@@ -211,6 +211,7 @@ public class Client extends Thread
 	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
 		LoginInfo userInfo = (LoginInfo)reqMsg.getEntity(0);
+		
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
 		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
 		if (!cursor.hasNext())

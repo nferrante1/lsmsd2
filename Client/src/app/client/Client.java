@@ -99,7 +99,6 @@ public class Client
 	{
 		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "launchCLI", args);
 		Console.println("WELCOME TO CLIENT!");
-
 		new LoginMenu().show();
 
 		Logger.getLogger(Client.class.getName()).exiting(Client.class.getName(), "launchCLI", args);

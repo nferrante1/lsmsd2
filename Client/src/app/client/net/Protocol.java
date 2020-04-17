@@ -74,6 +74,11 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.BROWSE_MARKET, browseInfo);
 	}
+	
+	public ResponseMessage browseDataSource() 
+	{
+		return sendRequest(ActionRequest.BROWSE_DATA_SOURCE);
+	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
 	{
@@ -89,6 +94,8 @@ public class Protocol implements AutoCloseable
 		ResponseMessage resMsg = ResponseMessage.receive(inputStream);
 		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
 	}
+	
+	
 
 	private ResponseMessage getProtocolErrorMessage()
 	{
@@ -98,6 +105,8 @@ public class Protocol implements AutoCloseable
 	public boolean isAdmin() {
 		return authToken.getBytes()[0] == '0';
 	}
+	
+	
 
 	public void close() throws IOException
 	{
