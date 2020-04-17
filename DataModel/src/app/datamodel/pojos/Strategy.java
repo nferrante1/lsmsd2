@@ -7,7 +7,6 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.conversions.Bson;
 
-import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.model.Filters;
 
 

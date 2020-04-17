@@ -18,18 +18,20 @@ import app.client.config.Configuration;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.LoginMenu;
-import app.common.net.ResponseList;
-import app.datamodel.pojos.Market;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.Entity;
+import app.common.net.entities.MarketInfo;
 
 public class Client
 {
 	public static void main(String[] args)
 	{
+		ResponseMessage message= Protocol.getInstance().performLogin("user", "pass");
 		
-		ResponseList<Market> message = (ResponseList<Market>)Protocol.getInstance().browseMarket("ETH", 0);
+		message = Protocol.getInstance().browseMarkets("ETH", 1);
 		
-		for(Market m : message.getList())
-			System.out.println(m.getId());
+		for(Entity m : message.getEntities())
+			System.out.println(((MarketInfo) m).getId());
 //		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
 //
 //		Options options = createOptions();

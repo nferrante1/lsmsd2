@@ -4,12 +4,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 import app.common.net.ActionRequest;
 import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
+import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.LoginInfo;
+import app.common.net.entities.MarketInfo;
+import app.datamodel.PojoCursor;
+import app.datamodel.PojoManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
@@ -38,8 +43,7 @@ public class Client extends Thread
 	@Override
 	public void run()
 	{
-		while (!Thread.currentThread().isInterrupted())
-			process();
+		process();
 		try {
 			inputStream.close();
 			outputStream.close();
@@ -61,16 +65,16 @@ public class Client extends Thread
 			return;
 		}
 		
-		if(reqMsg.getAction() != ActionRequest.LOGIN) {
-			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
-			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
-			
-			if(!cursor.hasNext()) {
-				new ResponseMessage("User not authenticated.").send(outputStream);
-				return;
-			}
-			authToken = cursor.next();
-		}
+//		if(reqMsg.getAction() != ActionRequest.LOGIN) {
+//			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+//			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
+//			
+//			if(!cursor.hasNext()) {
+//				new ResponseMessage("User not authenticated.").send(outputStream);
+//				return;
+//			}
+//			authToken = cursor.next();
+//		}
 		
 		
 		
@@ -121,7 +125,7 @@ public class Client extends Thread
 	
 			break;
 		case BROWSE_MARKET:
-			//resMsg = handleBrowseMarket(reqMsg); //TODO
+			resMsg = handleBrowseMarket(reqMsg); 
 			break;
 		case BROWSE_DATA_SOURCE:
 			//resMsg = handleBrowseDataSource(reqMsg); //TODO
@@ -180,18 +184,18 @@ public class Client extends Thread
 		return new ResponseMessage();
 	}
 	
-	/* TODO: use new [Storable]PojoManager
+	// TODO: use new [Storable]PojoManager
 	private ResponseMessage handleBrowseMarket(RequestMessage reqMsg)
 	{
 		int pageSize = 20;
-		List<app.datamodel.pojos.Market> markets = new SourcesManager().findMarketName(reqMsg.getFilter(), pageSize, reqMsg.getNumPage()*pageSize, authToken.isAdmin());
-		ResponseList<Market> response = new ResponseList<Market>();
-		for(app.datamodel.pojos.Market market: markets)
-			response.add(new app.common.net.entities.Market(source.getName(), source.isEnabled()));
-		return response;
+		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
+		MarketInfoManager manager = new MarketInfoManager();
+		PojoCursor<MarketInfo> cursor = manager.getMarketInfo(browse.getFilter(), browse.getPage(), pageSize);
+		List<MarketInfo> markets = cursor.toList();
+		return new ResponseMessage(markets.toArray(new MarketInfo[0]));
 	}
 	
-	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
+	/*private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
 	{
 		SourcesManager manager = new SourcesManager();
 		List<DataSource> sources = manager.find(false).toList();
@@ -201,5 +205,4 @@ public class Client extends Thread
 		return response;
 	}
 	*/
-
 }

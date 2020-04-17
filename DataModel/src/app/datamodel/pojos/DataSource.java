@@ -9,7 +9,6 @@ import java.util.ListIterator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-import com.google.gson.annotations.SerializedName;
 
 @CollectionName("Sources")
 public class DataSource extends StorablePojo

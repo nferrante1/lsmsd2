@@ -45,6 +45,7 @@ public class Server {
 
 		startServer();
 		Logger.getLogger(Server.class.getName()).exiting(Server.class.getName(), "main", args);
+		
 	}
 
 	private static void startServer()

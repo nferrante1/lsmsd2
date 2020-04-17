@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import com.google.gson.annotations.SerializedName;
 
 @CollectionName("MarketData")
 public class Candle extends StorablePojo

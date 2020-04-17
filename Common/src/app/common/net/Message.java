@@ -55,7 +55,9 @@ public class Message implements Serializable
 	public void send(DataOutputStream output)
 	{
 		String xml = this.toXML();
+		
 		try {
+			System.out.println(xml);
 			output.writeUTF(xml);
 		} catch (IOException ex) {
 			ex.printStackTrace();

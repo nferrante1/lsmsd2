@@ -9,17 +9,15 @@ import java.util.logging.Logger;
 import app.client.config.Configuration;
 import app.common.net.ActionRequest;
 import app.common.net.Message;
-import app.common.net.RequestBrowse;
-import app.common.net.RequestLogin;
+
 import app.common.net.RequestMessage;
-import app.common.net.ResponseList;
-import app.common.net.ResponseLogin;
+
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.Entity;
 import app.common.net.entities.LoginInfo;
-import app.common.net.entities.Market;
+
 
 public class Protocol implements AutoCloseable
 {
@@ -29,23 +27,15 @@ public class Protocol implements AutoCloseable
 	private static Protocol instance;
 	private String authToken;
 
-	private Protocol() throws IOException
+	private Protocol()
 	{
 		Configuration config = Configuration.getConfig();
-		this.socket = new Socket("127.0.0.1", 8888);//config.getServerIp(), config.getServerPort());
-		inputStream = new DataInputStream(socket.getInputStream());
-		outputStream = new DataOutputStream(socket.getOutputStream());
 	}
 
 	public static Protocol getInstance()
 	{
 		if(instance == null)
-			try {
-				instance = new Protocol();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				System.exit(1);
-			}
+		instance = new Protocol();	
 		return instance;
 	}
 
@@ -87,6 +77,14 @@ public class Protocol implements AutoCloseable
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
 	{
+		try {
+		socket = new Socket("127.0.0.1", 8888);//config.getServerIp(), config.getServerPort());
+		inputStream = new DataInputStream(socket.getInputStream());
+		outputStream = new DataOutputStream(socket.getOutputStream());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			System.exit(1);
+		}
 		new RequestMessage(actionRequest, authToken, entities).send(outputStream);
 		ResponseMessage resMsg = ResponseMessage.receive(inputStream);
 		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
