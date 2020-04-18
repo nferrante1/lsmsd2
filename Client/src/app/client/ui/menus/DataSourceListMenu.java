@@ -31,9 +31,7 @@ public class DataSourceListMenu extends Menu {
 	
 	void handleDataSourceSelection(MenuEntry entry)
 	{
-		SourceInfo info = (SourceInfo)entry.getHandlerData();
-		Console.println("Selected Data Source is: " + info.get_id());
-		Console.println("Enabled: " + info.isEnabled());
+		new DataSourceMenu((SourceInfo)entry.getHandlerData()).show();;
 		
 	}
 
