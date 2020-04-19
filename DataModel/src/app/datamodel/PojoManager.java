@@ -491,9 +491,18 @@ public class PojoManager<T extends Object>
 		return getCollection().aggregate(pipeline);
 	}
 	
-	protected PojoCursor<T> aggregate(List<Bson> pipeline)
+	public PojoCursor<T> aggregate(List<Bson> pipeline)
 	{
 		return new PojoCursor<T>(getAggregateIterable(pipeline).cursor());
+	}
+	
+	public PojoCursor<T> aggregate(Bson... stages)
+	{
+		List<Bson> pipeline = new ArrayList<Bson>();
+		if (stages != null && stages.length > 0)
+			for (Bson stage: stages)
+				pipeline.add(stage);
+		return aggregate(pipeline);
 	}
 	
 	public void drop()

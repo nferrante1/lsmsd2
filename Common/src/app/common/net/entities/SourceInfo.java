@@ -12,7 +12,7 @@ public class SourceInfo extends Entity
 		return name;
 	}
 
-	public void set_id(String name)
+	public void setName(String name)
 	{
 		this.name = name;
 	}

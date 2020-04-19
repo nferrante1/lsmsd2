@@ -17,7 +17,7 @@ public class DataSourceMenu extends Menu
 
 	public DataSourceMenu(SourceInfo data_source)
 	{
-		super("Selected Data Source is: "  + data_source.get_id() + "Enabled: " + data_source.isEnabled() + " | select an action");
+		super("Selected Data Source is: "  + data_source.getName() + "Enabled: " + data_source.isEnabled() + " | select an action");
 		this.data_source = data_source;
 	}
 

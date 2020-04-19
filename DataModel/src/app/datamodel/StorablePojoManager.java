@@ -709,7 +709,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	}
 	
 	@Override
-	protected DetachedPojoCursor<T> aggregate(List<Bson> pipeline)
+	public DetachedPojoCursor<T> aggregate(List<Bson> pipeline)
 	{
 		PojoCursor<T> cursor = super.aggregate(pipeline);
 		return new DetachedPojoCursor<T>(cursor);

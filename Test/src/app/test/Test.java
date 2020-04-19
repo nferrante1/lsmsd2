@@ -2,13 +2,20 @@ package app.test;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Projections;
+
+import app.common.net.entities.SourceInfo;
+import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
+import app.datamodel.pojos.User;
 
 public class Test
 {
@@ -19,6 +26,16 @@ public class Test
 		 */
 		setupDBManager();
 
+		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
+		PojoCursor<SourceInfo> cursor = manager.aggregate(Arrays.asList(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))));
+		while (cursor.hasNext()) {
+			SourceInfo info = cursor.next();
+			System.out.println("Name: " + info.getName());
+			System.out.println("Enabled: " + info.isEnabled());
+			System.out.println("---------------");
+		}
+		printPhase("DONE!");
+		/*
 		StorablePojoManager<First> firstManager = new StorablePojoManager<First>(First.class);
 		firstManager.drop();
 		printPhase("CREATE");
@@ -62,7 +79,7 @@ public class Test
 		for (First f: firstList)
 			print(f);
 		printPhase("!!! DONE !!!");
-		System.out.println(Instant.now());
+		System.out.println(Instant.now());*/
 	}
 	
 	public static void printPhase(String phase)

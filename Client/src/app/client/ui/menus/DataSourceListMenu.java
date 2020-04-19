@@ -21,7 +21,7 @@ public class DataSourceListMenu extends Menu {
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
 		for(SourceInfo source : sources) {
-			menu.add(new MenuEntry(i, source.get_id(), this::handleDataSourceSelection, source));
+			menu.add(new MenuEntry(i, source.getName(), this::handleDataSourceSelection, source));
 			++i;
 		}
 		

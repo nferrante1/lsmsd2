@@ -14,7 +14,7 @@ public class SingleValueManager<T extends Object> extends PojoManager<SingleValu
 	}
 
 	@Override
-	protected SingleValueCursor<T> aggregate(List<Bson> pipeline)
+	public SingleValueCursor<T> aggregate(List<Bson> pipeline)
 	{
 		PojoCursor<SingleValue<T>> cursor = super.aggregate(pipeline);
 		return new SingleValueCursor<T>(cursor);

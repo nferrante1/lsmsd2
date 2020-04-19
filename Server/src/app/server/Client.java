@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
@@ -189,7 +190,7 @@ public class Client extends Thread
 		
 		SourceInfo sourceinfo = (SourceInfo)reqMsg.getEntity();
 		StorablePojoManager<DataSource> data_source_manager = new StorablePojoManager<DataSource>(DataSource.class);
-		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)data_source_manager.find(sourceinfo.get_id());
+		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)data_source_manager.find(sourceinfo.getName());
 		if(!cursor.hasNext())
 			return new ResponseMessage("Source not found");
 		DataSource source = cursor.next();
@@ -249,7 +250,7 @@ public class Client extends Thread
 	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
 	{
 		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
-		List<SourceInfo> sources = manager.find(null, Projections.fields(Projections.exclude("markets"), Projections.excludeId(), Projections.computed("name", "$_id"))).toList();
+		List<SourceInfo> sources = manager.aggregate(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))).toList();
 		return new ResponseMessage(sources.toArray(new SourceInfo[0]));
 	}
 	
