@@ -170,12 +170,12 @@ public class BinanceConnector implements SourceConnector
 		List<APICandle> candles = new ArrayList<APICandle>();
 		int maxIndex = retCandles.size() - 1;
 		int index = 0;
-		for (Instant curTime = start; curTime.isAfter(end); curTime = curTime.plusSeconds(granularity * 60)) {
-			APICandle curCandle = retCandles.get(Math.max(index, maxIndex));
+		for (Instant curTime = start; curTime.isBefore(end); curTime = curTime.plusSeconds(granularity * 60)) {
+			APICandle curCandle = retCandles.get(Math.min(index, maxIndex));
 			Instant curCandleTime = curCandle.getTime();
-			if (curCandleTime.isBefore(curTime))
+			if (curCandleTime.isBefore(curTime) && index <= maxIndex)
 				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
-			if (curCandleTime.isAfter(curTime)) {
+			if (curCandleTime.isAfter(curTime) || index > maxIndex) {
 				double value = index > maxIndex ? curCandle.getClose() : curCandle.getOpen();
 				candles.add(new APICandle(curTime, value));
 				continue;

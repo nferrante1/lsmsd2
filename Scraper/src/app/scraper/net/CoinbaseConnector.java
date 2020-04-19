@@ -133,13 +133,13 @@ public class CoinbaseConnector implements SourceConnector
 			return new ArrayList<APICandle>();
 
 		List<APICandle> candles = new ArrayList<APICandle>();
-		int index = candles.size() - 1;
-		for (Instant curTime = start; curTime.isAfter(end); curTime = curTime.plusSeconds(granularity * 60)) {
-			APICandle curCandle = retCandles.get(Math.min(index, 0));
+		int index = retCandles.size() - 1;
+		for (Instant curTime = start; curTime.isBefore(end); curTime = curTime.plusSeconds(granularity * 60)) {
+			APICandle curCandle = retCandles.get(Math.max(index, 0));
 			Instant curCandleTime = curCandle.getTime();
-			if (curCandleTime.isBefore(curTime))
+			if (curCandleTime.isBefore(curTime) && index >= 0)
 				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
-			if (curCandleTime.isAfter(curTime)) {
+			if (curCandleTime.isAfter(curTime) || index < 0) {
 				double value = index < 0 ? curCandle.getClose() : curCandle.getOpen();
 				candles.add(new APICandle(curTime, value));
 				continue;

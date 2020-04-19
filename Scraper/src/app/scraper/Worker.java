@@ -130,21 +130,29 @@ final class Worker extends Thread
 				int remainingCandles = sourceCandlesCount - index;
 				while (remainingCandles > 0) {
 					candles = new ArrayList<Candle>();
-					for (int i = 0; i < Math.max(remainingCandles, 1000); i++) {
-						APICandle c = sourceCandles.get(index + i);
+					for (int i = 0; i < Math.min(remainingCandles, 1000); i++) {
+						APICandle c = sourceCandles.get(index + i );
 						candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
 					}
 					marketDatas.add(new MarketData(source.getName() + ":" + market.getId(), candles));
 					remainingCandles -= candles.size();
 				}
 				marketDataManager.save(marketDatas);
-
-				MarketData lastMarketData = marketDatas.get(marketDatas.size() - 1);
-				market.setLastCandlesCount(lastMarketData.getNcandles());
-				if(range.start == null)
-					range.start = lastMarketData.getStart();
-				range.end = lastMarketData.getEnd();
-				
+				if(!marketDatas.isEmpty())
+				{
+					MarketData lastMarketData = marketDatas.get(marketDatas.size() - 1);
+					market.setLastCandlesCount(lastMarketData.getNcandles());
+					if(range.start == null)
+						range.start = lastMarketData.getStart();
+					range.end = lastMarketData.getEnd();
+				}
+				else
+				{
+					market.setLastCandlesCount(lastCandlesCount + index);
+					if(range.start == null)
+						range.start = candles.get(0).getTime();
+					range.end = candles.get(candles.size() -1).getTime();
+				}
 				Thread.yield();
 				
 			}
