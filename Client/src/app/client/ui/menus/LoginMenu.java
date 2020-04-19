@@ -30,7 +30,7 @@ public class LoginMenu extends Menu
 	{
 		ResponseMessage resMsg = Protocol.getInstance().performLogin(username, password);
 		if(!resMsg.isSuccess()) {
-			Console.print("Invalid Login. Retry");
+			Console.print(resMsg.getErrorMsg());
 			new LoginMenu().show();
 		}
 		

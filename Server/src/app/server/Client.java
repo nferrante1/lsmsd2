@@ -135,7 +135,7 @@ public class Client extends Thread
 			resMsg = handleBrowseMarket(reqMsg); 
 			break;
 		case BROWSE_DATA_SOURCE:
-			resMsg = handleBrowseDataSource(reqMsg);
+			resMsg = handleBrowseDataSource();
 			break;
 		case CHANGE_DATA_SOURCE:
 			resMsg = handleChangeDataSource(reqMsg);
@@ -247,7 +247,7 @@ public class Client extends Thread
 		return new ResponseMessage(markets.toArray(new MarketInfo[0]));
 	}
 	
-	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
+	private ResponseMessage handleBrowseDataSource()
 	{
 		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
 		List<SourceInfo> sources = manager.aggregate(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))).toList();

@@ -8,9 +8,11 @@ import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.SearchByNameForm;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.Entity;
+import app.common.net.entities.LoginInfo;
 import app.common.net.entities.SourceInfo;
 
 public class UserMenu extends Menu
@@ -48,25 +50,26 @@ public class UserMenu extends Menu
 	
 	private void handleBrowseUsers(MenuEntry entry)
 	{
-		new UserListMenu().show();
+		HashMap<Integer, String> response = new SearchByNameForm("Username").show();
+		new UserListMenu(response.get(0)).show();
 	}
 	
 	private void handleAddUser(MenuEntry entry)
 	{
 		HashMap<Integer, String> response = new UserForm("insert username and password").show();
-		// Richiesta di aggiunta utente al server
+		ResponseMessage resMsg = Protocol.getInstance().addUser(new LoginInfo(response.get(0), response.get(1)));
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+		}
+		else {
+			Console.println("User correctly created");
+		}
 	}
 	
 	private void handleBrowseDataSource(MenuEntry entry)
 	{
-		ResponseMessage resMsg = Protocol.getInstance().browseDataSource();
-		List<SourceInfo> info = new ArrayList<SourceInfo>();
-		for(Entity entity : resMsg.getEntities())
-			info.add((SourceInfo)entity);
-		new DataSourceListMenu(info).show();
-			
-			
-		
+		new DataSourceListMenu().show();
+				
 	}
 	
 	private void handleDeleteData(MenuEntry entry)

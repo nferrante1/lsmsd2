@@ -1,37 +1,67 @@
-	package app.client.ui.menus;
+package app.client.ui.menus;
 
-	import java.time.LocalDate;
-	import java.util.HashMap;
-	import java.util.SortedSet;
-	import java.util.TreeSet;
-	import java.util.function.Function;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Function;
 
-	import app.client.ui.Console;
-	import app.client.ui.menus.MenuEntry;
-import app.datamodel.DataSource;
+import app.client.net.Protocol;
+import app.client.ui.Console;
+import app.client.ui.menus.MenuEntry;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.MarketInfo;
+
 
 public class MarketListMenu extends Menu {
 	
-	protected DataSource data_source;
+	protected List<MarketInfo> markets;
+	protected String filter;
+	protected String dataSource;
+	protected int currentPage;
 	
-	public MarketListMenu(DataSource data_source)
+	public MarketListMenu(String filter)
 	{
-		super("All the markets of this data source");
-		this.data_source = data_source;
+		this(filter, null);
+	}
+	
+	public MarketListMenu(String filter, String dataSource)
+	{
+		super("The list of all markets:");
+		this.dataSource = dataSource;
+		this.filter = filter;	
+		this.currentPage = 1;
 	}
 	
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		//richiedere una pagina di market al server
-		//gestire casi di errore o se non ci sono market
-
+		ResponseMessage resMsg;
+		if(this.dataSource  == null) {
+			resMsg = Protocol.getInstance().browseMarkets(new BrowseInfo(filter, currentPage));
+		}
+		else {
+			Protocol.getInstance().browseMarketsOfDataSource(dataSource, new BrowseInfo(filter, currentPage));
+		}
+		
+		for(int i=0; i<resMsg.getEntityCount(); i++) {
+			markets.add((MarketInfo)resMsg.getEntity(i));
+		}
+		
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i=1;
-		//per ogni market i trovato ...
-
-		menu.add(new MenuEntry(i, market.getName() + " " + market.getGranularity() + " " + market.getDataSync() + " "
-			+ market.getSelectable(), this::handleConfigMarket, market));
+		for(MarketInfo market : markets) {
+			if(this.dataSource.equals(null)) {
+				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity() + " " + market.isSync() + " "
+						+ market.isSelectable(), this::handleConfigMarket, market));
+			}
+			else {
+				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity(), this::handleConfigMarket, market));
+			}
+		}
 				
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		
@@ -45,7 +75,7 @@ public class MarketListMenu extends Menu {
 		//richiedere informazioni market al server
 		//stampare informazioni market Console.print(strategy.toString);
 		
-		currentPage = 0;
+		currentPage = 1;
 		new ConfigMarketForm(entry.getHandlerData()).show();
 	}
 	
@@ -53,6 +83,6 @@ public class MarketListMenu extends Menu {
 	private void handleLoadNewPage(MenuEntry entry) 
 	{
 		currentPage++;
-		
+		getMenu();
 	}
 }

@@ -1,14 +1,11 @@
 package app.client.ui.menus;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import app.client.net.Protocol;
-import app.client.ui.Console;
-import app.common.net.ResponseMessage;
-import app.common.net.entities.Entity;
+import app.client.ui.menus.forms.SearchByNameForm;
 import app.common.net.entities.SourceInfo;
 
 public class DataSourceMenu extends Menu
@@ -48,7 +45,7 @@ public class DataSourceMenu extends Menu
 	
 	private void handleBrowseMarket(MenuEntry entry)
 	{
-		//il riempimento della MarketListMenu si fa nel costruttore o fuori??
-		// Domanda relativa a come fare la searchbyName e la paginazione
+		HashMap<Integer, String> response = new SearchByNameForm("MarketName").show();
+		new MarketListMenu(response.get(0), data_source.getName());
 	}
 }

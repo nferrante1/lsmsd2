@@ -32,5 +32,11 @@ public class BrowseInfo extends Entity
 	{
 		return page;
 	}
+	
+	public boolean isFilter() {
+		if(this.filter.equals("*"))
+			return false;
+		return true;
+	}
 
 }

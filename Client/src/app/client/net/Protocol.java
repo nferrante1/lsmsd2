@@ -17,6 +17,8 @@ import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.Entity;
 import app.common.net.entities.LoginInfo;
+import app.common.net.entities.SourceInfo;
+import app.common.net.entities.UserInfo;
 
 
 public class Protocol implements AutoCloseable
@@ -78,6 +80,24 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage browseDataSource() 
 	{
 		return sendRequest(ActionRequest.BROWSE_DATA_SOURCE);
+	}
+	
+	public ResponseMessage changeDataSource(SourceInfo info)
+	{
+		return sendRequest(ActionRequest.CHANGE_DATA_SOURCE);
+	}
+	
+	public ResponseMessage browseUsers(BrowseInfo browseInfo)
+	{
+		return sendRequest(ActionRequest.BROWSE_USERS, browseInfo);
+	}
+	public ResponseMessage addUser(LoginInfo info)
+	{
+		return sendRequest(ActionRequest.ADD_USER);
+	}
+	public ResponseMessage deleteUser(UserInfo info)
+	{
+		return sendRequest(ActionRequest.DELETE_USER);
 	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)

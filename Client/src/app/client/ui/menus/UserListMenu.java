@@ -2,31 +2,48 @@ package app.client.ui.menus;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.MarketInfo;
+import app.common.net.entities.UserInfo;
 
 public class UserListMenu extends Menu
 {
+	protected String filter;
+	protected int currentPage;
+	
+	protected List<UserInfo> users;
 
-	public UserListMenu()
+	public UserListMenu(String filter)
 	{
-		super("All the users of the application");
+		super("List of the users. Select an user to DELETE it:");
+		this.filter = filter;
+		this.currentPage = 1;
+		
 	}
 
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		//richiedere una pagina di utenti al server
-		//gestire casi di errore o se non ci sono utenti
-
+		
+		ResponseMessage resMsg = Protocol.getInstance().browseUsers(new BrowseInfo(filter, currentPage));
+		
+		for(int i=0; i<resMsg.getEntityCount(); i++) {
+			users.add((UserInfo)resMsg.getEntity(i));
+		}
+		
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i =1;
-		//per ogni user i trovato ...
-		menu.add(new MenuEntry(i, loggedUser.getName() + Boolean.toString(loggedUser.isAdmin()), true, this::handleDeleteUser, loggedUser));
-				
+		for(UserInfo user : users) {
+			menu.add(new MenuEntry(i, user.getUsername() + Boolean.toString(user.isAdmin()), true, this::handleDeleteUser, user));
+		}		
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
@@ -34,17 +51,20 @@ public class UserListMenu extends Menu
 
 	private void handleDeleteUser(MenuEntry entry)
 	{
-		boolean confirm = Console.askConfirm("This will remove this user. Are you sure?");
-		if (confirm) {
-			//mandare la server la cancellazione della strategia
+		ResponseMessage resMsg = Protocol.getInstance().deleteUser((UserInfo)entry.getHandlerData());
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
 		}
-		Console.newLine();
+		else {
+			Console.println("User correctly deleted.");
+		}
 		
 	}
 	
 	private void handleLoadNewPage(MenuEntry entry) 
 	{
 		currentPage++;
+		getMenu();
 		
 	}
 }
