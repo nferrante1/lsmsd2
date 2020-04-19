@@ -23,7 +23,11 @@ public class Test
 	{
 		setupDBManager();
 		
-		
+		StrategyExecutor executor  = new StrategyExecutor("/home/speedjack/clazzes", "PippoStrategy");
+		ExecutableStrategy strategy = executor.getStrategy();
+		strategy.init();
+		strategy.process();
+		strategy.process();
 
 		/*PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
 		PojoCursor<SourceInfo> cursor = manager.aggregate(Arrays.asList(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))));
