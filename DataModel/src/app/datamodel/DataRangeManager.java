@@ -22,10 +22,11 @@ public class DataRangeManager extends PojoManager<DataRange>
 	
 	public DataRange get(String marketId)
 	{
+		
 		PojoCursor<DataRange> range = aggregate(
 				Arrays.asList(
-					Aggregates.match(generateFilter(MarketData.class, "market", marketId)),
-					Aggregates.sort(generateAscSort(MarketData.class, "start")),
+					Aggregates.match(Filters.eq("market", marketId)),
+					Aggregates.sort(Sorts.ascending("start")),
 					Aggregates.group(new BsonNull(),
 						Accumulators.first("start", "$start"),
 						Accumulators.last("end", Filters.eq("$arrayElemAt", Arrays.asList("$candles.t", -1L)))

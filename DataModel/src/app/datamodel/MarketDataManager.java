@@ -37,7 +37,11 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 	
 	public int countLastCandles(String marketId)
 	{
-		MarketData market = find(generateFilter("market", marketId), getIncludeProjection("ncandles"), generateAscSort("start")).next();
+		MarketData market = find(Filters.eq("market", marketId),
+			Projections.fields(
+				Projections.excludeId(),
+				Projections.include("ncandles")),
+			Sorts.descending("start")).next();
 		return (market == null) ? 1000 : market.getNcandles();
 	}
 	
@@ -48,7 +52,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 			return;
 		Bson update = ncandles == 1 ? Updates.push("candles", candles.get(0)) : Updates.pushEach("candles", candles);
 		getCollection().updateOne(
-				Filters.and(generateFilter("market", marketId), Filters.lte("ncandles", 1000 - ncandles)),
+				Filters.and(Filters.eq("market", marketId), Filters.lte("ncandles", 1000 - ncandles)),
 				Updates.combine(update, Updates.min("start", candles.get(0).getTime()), Updates.inc("ncandles", ncandles)),
 				(new UpdateOptions()).upsert(true));
 		for (Candle candle: candles)

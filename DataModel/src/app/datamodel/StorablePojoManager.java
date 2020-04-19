@@ -321,7 +321,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			update(pojo);
 	}
 	
-	public void save(StorablePojo parent, T pojo, String fieldName)
+	/*public void save(StorablePojo parent, T pojo, String fieldName)
 	{
 		save(getIdFilter(parent), pojo, fieldName);
 	}
@@ -342,7 +342,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			delete(pojo);
 		else if (pojo.isStaged() || pojo.isCommitted())
 			update(parentFilter, pojo, fieldName);
-	}
+	}*/
 	
 	public void save(List<T> pojos)
 	{
@@ -635,7 +635,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		commit(pojo);
 	}
 	
-	protected void update(StorablePojo parent, T pojo, String prefix)
+	/*protected void update(StorablePojo parent, T pojo, String prefix)
 	{
 		update(getIdFilter(parent), pojo, prefix);
 	}
@@ -660,7 +660,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			update = updateNode.getUpdate();
 		}
 		commit(pojo);
-	}
+	}*/
 	
 	protected void update(List<T> pojos)
 	{

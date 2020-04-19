@@ -11,7 +11,7 @@ aggregation pipeline is defined:
 \begin{enumerate}
 	\item \code{\$match} stage to get only the documents for the specific
 		\code{market}. This stage includes the entire shard key, so the
-		query is irected only to the specific server where the shard
+		query is directed only to the specific server where the shard
 		containing the documents is saved;
 	\item \code{\$sort} stage to order the documents ascending by the
 		\code{start} field;
@@ -32,9 +32,11 @@ To accomplish this, the following aggregation pipeline can be used:
 		on some search criteria;
 	\item \code{\$sort} stage to sort documents based on some sorting
 		criteria;
-	\item \code{\$skip} and \code{\$limit} stages to paginate the result;
-	\item \textit{(Optional)} additional stages to reformat the output in a
-		manageable structure.
+	\item \textit{(Optional)} \code{\$project}, \code{\$addFields} and
+		\code{\$replaceRoot} stages to reformat the document in the
+		desired structure (these stages may be present also in other
+		points of the pipeline);
+	\item \code{\$skip} and \code{\$limit} stages to paginate the result.
 \end{enumerate}
 
 \subsection{Queries on MarketData}
@@ -53,7 +55,18 @@ strategy}, it may need:
 To accomplish (\ref{itm:granularity}) the following aggregation pipeline has
 been defined:
 \begin{enumerate}
-	\item \ldots TODO \ldots
+	\item \code{\$match} stage to get only the documents for the specific
+		\code{market}. This stage includes the entire shard key, so the
+		query is directed only to the specific server where the shard
+		containing the documents is saved;
+	\item \code{\$sort} stage to order the documents ascending by the
+		\code{start} field;
+	\item \code{\$unwind} and \code{\$replaceRoot} stages to split the array
+		of candles in a document for each candle;
+	\item \code{\$addFields} and \code{\$group} stages to group candles in
+		bucket according to the desired granularity;
+	\item \code{\$project} stage to exclude unnecessary fields from
+		documents.
 \end{enumerate}
 
 The above aggregation returns the market data in the format shown in

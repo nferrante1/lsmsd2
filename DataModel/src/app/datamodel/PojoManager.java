@@ -81,7 +81,7 @@ public class PojoManager<T extends Object>
 		return getCollection(getCollectionName(), pojoClass);
 	}
 
-	//TODO: iterate in sub pojos
+	/*//TODO: iterate in sub pojos
 	protected static Bson getProjection(Class<? extends Object> clazz, boolean include, String... fields)
 	{
 		if (fields == null || fields.length == 0)
@@ -239,7 +239,7 @@ public class PojoManager<T extends Object>
 	public Bson generateDescSort(String... fields)
 	{
 		return generateSort(false, fields);
-	}
+	}*/
 	
 	protected FindIterable<T> getFindIterable(Bson filter, Bson projection, Bson sort, int skip, int limit)
 	{

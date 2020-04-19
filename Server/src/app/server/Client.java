@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.List;
 
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 
 import app.common.net.ActionRequest;
 import app.common.net.RequestMessage;
@@ -70,16 +71,16 @@ public class Client extends Thread
 			return;
 		}
 		
-//		if(reqMsg.getAction() != ActionRequest.LOGIN) {
-//			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
-//			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
-//			
-//			if(!cursor.hasNext()) {
-//				new ResponseMessage("User not authenticated.").send(outputStream);
-//				return;
-//			}
-//			authToken = cursor.next();
-//		}
+		if(reqMsg.getAction() != ActionRequest.LOGIN) {
+			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
+			
+			if(!cursor.hasNext()) {
+				new ResponseMessage("User not authenticated.").send(outputStream);
+				return;
+			}
+			authToken = cursor.next();
+		}
 		
 		
 		
@@ -203,7 +204,7 @@ public class Client extends Thread
 		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
 		PojoManager<UserInfo> manager = new PojoManager<UserInfo>(UserInfo.class, "Users");
 		PojoCursor<UserInfo> cursor = manager.findPaged(null, Projections.fields(Projections.computed("username", "$_id"), 
-				Projections.include("isAdmin"), Projections.excludeId()), PojoManager.generateAscSort(User.class, "username"), browse.getPage(), pageSize);
+				Projections.include("isAdmin"), Projections.excludeId()), Sorts.ascending("username"), browse.getPage(), pageSize);
 		List<UserInfo> users = cursor.toList();
 		return new ResponseMessage(users.toArray(new UserInfo[0]));
 	}
@@ -247,7 +248,7 @@ public class Client extends Thread
 	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
 	{
 		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
-		List<SourceInfo> sources = manager.find(PojoManager.getExcludeProjection(DataSource.class,"markets")).toList();
+		List<SourceInfo> sources = manager.find(null, Projections.fields(Projections.exclude("markets"), Projections.excludeId(), Projections.computed("name", "$_id"))).toList();
 		return new ResponseMessage(sources.toArray(new SourceInfo[0]));
 	}
 	

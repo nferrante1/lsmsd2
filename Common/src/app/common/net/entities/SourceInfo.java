@@ -1,25 +1,29 @@
 package app.common.net.entities;
 
-public class SourceInfo extends Entity {
-
-	private String _id;
+public class SourceInfo extends Entity
+{
+	private String name;
 	private boolean enabled;
 	
 	public SourceInfo() {}
 
-	public String get_id() {
-		return _id;
+	public String getName()
+	{
+		return name;
 	}
 
-	public void set_id(String _id) {
-		this._id = _id;
+	public void set_id(String name)
+	{
+		this.name = name;
 	}
 
-	public boolean isEnabled() {
+	public boolean isEnabled()
+	{
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(boolean enabled)
+	{
 		this.enabled = enabled;
 	}
 	
