@@ -112,7 +112,12 @@ trading days, is defined as follows:
 We can compute the \(\sma\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \ldots TODO \ldots
+	\item \code{\$group} stage to group candles in an array;
+	\item \code{\$addFields} using \code{\$map} operator to compute the
+		\(\sma\) on the previously created array of candles;
+	\item \code{\$unwind} to split the array in a document for each element;
+	\item \code{\$replaceRoot} and \code{\$project} to format the document
+		in the desired way.
 \end{enumerate}
 
 \subsubsection{Exponential Moving Average}
@@ -134,7 +139,12 @@ Where \(\alpha\) is a parameter chosen in the range \(\interval{0}{1}\).
 We can compute the \(\ema\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \ldots TODO \ldots
+	\item \code{\$group} stage to group candles in an array;
+	\item \code{\$addFields} using \code{\$reduce} operator to compute the
+		\(\ema\) on the previously created array of candles;
+	\item \code{\$unwind} to split the array in a document for each element;
+	\item \code{\$replaceRoot} and \code{\$project} to format the document
+		in the desired way.
 \end{enumerate}
 
 \subsubsection{Relative Strength Index}
@@ -162,12 +172,18 @@ the \(\sma\) of the decrement (\(O_t - C_t\)) in price of all falling candles in
 the last \(n\) days. \(n_U\) is the number of rising candles while \(n_D\) is
 the number of falling candles.
 
-We can compute the \(\rs\) with the following aggregation pipeline (the \(\rsi\)
-can then be computed by the server application applying the~\eqref{eq:rsi} to
-the \(\rs\) value):
+We can compute the two \(\sma\)s with the following aggregation pipeline (the
+\(\rs\) and \(\rsi\) can then be computed by the server application
+applying~\eqref{eq:rs} and~\eqref{eq:rsi}):
 
 \begin{enumerate}
-	\item \ldots TODO \ldots
+	\item \code{\$group} stage to group candles in an array;
+	\item \code{\$addFields} stage to compute the increments and decrements
+		in price for each candle;
+	\item \code{\$addFields} stage to compute the \(\sma\) of the increments
+		and decrements in price for each candle;
+	\item \code{\$unwind}, \code{\$replaceRoot} and \code{\$project} to
+		format the document in the desired way.
 \end{enumerate}
 
 \subsubsection{Momentum Indicator}
@@ -177,11 +193,16 @@ The Momentum Indicator (\(\mom\)), computed on the closing price of the candles
 days, is defined as follows:
 
 \begin{equation}\label{eq:mom}
-	\mom_n(C,t) = C_t - C_{n-t}
+	\mom_n(C,t) = C_t - C_{t-n}
 \end{equation}
 
 We can compute the \(\mom\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \ldots TODO \ldots
+	\item \code{\$group} stage to group candles in an array;
+	\item \code{\$addFields} stage to compute the difference between the
+		closing price of the trading day \(t\) and the closing price of
+		the candle at \(n\) days before;
+	\item \code{\$replaceRoot} and \code{\$project} to format the document
+		in the desired way.
 \end{enumerate}

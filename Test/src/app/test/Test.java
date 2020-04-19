@@ -21,12 +21,11 @@ public class Test
 {
 	public static void main(String[] args)
 	{
-		/*
-		 * TODO: generateFilter should work when specifying the class field name in the prefix (same for getProjection?)
-		 */
 		setupDBManager();
+		
+		
 
-		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
+		/*PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
 		PojoCursor<SourceInfo> cursor = manager.aggregate(Arrays.asList(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))));
 		while (cursor.hasNext()) {
 			SourceInfo info = cursor.next();
