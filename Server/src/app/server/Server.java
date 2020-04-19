@@ -17,7 +17,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
+import app.datamodel.pojos.User;
 
 
 public class Server {
@@ -42,9 +44,10 @@ public class Server {
 		
 		setupDBManager();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
+		
 		startServer();
 		Logger.getLogger(Server.class.getName()).exiting(Server.class.getName(), "main", args);
+		
 		
 	}
 

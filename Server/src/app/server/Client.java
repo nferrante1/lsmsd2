@@ -212,6 +212,7 @@ public class Client extends Thread
 	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
 		LoginInfo userInfo = (LoginInfo)reqMsg.getEntity(0);
+		
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
 		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
 		if (!cursor.hasNext())

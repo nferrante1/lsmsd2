@@ -1,12 +1,17 @@
 package app.client.ui.menus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.forms.UserForm;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.Entity;
+import app.common.net.entities.SourceInfo;
 
 public class UserMenu extends Menu
 {
@@ -29,7 +34,6 @@ public class UserMenu extends Menu
 	private void handleLogout(MenuEntry entry)
 	{
 		Protocol.getInstance().performLogout();
-		new LoginMenu().show();
 	}
 
 	private void handleBrowseStrategies(MenuEntry entry)
@@ -55,7 +59,14 @@ public class UserMenu extends Menu
 	
 	private void handleBrowseDataSource(MenuEntry entry)
 	{
-
+		ResponseMessage resMsg = Protocol.getInstance().browseDataSource();
+		List<SourceInfo> info = new ArrayList<SourceInfo>();
+		for(Entity entity : resMsg.getEntities())
+			info.add((SourceInfo)entity);
+		new DataSourceListMenu(info).show();
+			
+			
+		
 	}
 	
 	private void handleDeleteData(MenuEntry entry)

@@ -21,11 +21,17 @@ public class User extends StorablePojo
 		super();
 	}
 	
-	public User(String username, String password)
+	public User(String username, String password, boolean admin)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.username = username;
 		this.passwordHash = hashPassword(password);
+		this.admin = admin;
+	}
+	
+	public User(String username, String password)
+	{
+		this(username, password, false);
 	}
 
 
@@ -141,7 +147,7 @@ public class User extends StorablePojo
 
 	public void setPasswordHash(String passwordHash)
 	{
-		updateField("passwordHash",hashPassword(passwordHash));
+		updateField("passwordHash", passwordHash);
 	}
 	
 //	@BsonIgnore
