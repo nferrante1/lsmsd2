@@ -23,6 +23,12 @@ public class DataSourceListMenu extends Menu {
 	protected SortedSet<MenuEntry> getMenu()
 	{
 		ResponseMessage resMsg = Protocol.getInstance().browseDataSource();
+		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return null;
+		}
+		
 		for(Entity entity : resMsg.getEntities())
 			this.sources.add((SourceInfo)entity);
 		

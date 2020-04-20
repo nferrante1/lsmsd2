@@ -2,31 +2,52 @@ package app.client.ui.menus;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.MarketInfo;
+import app.common.net.entities.StrategyInfo;
+import app.common.net.entities.UserInfo;
 
 public class StrategyListMenu extends Menu
 {
 
-	public StrategyListMenu()
+	protected List<StrategyInfo> strategies;
+	protected String filter;
+	protected int currentPage;
+	
+	public StrategyListMenu(String filter)
 	{
 		super("All the available strategies");
+		this.filter = filter;
+		this.currentPage = 1;
 	}
 
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		//richiedere una pagina di strategie al server
-		//gestire casi di errore o se non ci sono strategie
+		ResponseMessage resMsg = Protocol.getInstance().browseStrategy(new BrowseInfo(filter, currentPage));
+		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return null;
+		}
+		
+		for(int i=0; i<resMsg.getEntityCount(); i++) {
+			strategies.add((StrategyInfo)resMsg.getEntity(i));
+		}
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
-		//per ogni strategia i trovata ...
-		menu.add(new MenuEntry(i, strategy.getName(), true, this::handleStrategySelection, strategy));
-				
+		for(StrategyInfo strategy : strategies) {
+			menu.add(new MenuEntry(i, strategy.getName(), true, this::handleStrategySelection, strategy));
+		}		
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
@@ -34,17 +55,13 @@ public class StrategyListMenu extends Menu
 
 	private void handleStrategySelection(MenuEntry entry)
 	{
-		//richiedere informazioni strategia al server
-		//stampare informazioni strategia Console.print(trategy.toString);
-		
-		currentPage = 0;
-		//new StrategyMenu(entry.getHandlerData()).show();
-		new StrategyMenu(strategy).show();
+		new StrategyMenu((StrategyInfo)entry.getHandlerData()).show();
 	}
 	
 	private void handleLoadNewPage(MenuEntry entry) 
 	{
 		currentPage++;
+		getMenu();
 		
 	}
 }
