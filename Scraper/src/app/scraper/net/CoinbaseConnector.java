@@ -43,9 +43,9 @@ public class CoinbaseConnector implements SourceConnector
 			JsonArray candle = json.getAsJsonArray();
 				return new APICandle(
 					Instant.ofEpochSecond(candle.get(0).getAsLong()),
-					candle.get(1).getAsDouble(),
-					candle.get(2).getAsDouble(),
 					candle.get(3).getAsDouble(),
+					candle.get(2).getAsDouble(),
+					candle.get(1).getAsDouble(),
 					candle.get(4).getAsDouble(),
 					candle.get(5).getAsDouble()
 				);

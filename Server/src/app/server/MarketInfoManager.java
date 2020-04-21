@@ -18,7 +18,7 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 		super(MarketInfo.class, "Sources");
 	}
 	
-	public PojoCursor<MarketInfo> getMarketInfo(String filter, int pageNumber, int perPage )
+	public PojoCursor<MarketInfo> getMarketInfo(String filter, int pageNumber, int perPage)
 	{
 		
 		return aggregate(Arrays.asList(

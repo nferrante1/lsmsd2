@@ -42,7 +42,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 				Projections.excludeId(),
 				Projections.include("ncandles")),
 			Sorts.descending("start")).next();
-		return (market == null) ? 1000 : market.getNcandles();
+		return (market == null) ? 0 : market.getNcandles();
 	}
 	
 	public void save(String marketId, List<Candle> candles)

@@ -115,23 +115,22 @@ final class Worker extends Thread
 				if (sourceCandles.isEmpty())
 					continue;
 
-				List<Candle> candles = new ArrayList<Candle>();
 				int sourceCandlesCount = sourceCandles.size();
 				int toUpsert = lastCandlesCount == 0 ? 0 : 1000 - lastCandlesCount;
-				int index = 0;
-				for (toUpsert = Math.min(toUpsert, sourceCandlesCount); toUpsert > 0; toUpsert--) {
-					APICandle c = sourceCandles.get(index);
+				toUpsert = Math.min(toUpsert, sourceCandlesCount);
+				List<Candle> candles = new ArrayList<Candle>(toUpsert);
+				for (int i = 0; i < toUpsert; i++) {
+					APICandle c = sourceCandles.get(i);
 					candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
-					index++;
 				}
 				marketDataManager.save(source.getName() + ":" + market.getId(), candles);
 
 				List<MarketData> marketDatas = new ArrayList<MarketData>();
-				int remainingCandles = sourceCandlesCount - index;
+				int remainingCandles = sourceCandlesCount - toUpsert;
 				while (remainingCandles > 0) {
-					candles = new ArrayList<Candle>();
+					candles = new ArrayList<Candle>(Math.min(remainingCandles, 1000));
 					for (int i = 0; i < Math.min(remainingCandles, 1000); i++) {
-						APICandle c = sourceCandles.get(index + i );
+						APICandle c = sourceCandles.get(toUpsert + i);
 						candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
 					}
 					marketDatas.add(new MarketData(source.getName() + ":" + market.getId(), candles));
@@ -148,7 +147,7 @@ final class Worker extends Thread
 				}
 				else
 				{
-					market.setLastCandlesCount(lastCandlesCount + index);
+					market.setLastCandlesCount(lastCandlesCount + toUpsert);
 					if(range.start == null)
 						range.start = candles.get(0).getTime();
 					range.end = candles.get(candles.size() -1).getTime();
