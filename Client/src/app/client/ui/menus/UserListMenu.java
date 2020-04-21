@@ -35,6 +35,11 @@ public class UserListMenu extends Menu
 		
 		ResponseMessage resMsg = Protocol.getInstance().browseUsers(new BrowseInfo(filter, currentPage));
 		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return null;
+		}
+		
 		for(int i=0; i<resMsg.getEntityCount(); i++) {
 			users.add((UserInfo)resMsg.getEntity(i));
 		}

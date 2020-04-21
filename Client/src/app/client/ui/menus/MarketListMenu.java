@@ -44,7 +44,12 @@ public class MarketListMenu extends Menu {
 			resMsg = Protocol.getInstance().browseMarkets(new BrowseInfo(filter, currentPage));
 		}
 		else {
-			Protocol.getInstance().browseMarketsOfDataSource(dataSource, new BrowseInfo(filter, currentPage));
+			Protocol.getInstance().browseMarketsByDataSource(dataSource, new BrowseInfo(filter, currentPage));
+		}
+		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return null;
 		}
 		
 		for(int i=0; i<resMsg.getEntityCount(); i++) {
@@ -54,7 +59,7 @@ public class MarketListMenu extends Menu {
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i=1;
 		for(MarketInfo market : markets) {
-			if(this.dataSource.equals(null)) {
+			if(!this.dataSource.equals(null)) {
 				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity() + " " + market.isSync() + " "
 						+ market.isSelectable(), this::handleConfigMarket, market));
 			}

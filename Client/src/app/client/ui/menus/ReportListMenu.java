@@ -2,34 +2,62 @@
 
 	import java.time.LocalDate;
 	import java.util.HashMap;
-	import java.util.SortedSet;
+import java.util.List;
+import java.util.SortedSet;
 	import java.util.TreeSet;
 
-	import app.client.ui.Console;
+import app.client.net.Protocol;
+import app.client.ui.Console;
 	import app.client.ui.menus.MenuEntry;
-import app.datamodel.Strategy;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.ReportInfo;
+import app.common.net.entities.StrategyInfo;
 
 public class ReportListMenu extends Menu {
 	
-	protected Strategy strategy;
+	protected StrategyInfo strategy;
+	protected List<ReportInfo> reports;
+	protected String filter;
+	protected int currentPage;
 	
-	public ReportListMenu(Strategy strategy)
+	public ReportListMenu(StrategyInfo strategy, String filter)
 	{
-		super("All the reports of this strategy");
+		super("Selected reports of this strategy");
 		this.strategy = strategy;
+		this.filter = filter;
+		this.currentPage = 1;
 	}
 
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		//richiedere una pagina di report al server
-		//gestire casi di errore o se non ci sono report
+		
+		ResponseMessage resMsg = Protocol.getInstance().browseReports(new BrowseInfo(filter, currentPage));
+		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return null;
+		}
+		
+		for(int i=0; i<resMsg.getEntityCount(); i++) {
+			reports.add((ReportInfo)resMsg.getEntity(i));
+		}
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i=1;
-		//per ogni report i trovato ...
-		menu.add(new MenuEntry(i, report.getId() + " " + report.getMarketName() + " " + report.getTimeRange() +
-				+" "+ report.getCreatorUser(), true, this::handleReportSelection, report));
+		for(ReportInfo report : reports) {
+			if(report.isCanDelete()) {
+				menu.add(new MenuEntry(i, "Market Name: " + report.getMarketName() + ", " 
+						+ "Time Range: " + report.getStart() + "-" + report.getEnd() + ", "
+						+ "you are the author!", this::handleReportSelection, report));
+			}
+			else {
+				menu.add(new MenuEntry(i, "Market Name: " + report.getMarketName() + ", " 
+						+ "Time Range: " + report.getStart() + "-" + report.getEnd() + ", "
+						+ report.getAuthor(), this::handleReportSelection, report));
+			}
+		}
 				
 		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
@@ -38,16 +66,13 @@ public class ReportListMenu extends Menu {
 
 	private void handleReportSelection(MenuEntry entry)
 	{
-		//richiedere informazioni report al server
-		//stampare informazioni report Console.print(strategy.toString);
-		
-		currentPage = 0;
-		new ReportMenu(entry.getHandlerData()).show();
+
 	}
 	
 	private void handleLoadNewPage(MenuEntry entry) 
 	{
 		currentPage++;
+		getMenu();
 		
 	}
 }

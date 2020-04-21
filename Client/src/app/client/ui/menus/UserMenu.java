@@ -40,7 +40,8 @@ public class UserMenu extends Menu
 
 	private void handleBrowseStrategies(MenuEntry entry)
 	{
-		new StrategyListMenu().show();
+		HashMap<Integer, String> response = new SearchByNameForm("Strategy Name").show();
+		new StrategyListMenu(response.get(0)).show();
 	}
 
 	private void handleAddStrategy(MenuEntry entry)

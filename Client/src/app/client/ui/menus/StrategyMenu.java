@@ -1,38 +1,50 @@
 package app.client.ui.menus;
 
+import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.UserForm;
+import app.common.net.entities.StrategyInfo;
 import app.datamodel.Strategy;
 
 public class StrategyMenu extends Menu
 {
-	protected Strategy strategy;
+	protected StrategyInfo strategy;
 
-	public StrategyMenu(Strategy strategy)
+	public StrategyMenu(StrategyInfo strategy)
 	{
-		super(strategy.getName() + " | select an action");
+		super("Strategy Name: " + strategy.getName());
 		this.strategy = strategy;
 	}
 
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
+		if(strategy.isCanDelete()) {
+			Console.println("You are the author of this strategy!");
+		}
+		else {
+			Console.println("Author: " + strategy.getAuthor());
+		}
+		
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		menu.add(new MenuEntry(1, "Browse reports", this::handleBrowseReports, this.strategy));
+		menu.add(new MenuEntry(1, "Browse reports", this::handleBrowseReports, strategy));
 		menu.add(new MenuEntry(2, "Run strategy", this::handleRunStrategy));
 		menu.add(new MenuEntry(3, "Download strategy", this::handleDownloadStrategy));
-		//Se la strategia � dell' utente if(strategy.canDelete) {
+		if(strategy.isCanDelete()) {
 			menu.add(new MenuEntry(4, "Delete strategy", true, this::handleDeleteStrategy));
-		//}
+		}
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
 
 	private void handleBrowseReports(MenuEntry entry)
 	{
-		new ReportListMenu(entry.getHandlerData()).show();
+		HashMap<Integer, String> response = new UserForm("Market Name: ").show();
+		new ReportListMenu((StrategyInfo)entry.getHandlerData(), response.get(0)).show();
 	}
 
 	private void handleRunStrategy(MenuEntry entry)
@@ -42,15 +54,11 @@ public class StrategyMenu extends Menu
 
 	private void handleDeleteStrategy(MenuEntry entry)
 	{
-		boolean confirm = Console.askConfirm("This will remove your strategy. Are you sure?");
-		if (confirm) {
-			//mandare la server la cancellazione della strategia
-		}
-		Console.newLine();
+	
 	}
 
 	private void handleDownloadStrategy(MenuEntry entry)
 	{
-		//mandare al server la richiesta di scaricamento della strategia
+
 	}
 }
