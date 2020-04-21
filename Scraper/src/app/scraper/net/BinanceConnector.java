@@ -123,7 +123,7 @@ public class BinanceConnector implements SourceConnector
 		return minutes + "m";
 	}
 
-	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end) throws InterruptedException
+	protected List<APICandle> _getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
 		rateLimit();
 		Map<String, String> options = new HashMap<String, String>();
@@ -133,7 +133,7 @@ public class BinanceConnector implements SourceConnector
 			options.put("startTime", "0");
 		else
 			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
-		options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
+		//options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
 		options.put("interval", getIntervalString(granularity));
 		options.put("limit", "1000");
 		
@@ -160,23 +160,27 @@ public class BinanceConnector implements SourceConnector
 	{
 		if (start != null && !start.isBefore(Instant.now()))
 			return new ArrayList<APICandle>();
-		Instant end = start.plusSeconds(granularity * 60 * 1000);
+		/*Instant end = start.plusSeconds(granularity * 60 * 1000);
 		if (end.isAfter(Instant.now()))
-			end = Instant.now();
-		List<APICandle> retCandles = getCandles(marketId, granularity, start, end);
+			end = Instant.now();*/
+		List<APICandle> retCandles = _getCandles(marketId, granularity, start);
 		if (retCandles == null || retCandles.isEmpty())
-			return new ArrayList<APICandle>();
+			return retCandles;
 
 		List<APICandle> candles = new ArrayList<APICandle>();
-		int maxIndex = retCandles.size() - 1;
+		if (start == null)
+			start = retCandles.get(0).getTime();
+		Instant end = retCandles.get(retCandles.size() - 1).getTime().plusSeconds(1);
 		int index = 0;
 		for (Instant curTime = start; curTime.isBefore(end); curTime = curTime.plusSeconds(granularity * 60)) {
-			APICandle curCandle = retCandles.get(Math.min(index, maxIndex));
+			APICandle curCandle = retCandles.get(index);
 			Instant curCandleTime = curCandle.getTime();
-			if (curCandleTime.isBefore(curTime) && index <= maxIndex)
-				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
-			if (curCandleTime.isAfter(curTime) || index > maxIndex) {
-				double value = index > maxIndex ? curCandle.getClose() : curCandle.getOpen();
+			if (curCandleTime.isBefore(curTime)) {
+				//throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
+				curTime = curCandleTime;
+			}
+			if (curCandleTime.isAfter(curTime)) {
+				double value = curCandle.getOpen();
 				candles.add(new APICandle(curTime, value));
 				continue;
 			}

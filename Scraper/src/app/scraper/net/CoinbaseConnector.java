@@ -129,18 +129,28 @@ public class CoinbaseConnector implements SourceConnector
 		if (end.isAfter(Instant.now()))
 			end = Instant.now();
 		List<APICandle> retCandles = getCandles(marketId, granularity, start, end);
-		if (retCandles == null || retCandles.isEmpty())
-			return new ArrayList<APICandle>();
+		if (retCandles == null)
+			return null;
+		boolean recursive = false;
+		if (retCandles.isEmpty()) {
+			retCandles = getCandles(marketId, granularity, end);
+			if (retCandles == null || retCandles.isEmpty())
+				return retCandles;
+			recursive = true;
+		}
 
 		List<APICandle> candles = new ArrayList<APICandle>();
+		end = retCandles.get(retCandles.size() - 1).getTime().plusSeconds(1);
 		int index = retCandles.size() - 1;
 		for (Instant curTime = start; curTime.isBefore(end); curTime = curTime.plusSeconds(granularity * 60)) {
-			APICandle curCandle = retCandles.get(Math.max(index, 0));
+			APICandle curCandle = retCandles.get(recursive ? 0 : index);
 			Instant curCandleTime = curCandle.getTime();
-			if (curCandleTime.isBefore(curTime) && index >= 0)
-				throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
-			if (curCandleTime.isAfter(curTime) || index < 0) {
-				double value = index < 0 ? curCandle.getClose() : curCandle.getOpen();
+			if (curCandleTime.isBefore(curTime)) {
+				//throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
+				curTime = curCandleTime;
+			}
+			if (curCandleTime.isAfter(curTime)) {
+				double value = curCandle.getOpen();
 				candles.add(new APICandle(curTime, value));
 				continue;
 			}
@@ -172,7 +182,7 @@ public class CoinbaseConnector implements SourceConnector
 			start = end.plusSeconds(1);
 		}
 		
-		return curCandles.get(curCandles.size()-1).getTime();	 
+		return curCandles.get(curCandles.size()-1).getTime();
 	} 
 	
 }

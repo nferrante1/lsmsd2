@@ -3,6 +3,7 @@ package app.scraper;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import app.datamodel.DataRangeManager;
@@ -21,6 +22,8 @@ final class Worker extends Thread
 {
 	private final DataSource source;
 	private final SourceConnector connector;
+	private final HashMap<String, Instant> waitTime = new HashMap<String, Instant>();
+	private Instant nearestWaitTime = Instant.MAX;
 	 
 	public Worker(DataSource source, SourceConnector connector)
 	{
@@ -89,52 +92,76 @@ final class Worker extends Thread
 			for(Market market: sourceMarkets) {
 				if (!market.isSyncEnabled()) {
 					disabledCount++;
-					if (disabledCount < marketsCount)
+					if (disabledCount < marketsCount) {
+						if (disabledCount + waitTime.size() == marketsCount)
+							;
 						continue;
+					}
 					System.out.println(getName() + ": All markets disabled! Exiting...");
 					return;
+				}
+				String marketId = market.getId();
+				String fullMarketId = source.getName() + ":" + marketId;
+				int marketGranularity = market.getGranularity();
+				if (waitTime.containsKey(marketId)) {
+					if (waitTime.get(marketId).isAfter(Instant.now()))
+						continue;
+					waitTime.remove(marketId);
 				}
 				
 				DataRange range = market.getRange();
 				if (range == null) {
-					range = dataRangeManager.get(source.getName() + ":" + market.getId());
+					range = dataRangeManager.get(fullMarketId);
 					market.setRange(range);
 				}
 				Instant start = range.end;
 				if (start != null)
-					start = start.plusSeconds(market.getGranularity() * 60);
+					start = start.plusSeconds(marketGranularity * 60);
 
-				List<APICandle> sourceCandles = connector.getCandles(market.getId(), market.getGranularity(), start);
+				List<APICandle> sourceCandles = connector.getCandles(marketId, marketGranularity, start);
+
+				if (sourceCandles == null)
+					continue;
+				if (sourceCandles.isEmpty()) {
+					Instant t = Instant.now().plusSeconds(marketGranularity * 60);
+					if (t.isBefore(nearestWaitTime))
+						nearestWaitTime = t;
+					waitTime.put(marketId, t);
+				}
 
 				int lastCandlesCount = market.getLastCandlesCount();
-				if (lastCandlesCount < 0) {
-					lastCandlesCount = marketDataManager.countLastCandles(source.getName() + ":" + market.getId());
-					market.setLastCandlesCount(lastCandlesCount);
-				}
-				
-				if (sourceCandles.isEmpty())
-					continue;
+				if (lastCandlesCount < 0)
+					lastCandlesCount = marketDataManager.countLastCandles(fullMarketId);
 
 				int sourceCandlesCount = sourceCandles.size();
 				int toUpsert = lastCandlesCount == 0 ? 0 : 1000 - lastCandlesCount;
 				toUpsert = Math.min(toUpsert, sourceCandlesCount);
-				List<Candle> candles = new ArrayList<Candle>(toUpsert);
-				for (int i = 0; i < toUpsert; i++) {
-					APICandle c = sourceCandles.get(i);
-					candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
+				if (toUpsert > 0) {
+					List<Candle> candles = new ArrayList<Candle>(toUpsert);
+					for (int i = 0; i < toUpsert; i++) {
+						APICandle c = sourceCandles.get(i);
+						candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
+					}
+					marketDataManager.save(fullMarketId, candles);
+					market.setLastCandlesCount(lastCandlesCount + toUpsert);
+					if(range.start == null)
+						range.start = candles.get(0).getTime();
+					range.end = candles.get(candles.size() -1).getTime();
 				}
-				marketDataManager.save(source.getName() + ":" + market.getId(), candles);
 
 				List<MarketData> marketDatas = new ArrayList<MarketData>();
 				int remainingCandles = sourceCandlesCount - toUpsert;
+				int offset = toUpsert;
+				int i = 0;
 				while (remainingCandles > 0) {
-					candles = new ArrayList<Candle>(Math.min(remainingCandles, 1000));
-					for (int i = 0; i < Math.min(remainingCandles, 1000); i++) {
-						APICandle c = sourceCandles.get(toUpsert + i);
+					List<Candle> candles = new ArrayList<Candle>(Math.min(remainingCandles, 1000));
+					for (i = 0; i < Math.min(remainingCandles, 1000); i++) {
+						APICandle c = sourceCandles.get(offset + i);
 						candles.add(new Candle(c.getTime(),c.getOpen(), c.getHigh(), c.getLow(), c.getClose(), c.getVolume()));
 					}
-					marketDatas.add(new MarketData(source.getName() + ":" + market.getId(), candles));
-					remainingCandles -= candles.size();
+					marketDatas.add(new MarketData(fullMarketId, candles));
+					remainingCandles -= i;
+					offset += i;
 				}
 				marketDataManager.save(marketDatas);
 				if(!marketDatas.isEmpty())
@@ -144,13 +171,6 @@ final class Worker extends Thread
 					if(range.start == null)
 						range.start = lastMarketData.getStart();
 					range.end = lastMarketData.getEnd();
-				}
-				else
-				{
-					market.setLastCandlesCount(lastCandlesCount + toUpsert);
-					if(range.start == null)
-						range.start = candles.get(0).getTime();
-					range.end = candles.get(candles.size() -1).getTime();
 				}
 				Thread.yield();
 				

@@ -55,4 +55,9 @@ public class APICandle
 	{
 		return volume;
 	}
+	
+	public void setTime(Instant time)
+	{
+		this.time = time;
+	}
 }
