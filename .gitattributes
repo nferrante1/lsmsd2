@@ -6,3 +6,4 @@
 .git*		export-ignore
 README.md	export-ignore
 doc		export-ignore
+drawio		export-ignore
