@@ -4,9 +4,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
@@ -15,9 +22,11 @@ import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.SourceInfo;
+import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
@@ -30,6 +39,7 @@ import app.datamodel.pojos.User;
 
 public class Client extends Thread
 {
+	private final int perPage = 20;
 	private Socket socket;
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
@@ -105,7 +115,7 @@ public class Client extends Thread
 				resMsg = handleLogout();
 			break;
 		case BROWSE_STRATEGY:
-			
+				resMsg = handleBrowseStrategy(reqMsg);
 			break;
 		case VIEW_STRATEGY:
 			
@@ -201,11 +211,10 @@ public class Client extends Thread
 
 	private ResponseMessage handleBrowseUsers(RequestMessage reqMsg) {
 		
-		int pageSize = 20;
 		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
 		PojoManager<UserInfo> manager = new PojoManager<UserInfo>(UserInfo.class, "Users");
 		PojoCursor<UserInfo> cursor = manager.findPaged(null, Projections.fields(Projections.computed("username", "$_id"), 
-				Projections.include("isAdmin"), Projections.excludeId()), Sorts.ascending("username"), browse.getPage(), pageSize);
+				Projections.include("isAdmin"), Projections.excludeId()), Sorts.ascending("username"), (browse.getPage()-1)*perPage, perPage);
 		List<UserInfo> users = cursor.toList();
 		return new ResponseMessage(users.toArray(new UserInfo[0]));
 	}
@@ -239,10 +248,10 @@ public class Client extends Thread
 	// TODO: use new [Storable]PojoManager
 	private ResponseMessage handleBrowseMarket(RequestMessage reqMsg)
 	{
-		int pageSize = 20;
+		
 		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
 		MarketInfoManager manager = new MarketInfoManager();
-		PojoCursor<MarketInfo> cursor = manager.getMarketInfo(browse.getFilter(), browse.getPage(), pageSize);
+		PojoCursor<MarketInfo> cursor = manager.getMarketInfo(browse.getFilter(), browse.getPage(), perPage);
 		List<MarketInfo> markets = cursor.toList();
 		return new ResponseMessage(markets.toArray(new MarketInfo[0]));
 	}
@@ -254,4 +263,36 @@ public class Client extends Thread
 		return new ResponseMessage(sources.toArray(new SourceInfo[0]));
 	}
 	
+	private ResponseMessage handleBrowseStrategy(RequestMessage reqMsg) 
+	{
+		BrowseInfo info = (BrowseInfo)reqMsg.getEntity();
+		
+		List<Bson> projections = new ArrayList<Bson>();
+		projections.add(Projections.excludeId());	
+		//projections.add(Projections.computed("canDelete", false));
+		
+		//Equality condition on author, if eq canDelete == true else canDelete = false
+		/*List<Document> eq = new ArrayList<Document>();
+		eq.add(new Document("if",new Document("$eq", Arrays.asList("$author",authToken.getUsername()))));
+		eq.add(new Document ("then", true));
+		eq.add(new Document ("else", false));
+		
+		List<Document> cond = new ArrayList<Document>();
+		cond.add(new Document("$cond", eq.toArray()));
+		projections.add(Projections.computed("canDelete", cond));
+		*/		
+		PojoManager<StrategyInfo> manager = new PojoManager<StrategyInfo>(StrategyInfo.class, "Strategies");
+		List<StrategyInfo> strategies = manager.find(
+				Filters.regex("name", Pattern.compile(info.getFilter(), Pattern.CASE_INSENSITIVE)), 
+				Projections.fields(projections),
+				(info.getPage()-1)*perPage,
+				perPage).toList();
+		for(StrategyInfo strategy : strategies) 
+		{
+			if(authToken.isAdmin() || authToken.getUsername() == strategy.getUsername())
+				strategy.setCanDelete(true);
+		}
+		
+		return new ResponseMessage((Entity[])strategies.toArray(new StrategyInfo[0]));
+	}
 }

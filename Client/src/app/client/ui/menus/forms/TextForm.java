@@ -84,5 +84,5 @@ public abstract class TextForm
 			return false;
 		}
 		return true;
-	}
+	}	
 }

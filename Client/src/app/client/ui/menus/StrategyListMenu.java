@@ -1,6 +1,7 @@
 package app.client.ui.menus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
@@ -11,6 +12,7 @@ import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
@@ -18,7 +20,7 @@ import app.common.net.entities.UserInfo;
 public class StrategyListMenu extends Menu
 {
 
-	protected List<StrategyInfo> strategies;
+	protected List<StrategyInfo> strategies = new ArrayList<StrategyInfo>();
 	protected String filter;
 	protected int currentPage;
 	
@@ -38,15 +40,16 @@ public class StrategyListMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
-		
-		for(int i=0; i<resMsg.getEntityCount(); i++) {
-			strategies.add((StrategyInfo)resMsg.getEntity(i));
+		strategies.clear();
+		for(Entity entity: resMsg.getEntities()) {
+			strategies.add((StrategyInfo)entity);
 		}
 
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
 		for(StrategyInfo strategy : strategies) {
 			menu.add(new MenuEntry(i, strategy.getName(), true, this::handleStrategySelection, strategy));
+			++i;
 		}		
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));

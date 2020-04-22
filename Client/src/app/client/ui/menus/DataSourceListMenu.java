@@ -12,7 +12,7 @@ import app.common.net.entities.Entity;
 import app.common.net.entities.SourceInfo;
 
 public class DataSourceListMenu extends Menu {
-	List<SourceInfo> sources;
+	List<SourceInfo> sources = new ArrayList<SourceInfo>();
 
 	DataSourceListMenu()
 	{
@@ -28,7 +28,7 @@ public class DataSourceListMenu extends Menu {
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
-		
+		sources.clear();
 		for(Entity entity : resMsg.getEntities())
 			this.sources.add((SourceInfo)entity);
 		

@@ -20,7 +20,7 @@ public class SearchByNameForm extends TextForm{
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField(searchBy,"*", this::validateUsername));
+		fields.add(new FormField(searchBy,"", /*this::validateString(searchBy)*/ null));
 		return fields;
 	}
 

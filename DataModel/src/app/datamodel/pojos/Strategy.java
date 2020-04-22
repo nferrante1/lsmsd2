@@ -19,6 +19,8 @@ public class Strategy extends StorablePojo
 	protected String username;
 	protected List<StrategyRun> runs = new ArrayList<StrategyRun>();
 	
+	public Strategy() {};
+	
 	public Strategy(String name, String username, byte[] file)
 	{
 		super(StorablePojoState.UNTRACKED);
@@ -30,11 +32,6 @@ public class Strategy extends StorablePojo
 	public void addRun(StrategyRun run)
 	{
 		runs.add(run);
-	}
-	
-	private Strategy()
-	{
-		super();
 	}
 	
 	public void setName(String name)

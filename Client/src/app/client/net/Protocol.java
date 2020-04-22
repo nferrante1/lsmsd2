@@ -99,6 +99,11 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.DELETE_USER);
 	}
+	
+	public ResponseMessage browseStrategy(BrowseInfo info)
+	{
+		return sendRequest(ActionRequest.BROWSE_STRATEGY, info);
+	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
 	{

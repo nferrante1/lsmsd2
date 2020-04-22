@@ -8,7 +8,7 @@ import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.entities.StrategyInfo;
-import app.datamodel.Strategy;
+
 
 public class StrategyMenu extends Menu
 {
@@ -27,7 +27,7 @@ public class StrategyMenu extends Menu
 			Console.println("You are the author of this strategy!");
 		}
 		else {
-			Console.println("Author: " + strategy.getAuthor());
+			Console.println("Author: " + strategy.getUsername());
 		}
 		
 		SortedSet<MenuEntry> menu = new TreeSet<>();
