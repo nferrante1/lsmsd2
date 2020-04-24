@@ -6,18 +6,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 
 public final class DBManager implements Closeable
 {
@@ -131,9 +135,50 @@ public final class DBManager implements Closeable
 	{
 		if (instance == null)
 			throw new IllegalStateException("Called getDatabase() on a uninitialized instance.");
-		if (mongoDatabase == null)
+		if (mongoDatabase == null) {
 			mongoDatabase = mongoClient.getDatabase(databaseName);
+			init();
+		}
 		return mongoDatabase;
+	}
+	
+	private void init()
+	{
+		IndexOptions indexOptions = new IndexOptions()
+			.name("authTokenTTLIndex")
+			.expireAfter(0L, TimeUnit.SECONDS);
+		Bson keys = new Document("expireTime", 1);
+		mongoDatabase.getCollection("AuthTokens").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions()
+			.name("marketIdIndex")
+			.unique(true);
+		keys = new Document("_id", 1).append("markets.id", 1);
+		mongoDatabase.getCollection("Sources").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("marketHashed");
+		keys = new Document("market", "hashed");
+		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("startIndex");
+		keys = new Document("start", 1);
+		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions()
+			.name("nameIndex")
+			.unique(true);
+		keys = new Document("name", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions()
+			.name("runIdIndex")
+			.unique(true);
+		keys = new Document("runs.id", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("reportNetProfitIndex")
+		keys = new Document("runs.report.netProfit", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 	}
 
 	@Override
