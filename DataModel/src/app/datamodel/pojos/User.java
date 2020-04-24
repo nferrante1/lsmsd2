@@ -2,11 +2,8 @@ package app.datamodel.pojos;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @CollectionName("Users")
 public class User extends StorablePojo
