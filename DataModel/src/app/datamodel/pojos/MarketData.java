@@ -1,17 +1,12 @@
 package app.datamodel.pojos;
 
 import java.time.Instant;
-import java.time.LocalTime;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
-
 
 public class MarketData extends StorablePojo
 {
@@ -21,13 +16,13 @@ public class MarketData extends StorablePojo
 	protected int ncandles;
 	protected Instant start;
 	protected List<Candle> candles = new ArrayList<Candle>();
-		
-	public MarketData() 
+
+	public MarketData()
 	{
 		super();
 	}
-	
-	public MarketData(String marketName, List<Candle> candles) 
+
+	public MarketData(String marketName, List<Candle> candles)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.market = marketName;
@@ -57,18 +52,18 @@ public class MarketData extends StorablePojo
 	{
 		return candles.get(index);
 	}
-	
+
 	public void setCandles(List<Candle> candles)
 	{
 		this.candles = candles;
 		setNcandles(candles.size());
 	}
-	
+
 	public int getNcandles() 
 	{
 		return this.ncandles;
 	}
-	
+
 	public String getMarket() 
 	{
 		return market;
@@ -93,7 +88,7 @@ public class MarketData extends StorablePojo
 	{
 		updateField("start", start);
 	}
-	
+
 	@BsonIgnore
 	public Instant getEnd()
 	{

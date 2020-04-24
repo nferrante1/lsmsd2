@@ -3,21 +3,19 @@ package app.datamodel;
 import com.mongodb.client.MongoCursor;
 
 import app.datamodel.pojos.StorablePojo;
-import app.datamodel.pojos.StorablePojoState;
 
 public class StorablePojoCursor<T extends StorablePojo> extends PojoCursor<T>
 {
-
 	public StorablePojoCursor(MongoCursor<T> cursor)
 	{
 		super(cursor);
 	}
-	
+
 	public StorablePojoCursor(PojoCursor<T> cursor)
 	{
 		super(cursor);
 	}
-	
+
 	@Override
 	public T next()
 	{
@@ -26,5 +24,4 @@ public class StorablePojoCursor<T extends StorablePojo> extends PojoCursor<T>
 			pojo.initialized();
 		return pojo;
 	}
-
 }

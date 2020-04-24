@@ -10,19 +10,16 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
 import app.datamodel.pojos.DataRange;
-import app.datamodel.pojos.MarketData;
 
 public class DataRangeManager extends PojoManager<DataRange>
 {
-
 	public DataRangeManager()
 	{
 		super(DataRange.class);
 	}
-	
+
 	public DataRange get(String marketId)
 	{
-		
 		PojoCursor<DataRange> range = aggregate(
 				Arrays.asList(
 					Aggregates.match(Filters.eq("market", marketId)),
@@ -35,5 +32,4 @@ public class DataRangeManager extends PojoManager<DataRange>
 			return range.next();
 		return new DataRange();
 	}
-
 }

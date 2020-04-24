@@ -11,12 +11,12 @@ public class DetachedPojoCursor<T extends StorablePojo> extends StorablePojoCurs
 	{
 		super(cursor);
 	}
-	
+
 	public DetachedPojoCursor(PojoCursor<T> cursor)
 	{
 		super(cursor);
 	}
-	
+
 	public T next()
 	{
 		T pojo = super.next();
@@ -24,5 +24,4 @@ public class DetachedPojoCursor<T extends StorablePojo> extends StorablePojoCurs
 			pojo.detach();
 		return pojo;
 	}
-
 }
