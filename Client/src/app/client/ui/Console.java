@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import app.client.ui.menus.MenuEntry;
 
-public class Console
+public final class Console
 {
 	private static Scanner scanner = exists() ?
 		new Scanner(System.console().reader()) : new Scanner(System.in);

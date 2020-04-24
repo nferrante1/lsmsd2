@@ -10,7 +10,7 @@ public class APICandle
 	protected double low;
 	protected double close;
 	protected double volume;
-	
+
 	public APICandle(Instant time, double open, double high, double low, double close, double volume)
 	{
 		this.time = time;
@@ -20,12 +20,12 @@ public class APICandle
 		this.close = close;
 		this.volume = volume;
 	}
-	
+
 	public APICandle(Instant time, double price)
 	{
 		this(time, price, price, price, price, 0.0);
 	}
-	
+
 	public Instant getTime()
 	{
 		return time;
@@ -55,7 +55,7 @@ public class APICandle
 	{
 		return volume;
 	}
-	
+
 	public void setTime(Instant time)
 	{
 		this.time = time;

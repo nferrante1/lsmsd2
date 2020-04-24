@@ -22,16 +22,10 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.Entity;
 import app.common.net.entities.MarketInfo;
 
-public class Client
+public final class Client
 {
 	public static void main(String[] args)
 	{
-		//ResponseMessage message= Protocol.getInstance().performLogin("user", "pass");
-		
-		//message = Protocol.getInstance().browseMarkets("ETH", 1);
-
-		//for(Entity m : message.getEntities())
-			//System.out.println(((MarketInfo) m).getId());
 		Logger.getLogger(Client.class.getName()).entering(Client.class.getName(), "main", args);
 
 		Options options = createOptions();
@@ -44,10 +38,7 @@ public class Client
 			Logger.getLogger(Client.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
 		}
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		//Configuration config = Configuration.getConfig();
-		//if (cmd == null || !cmd.hasOption("log-level"))
-			//setLogLevel(config.getLogLevel());
-		
+
 		launchCLI(args);
 	}
 

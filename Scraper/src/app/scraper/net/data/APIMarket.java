@@ -10,8 +10,7 @@ public class APIMarket
 	protected String baseCurrency;
 	@SerializedName(value = "quoteCurrency", alternate = {"quote_currency", "quoteAsset"})
 	protected String quoteCurrency;
-	
-	
+
 	private APIMarket()
 	{
 	}

@@ -30,11 +30,10 @@ public class LoginMenu extends Menu
 	{
 		ResponseMessage resMsg = Protocol.getInstance().performLogin(username, password);
 		if(!resMsg.isSuccess()) {
-			Console.print(resMsg.getErrorMsg());
-			new LoginMenu().show();
+			Console.println(resMsg.getErrorMsg());
+			return;
 		}
-		
+		Console.println("Successfully logged in as " + username);
 		new UserMenu().show();
-		
 	}
 }
