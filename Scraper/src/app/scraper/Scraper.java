@@ -1,6 +1,13 @@
 package app.scraper;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,15 +31,83 @@ public final class Scraper
 	public static void main(String[] args)
 	{
 		setupDBManager();
-		setupListener();
 
-		while(!Listener.getRunning()) {
-			createWorkers();
-			for (Worker worker: workers)
-				worker.start();
-			Listener.addWorkers(workers);
-			Listener.setRunning(true);
-			Thread.yield();
+		createWorkers();
+		for (Worker worker: workers)
+			worker.start();
+		listenForSync();
+		System.err.println("Unknown error. Stopping...");
+		for (Worker worker: workers)
+			if (worker.isAlive())
+				worker.interrupt();
+		for (Worker worker: workers)
+			try {
+				worker.join();
+			} catch (InterruptedException e) {
+				System.exit(1);
+			}
+	}
+
+	private static void listenForSync()
+	{
+		ServerSocket listeningSocket = null;
+		try {
+			listeningSocket = new ServerSocket(5656);
+			while (true) {
+				Socket socket = listeningSocket.accept();
+				InputStream is = socket.getInputStream();
+				DataInputStream dis = new DataInputStream(is);
+
+				String msg = dis.readUTF();
+				if (!msg.equals("STOP")) {
+					System.err.println("Received invalid SYNC command from server: " + msg + ".");
+					dis.close();
+					socket.close();
+					continue;
+				}
+
+				System.out.println("Stopping workers...");
+				for (Worker worker: workers)
+					worker.interrupt();
+				for (Worker worker: workers)
+					while (worker.isAlive())
+						try {
+							worker.join();
+						} catch (InterruptedException e) {
+						}
+				workers.clear();
+				System.out.println("All threads stopped.");
+
+				OutputStream os = socket.getOutputStream();
+				DataOutputStream dos = new DataOutputStream(os);
+				dos.writeUTF("ACK");
+				dos.flush();
+
+				msg = dis.readUTF();
+				if (!msg.equals("START")) {
+					System.err.println("Received invalid SYNC command from server: " + msg + ".");
+					dos.close();
+					dis.close();
+					socket.close();
+					throw new RuntimeException("Invalid message from server.");
+				}
+				dos.close();
+				dis.close();
+				socket.close();
+				System.out.println("Restarting...");
+				createWorkers();
+				for (Worker worker: workers)
+					worker.start();
+			}
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+		} finally {
+			if (listeningSocket != null);
+				try {
+					listeningSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 
@@ -43,14 +118,6 @@ public final class Scraper
 		DBManager.setUsername("root");
 		DBManager.setPassword("rootpass");
 		DBManager.setDatabase("mydb");
-	}
-
-	private static void setupListener()
-	{
-		Listener.setScraperAddress("127.0.0.1");
-		Listener.addAllowedAddress("127.0.0.1");
-		Listener.setPortNumber(99999);
-		Listener.setRunning(false);
 	}
 
 	private static void createWorkers()
