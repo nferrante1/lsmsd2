@@ -19,6 +19,8 @@ import com.google.gson.JsonParseException;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;
+import app.scraper.net.exceptions.PermanentAPIException;
+import app.scraper.net.exceptions.TemporaryAPIException;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -30,12 +32,8 @@ public class BinanceConnector implements SourceConnector
 {
 	private Retrofit retrofit;
 	private BinanceInterface apiInterface;
-	/*private int lastRequestMinute;
-	private int usedWeight;
-	private final int availableWeight = 1200;
-	private final double requestMargin = 0.25;
-	private int requestedWaitTime;*/
-	
+	private int additionalRateLimit = 0;
+
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
 		@Override
@@ -52,9 +50,8 @@ public class BinanceConnector implements SourceConnector
 				Double.parseDouble(candle.get(5).getAsString())
 				);
 		}
-		
 	}
-	
+
 	public BinanceConnector()
 	{
 		//TODO: remove the following 3 lines and client from below
@@ -66,30 +63,18 @@ public class BinanceConnector implements SourceConnector
 		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
 	}
-	
+
 	private void rateLimit() throws InterruptedException
 	{
-		Thread.sleep(3000);
-		/*LocalTime curTime = LocalTime.now();
-		int curMinute = curTime.getHour() * 60 + curTime.getMinute();
-		int remainingSeconds = 60 - curTime.getSecond();
-		if (lastRequestMinute == curMinute) {
-			double curAvailWeight = (availableWeight * (1 - requestMargin)) - usedWeight;
-			if (curAvailWeight <= 0)
-				Thread.sleep(remainingSeconds);
-			else
-				Thread.sleep((long)Math.ceil(curAvailWeight / remainingSeconds));
-		}
-		if (requestedWaitTime > 0)
-			Thread.sleep(requestedWaitTime);*/
+		Thread.sleep(3000 + additionalRateLimit);
 	}
-	
+
 	@Override
 	public List<APIMarket> getMarkets() throws InterruptedException
 	{
 		rateLimit();
 		Call<ExchangeInfo> call = apiInterface.getExchangeInfo();
-		
+
 		Response<ExchangeInfo> response;
 		try {
 			response = call.execute();
@@ -97,15 +82,12 @@ public class BinanceConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
-		/*String weight = response.headers().get("x-mbx-used-weight-1m");
-		if (weight != null)
-			usedWeight = Integer.parseInt(weight);
-		else
-			usedWeight++;*/
-		//TODO: check response code
+
+		checkResponse(response);
+
 		return response.body().getMarkets();
 	}
-	
+
 	private String getIntervalString(int minutes)
 	{
 		if (minutes == 60 * 24 * 7)
@@ -127,42 +109,56 @@ public class BinanceConnector implements SourceConnector
 	{
 		rateLimit();
 		Map<String, String> options = new HashMap<String, String>();
-		
+
 		options.put("symbol", marketId);
 		if(start == null)
 			options.put("startTime", "0");
 		else
 			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
-		//options.put("endTime", Long.toString(end.getEpochSecond() * 1000));
 		options.put("interval", getIntervalString(granularity));
 		options.put("limit", "1000");
-		
+
 		Call<List<APICandle>> call = apiInterface.getCandles(options);
-		
+
 		Response<List<APICandle>> response;
 		try {
 			response = call.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} catch (IOException | RuntimeException e) {
+			throw new TemporaryAPIException("Unexpected error.", e, 5*60*1000);
 		}
-		/*String weight = response.headers().get("x-mbx-used-weight-1m");
-		if (weight != null)
-			usedWeight = Integer.parseInt(weight);
-		else
-			usedWeight++;*/
-		//TODO: check response code
+
+		checkResponse(response);
+
 		return response.body();
 	}
 
-	
+	protected void checkResponse(Response<?> response)
+	{
+		if (response.isSuccessful())
+			return;
+		int code = response.code();
+		switch (code) {
+		case 403:
+			throw new TemporaryAPIException("WAF Limit vuiolated.", 20*60*1000);
+		case 429:
+			additionalRateLimit += 1000;
+			throw new TemporaryAPIException("Rate limit violated.", 2*60*1000);
+		case 418:
+			additionalRateLimit += 10000;
+			throw new TemporaryAPIException("Rate limit violated. Banned by the source.", 24*60*60*1000);
+		case 504:
+			throw new TemporaryAPIException("Unknown error.");
+		}
+		if (code > 399 && code < 500)
+			throw new PermanentAPIException("Malformed request.");
+		throw new TemporaryAPIException("Server error.", 5*60*1000);
+	}
+
+	@Override
 	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
 		if (start != null && !start.isBefore(Instant.now()))
 			return new ArrayList<APICandle>();
-		/*Instant end = start.plusSeconds(granularity * 60 * 1000);
-		if (end.isAfter(Instant.now()))
-			end = Instant.now();*/
 		List<APICandle> retCandles = _getCandles(marketId, granularity, start);
 		if (retCandles == null || retCandles.isEmpty())
 			return retCandles;
@@ -187,9 +183,6 @@ public class BinanceConnector implements SourceConnector
 			candles.add(curCandle);
 			index++;
 		}
-		
 		return candles;
 	}
-
-
 }

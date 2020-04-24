@@ -18,6 +18,8 @@ import com.google.gson.JsonParseException;
 
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
+import app.scraper.net.exceptions.PermanentAPIException;
+import app.scraper.net.exceptions.TemporaryAPIException;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -29,11 +31,8 @@ public class CoinbaseConnector implements SourceConnector
 {
 	private Retrofit retrofit;
 	private CoinbaseInterface apiInterface;
-	/*private long lastRequestMillis = 0;
-	private final int maxRequestsPerSecond = 3;
-	private final double requestMargin = 0.25;
-	private boolean additionalRateLimit;*/
-	
+	private int additionalRateLimit = 0;
+
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
 		@Override
@@ -50,9 +49,8 @@ public class CoinbaseConnector implements SourceConnector
 					candle.get(5).getAsDouble()
 				);
 		}
-		
 	}
-	
+
 	public CoinbaseConnector()
 	{
 		//TODO: remove the following 3 lines and the client from below
@@ -64,26 +62,19 @@ public class CoinbaseConnector implements SourceConnector
 		retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(CoinbaseInterface.class);
 	}
-	
+
 	private void rateLimit() throws InterruptedException
 	{
-		Thread.sleep(3000);
-		/*if(lastRequestMillis == 0) return;
-		long curMillis = System.currentTimeMillis();
-		double waitTime = (curMillis - lastRequestMillis) - 1/(maxRequestsPerSecond * (1 - requestMargin));
-		if (waitTime > 0)
-			Thread.sleep((long)Math.ceil(waitTime) + (additionalRateLimit ? 1000 : 0));
-		additionalRateLimit = false;
-		lastRequestMillis = curMillis;*/
+		Thread.sleep(3000 + additionalRateLimit);
 	}
 
 	@Override
 	public List<APIMarket> getMarkets() throws InterruptedException
 	{
 		rateLimit();
-		
+
 		Call<List<APIMarket>> call = apiInterface.listMarkets();
-		
+
 		Response<List<APIMarket>> response;
 		try {
 			response = call.execute();
@@ -91,23 +82,21 @@ public class CoinbaseConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
-		//TODO: check response code
 		return response.body();
-		
 	}
 
 	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end) throws InterruptedException
 	{
 		rateLimit();
-		
+
 		Map<String, String> options = new HashMap<String, String>();
-		
+
 		options.put("start", start.toString());
 		options.put("end", end.toString());
 		options.put("granularity", Integer.toString(granularity * 60));
-		
+
 		Call<List<APICandle>> call = apiInterface.getCandles(marketId, options);
-		
+
 		Response<List<APICandle>> response;
 		try {
 			response = call.execute();
@@ -115,10 +104,35 @@ public class CoinbaseConnector implements SourceConnector
 			e.printStackTrace();
 			return null;
 		}
-		//TODO: check response code
 		return response.body();
 	}
 
+	protected void checkResponse(Response<?> response)
+	{
+		if (response.isSuccessful())
+			return;
+		int code = response.code();
+		switch (code) {
+		case 400:
+			throw new PermanentAPIException("Bad Request -- Invalid request format.");
+		case 401:
+			throw new PermanentAPIException("Unauthorized -- Invalid API Key.");
+		case 403:
+			throw new PermanentAPIException("Forbidden -- You do not have access to the requested resource.");
+		case 404:
+			throw new PermanentAPIException("Not Found.");
+		case 429:
+			additionalRateLimit += 1000;
+			throw new TemporaryAPIException("Too Many Requests. Rate limit violated.", 2*60*1000);
+		case 500:
+			throw new TemporaryAPIException("Internal Server Error -- We had a problem with our server.", 5*60*1000);
+		}
+		if (code > 399 && code < 500)
+			throw new PermanentAPIException("Malformed request.");
+		throw new TemporaryAPIException("Server error.", 5*60*1000);
+	}
+
+	@Override
 	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
 		if(start == null)
@@ -157,10 +171,10 @@ public class CoinbaseConnector implements SourceConnector
 			candles.add(curCandle);
 			index--;
 		}
-		
+
 		return candles;
 	}
-	
+
 	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException
 	{
 		Instant start = Instant.ofEpochSecond(1437428220);
@@ -172,17 +186,16 @@ public class CoinbaseConnector implements SourceConnector
 			curCandles = getCandles(marketId, 1440, start, end);
 			start = end.plusSeconds(1);
 		}
-	
+
 		start = curCandles.get(curCandles.size()-1).getTime();
 		curCandles.clear();
-		
+
 		while (curCandles.size() == 0) {
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			curCandles = getCandles(marketId, granularity, start, end);
 			start = end.plusSeconds(1);
 		}
-		
+
 		return curCandles.get(curCandles.size()-1).getTime();
-	} 
-	
+	}
 }

@@ -15,16 +15,20 @@ import app.datamodel.pojos.MarketData;
 import app.scraper.net.SourceConnector;
 import app.scraper.net.data.APICandle;
 import app.scraper.net.data.APIMarket;
+import app.scraper.net.exceptions.PermanentAPIException;
+import app.scraper.net.exceptions.TemporaryAPIException;
 
 final class Worker extends Thread
 {
 	private final DataSource source;
 	private final SourceConnector connector;
+	private StorablePojoManager<DataSource> sourceManager;
 
 	public Worker(DataSource source, SourceConnector connector)
 	{
 		this.source = source;
 		this.connector = connector;
+		sourceManager = new StorablePojoManager<DataSource>(DataSource.class);
 	}
 
 	@Override
@@ -33,7 +37,9 @@ final class Worker extends Thread
 		try {
 			execute();
 		} catch (InterruptedException e) {
-			System.out.println(getName() + ": Interrupted! Exiting...");
+			System.out.println(getName() + ": Interrupted!");
+		} finally {
+			System.out.println(getName() + ": Exiting...");
 		}
 	}
 
@@ -47,7 +53,7 @@ final class Worker extends Thread
 			return;
 		}
 
-		for(APIMarket curMarket: markets) 
+		for(APIMarket curMarket: markets)
 		{
 			Market market = source.getMarket(curMarket.getId());
 			if(market == null) {
@@ -67,8 +73,7 @@ final class Worker extends Thread
 			sm.delete();
 		}
 
-		StorablePojoManager<DataSource> manager = new StorablePojoManager<DataSource>(DataSource.class);
-		manager.save(source);
+		sourceManager.save(source);
 
 		if (!source.isEnabled()) {
 			System.out.println(getName() + ": Source not enabled. Exiting...");
@@ -90,7 +95,7 @@ final class Worker extends Thread
 			return;
 		}
 
-		while(true)
+		while(!interrupted())
 			for (Market market: sourceMarkets)
 				if (market.isSyncEnabled()) {
 					DataRange range = market.getRange();
@@ -118,7 +123,28 @@ final class Worker extends Thread
 		if (start != null)
 			start = start.plusSeconds(marketGranularity * 60);
 
-		List<APICandle> sourceCandles = connector.getCandles(marketId, marketGranularity, start);
+		List<APICandle> sourceCandles;
+		try {
+			sourceCandles = connector.getCandles(marketId, marketGranularity, start);
+		} catch(TemporaryAPIException ex) {
+			System.err.println(getName() + ": " + ex.getMessage());
+			long millisToWait = ex.getMillisToWait();
+			System.out.println(getName() + ": Waiting for " + millisToWait + " as requested by source connector.");
+			Thread.sleep(millisToWait);
+			sourceCandles = null;
+		} catch(PermanentAPIException ex) {
+			System.err.println(getName() + ": " + ex.getMessage());
+			System.err.println(getName() + ": Disabling sync for market " + fullMarketId + " (may resolve the problem).");
+			market.setSync(false);
+			sourceManager.save(source);
+			sourceCandles = null;
+		} catch (InterruptedException ex) {
+			throw ex;
+		} catch (Throwable ex) {
+			System.err.println(getName() + ": " + ex.getMessage());
+			Thread.sleep(10000);
+			sourceCandles = null;
+		}
 
 		if (sourceCandles == null) // API error
 			return;
@@ -144,7 +170,7 @@ final class Worker extends Thread
 			market.setLastCandlesCount(lastCandlesCount + toUpsert);
 			if(range.start == null)
 				range.start = candles.get(0).getTime();
-			range.end = candles.get(candles.size() -1).getTime();
+			range.end = candles.get(candles.size() - 1).getTime();
 		}
 
 		List<MarketData> marketDatas = new ArrayList<MarketData>();
