@@ -1,32 +1,17 @@
 package app.datamodel;
 
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
-import org.bson.BsonNull;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
-import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.Candle;
-import app.datamodel.pojos.DataRange;
-import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.MarketData;
-import app.datamodel.pojos.StorablePojoState;
 
 public class MarketDataManager extends StorablePojoManager<MarketData>
 {
@@ -34,7 +19,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 	{
 		super(MarketData.class);
 	}
-	
+
 	public int countLastCandles(String marketId)
 	{
 		MarketData market = find(Filters.eq("market", marketId),
@@ -44,7 +29,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 			Sorts.descending("start")).next();
 		return (market == null) ? 0 : market.getNcandles();
 	}
-	
+
 	public void save(String marketId, List<Candle> candles)
 	{
 		int ncandles = candles.size();

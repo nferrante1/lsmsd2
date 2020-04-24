@@ -9,21 +9,22 @@ import java.util.ListIterator;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-public abstract class StorablePojo {
+public abstract class StorablePojo
+{
 	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
 	protected transient StorablePojoState state;
 	protected transient boolean deleted;
-	
-	public StorablePojo() 
+
+	public StorablePojo()
 	{
 		this(StorablePojoState.INIT);
 	}
-	
+
 	public StorablePojo(StorablePojoState state)
 	{
 		this.state = state;
 	}
-	
+
 	@BsonIgnore
 	public HashMap<String,Object> getUpdatedFields()
 	{
@@ -35,7 +36,7 @@ public abstract class StorablePojo {
 			return null;
 		return updatedFields;
 	}
-	
+
 	protected void updateField(String name, Object value)
 	{
 		if (isDeleted())
@@ -58,7 +59,7 @@ public abstract class StorablePojo {
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		if (Modifier.isTransient(field.getModifiers()))
 			return;
 
@@ -91,13 +92,13 @@ public abstract class StorablePojo {
 	{
 		return state;
 	}
-	
+
 	@BsonIgnore
 	protected void setState(StorablePojoState state)
 	{
 		this.state = state;
 	}
-	
+
 	private void commitSubPojos()
 	{
 		for (Field field: this.getClass().getDeclaredFields()) {
@@ -137,10 +138,9 @@ public abstract class StorablePojo {
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
-			
 		}
 	}
-	
+
 	public void commit()
 	{
 		if (isDeleted())
@@ -157,7 +157,7 @@ public abstract class StorablePojo {
 			updatedFields.clear();
 		setState(StorablePojoState.COMMITTED);
 	}
-	
+
 	public void delete()
 	{
 		if (isDeleting() || isIgnored())
@@ -169,7 +169,7 @@ public abstract class StorablePojo {
 		setState(StorablePojoState.STAGED);
 		deleted = true;
 	}
-	
+
 	public void detach()
 	{
 		if (isDeleted())
@@ -177,7 +177,7 @@ public abstract class StorablePojo {
 		updatedFields.clear();
 		setState(StorablePojoState.IGNORED);
 	}
-	
+
 	public void initialized()
 	{
 		if (!isInitializing())
@@ -212,53 +212,52 @@ public abstract class StorablePojo {
 		}
 		setState(StorablePojoState.COMMITTED);
 	}
-	
+
 	@BsonIgnore
 	public boolean isDeleted()
 	{
 		return deleted && isCommitted();
 	}
-	
+
 	@BsonIgnore
 	public boolean isDeleting()
 	{
 		return deleted && isStaged();
 	}
-	
+
 	@BsonIgnore
 	public boolean isTracked()
 	{
 		return !isInitializing() && !isIgnored() && !isUntracked() && !isDeleted();
 	}
-	
+
 	@BsonIgnore
 	public boolean isUntracked()
 	{
 		return state == StorablePojoState.UNTRACKED || state == null;
 	}
-	
+
 	@BsonIgnore
 	public boolean isIgnored()
 	{
 		return state == StorablePojoState.IGNORED;
 	}
-	
+
 	@BsonIgnore
 	public boolean isInitializing()
 	{
 		return state == StorablePojoState.INIT;
 	}
-	
+
 	@BsonIgnore
 	public boolean isStaged()
 	{
 		return state == StorablePojoState.STAGED;
 	}
-	
+
 	@BsonIgnore
 	public boolean isCommitted()
 	{
 		return state == StorablePojoState.COMMITTED;
 	}
-	
 }

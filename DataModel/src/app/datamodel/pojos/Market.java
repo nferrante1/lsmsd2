@@ -1,24 +1,10 @@
 package app.datamodel.pojos;
 
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.List;
-
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
-
-import app.datamodel.MarketDataManager;
-
-import org.bson.BsonNull;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
-
 
 @CollectionName("Sources")
 public class Market extends StorablePojo
-{	
+{
 	@PojoId
 	public String id;
 	protected String baseCurrency;
@@ -28,7 +14,7 @@ public class Market extends StorablePojo
 	protected boolean sync;
 	protected transient DataRange range;
 	protected transient int lastCandlesCount = -1;
-	
+
 	public Market()
 	{
 		super();
@@ -42,79 +28,78 @@ public class Market extends StorablePojo
 		this.quoteCurrency = quote;
 		this.granularity = 5;
 	}
-	
 
 	public String getId()
 	{
 		return id;
 	}
-	
+
 	@BsonIgnore
 	public String getMarketName()
 	{
 		return getBaseCurrency() + "/" + getQuoteCurrency();
 	}
-	
+
 	public String getBaseCurrency()
 	{
 		return baseCurrency;
 	}
-	
+
 	public String getQuoteCurrency()
 	{
 		return quoteCurrency;
 	}
-	
+
 	public int getGranularity()
 	{
 		return granularity;
 	}
-	
-	
+
 	public boolean isSelectable()
 	{
 		return selectable;
 	}
-	
+
 	@BsonIgnore
 	public boolean isSyncEnabled()
 	{
 		return sync;
 	}
-	
+
 	@BsonIgnore
-	public DataRange getRange() {
+	public DataRange getRange()
+	{
 		return range;
 	}
-	
+
 	@BsonIgnore
-	public int getLastCandlesCount() {
+	public int getLastCandlesCount()
+	{
 		return lastCandlesCount;
 	}
-	
+
 	@BsonIgnore
 	public void setRange(DataRange range)
 	{
 		this.range = range;
 	}
-	
+
 	@BsonIgnore
 	public void setLastCandlesCount(int lastCandlesCount)
 	{
 		this.lastCandlesCount = lastCandlesCount;
 	}
-	
-	
+
 	public void setBaseCurrency(String baseCurrency)
 	{
 		updateField("baseCurrency", baseCurrency);
 	}
-	
+
 	public void setQuoteCurrency(String quoteCurrency)
 	{
 		updateField("quoteCurrency", quoteCurrency);
 	}
-	
+
 	public boolean isSync()
 	{
 		return sync;

@@ -3,10 +3,9 @@ package app.datamodel;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
@@ -15,13 +14,10 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
-import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.PojoId;
 import app.datamodel.pojos.StorablePojo;
 
@@ -31,43 +27,43 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	{
 		protected List<Bson> filters;
 		protected Bson update;
-		
+
 		public UpdateInfo(Bson update, List<Bson> filters)
 		{
 			this.update = update;
 			this.filters = filters;
 		}
-		
+
 		public UpdateInfo(Bson update)
 		{
 			this(update, new ArrayList<Bson>());
 		}
-		
+
 		public UpdateInfo()
 		{
 			this(null);
 		}
-		
+
 		public boolean hasUpdate()
 		{
 			return update != null;
 		}
-		
+
 		public Bson getUpdate()
 		{
 			return update;
 		}
-		
+
 		public List<Bson> getFilters()
 		{
 			return filters;
 		}
-		
+
 		public boolean hasFilters()
 		{
 			return filters.size() > 0;
 		}
-		
+
 		public void addFilter(Bson filter)
 		{
 			filters.add(filter);
@@ -78,18 +74,18 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	{
 		protected List<AbstractUpdateNode> children = new ArrayList<AbstractUpdateNode>();
 		protected String prefix = "";
-		
+
 		public AbstractUpdateNode(String prefix)
 		{
 			if (prefix != null)
 				this.prefix = prefix;
 		}
-		
+
 		public AbstractUpdateNode()
 		{
 			this(null);
 		}
-		
+
 		public void setPrefix(String prefix)
 		{
 			if (this.prefix.equals(prefix))
@@ -98,80 +94,78 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			for (AbstractUpdateNode child: children)
 				child.addToPrefix(getPrefix());
 		}
-		
+
 		public void addToPrefix(String prePrefix)
 		{
 			setPrefix(prePrefix + getFieldName());
 		}
-		
+
 		private String getPrefix(boolean withDot)
 		{
 			if (withDot)
 				return (prefix == null || prefix.isEmpty()) ? "" : prefix + ".";
 			return prefix;
 		}
-		
+
 		public String getPrefix()
 		{
 			return getPrefix(true);
 		}
-		
+
 		public String getFieldName()
 		{
 			return getPrefix(false);
 		}
-		
+
 		public void addChild(AbstractUpdateNode child)
 		{
 			children.add(child);
-			//child.addToPrefix(getPrefix());
-			
 		}
-		
+
 		abstract public UpdateInfo getUpdate();
 	}
-	
+
 	protected class UpdateNode extends AbstractUpdateNode
 	{
 		protected Bson filter;
 		protected HashMap<String, Object> changes = new HashMap<String, Object>();
-		
+
 		public UpdateNode(String prefix, Bson filter)
 		{
 			super(prefix);
 			this.filter = filter;
 		}
-		
+
 		public UpdateNode(Bson filter)
 		{
 			this(null, filter);
 		}
-		
+
 		public UpdateNode(String prefix)
 		{
 			this(prefix, null);
 		}
-		
+
 		public UpdateNode()
 		{
 			super();
 		}
-		
+
 		public void addChange(String field, Object value)
 		{
 			changes.put(field, value);
 		}
-		
+
 		public void setFilter(Bson filter)
 		{
 			this.filter = filter;
 		}
-		
+
 		public Bson getFilter()
 		{
 			return filter;
 		}
-		
+
 		public UpdateInfo getUpdate()
 		{
 			List<Bson> updateList = new ArrayList<Bson>();
@@ -204,29 +198,29 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			return ui;
 		}
 	}
-	
+
 	protected class ListUpdateNode extends AbstractUpdateNode
 	{
 		protected List<StorablePojo> pushList;
 		protected List<StorablePojo> pullList;
-		
+
 		public ListUpdateNode(String prefix, List<StorablePojo> pushList, List<StorablePojo> pullList)
 		{
 			super(prefix);
 			this.pushList = pushList;
 			this.pullList = pullList;
 		}
-		
+
 		public ListUpdateNode(List<StorablePojo> pushList, List<StorablePojo> pullList)
 		{
 			this(null, pushList, pullList);
 		}
-		
+
 		public ListUpdateNode()
 		{
 			this(null, new ArrayList<StorablePojo>(), new ArrayList<StorablePojo>());
 		}
-		
+
 		public void addPush(StorablePojo pojo)
 		{
 			pushList.add(pojo);
@@ -236,7 +230,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		{
 			pullList.add(pojo);
 		}
-		
+
 		public UpdateInfo getUpdate()
 		{
 			if (!pullList.isEmpty()) {
@@ -280,35 +274,21 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			return ui;
 		}
 	}
-	
-/******************************************************************************/
-	private boolean nested;
 
-	protected boolean isNested()
-	{
-		return nested;
-	}
-	
+/******************************************************************************/
+
 	public StorablePojoManager(Class<T> pojoClass)
 	{
 		super(pojoClass);
-		for (Field field: pojoClass.getDeclaredFields()) {
-			field.setAccessible(true);
-			if (!Modifier.isTransient(field.getModifiers()) && field.isAnnotationPresent(BsonId.class))
-				return;
-		}
-		nested = true;
 	}
-	
+
 	public StorablePojoManager(Class<T> pojoClass, String collectionName)
 	{
 		super(pojoClass, collectionName);
 	}
-	
+
 	public void save(T pojo)
 	{
-		if (isNested())
-			throw new UnsupportedOperationException("Called save() on a nested Pojo.");
 		if (pojo.isDeleted())
 			throw new IllegalStateException("Trying to save a deleted Pojo.");
 		if (pojo.isInitializing() || pojo.isIgnored())
@@ -320,34 +300,9 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		else if (pojo.isStaged() || pojo.isCommitted())
 			update(pojo);
 	}
-	
-	/*public void save(StorablePojo parent, T pojo, String fieldName)
-	{
-		save(getIdFilter(parent), pojo, fieldName);
-	}
 
-	public void save(Bson parentFilter, T pojo, String fieldName)
-	{
-		if (!isNested()) {
-			save(pojo);
-			return;
-		}
-		if (pojo.isDeleted())
-			throw new IllegalStateException("Trying to save a deleted Pojo.");
-		if (pojo.isInitializing() || pojo.isIgnored()) //FIXME: nested pojos are detached if obtained with find
-			throw new IllegalStateException("Trying to save a Pojo in an initializing/ignored state.");
-		if (pojo.isUntracked())
-			insert(pojo);
-		else if (pojo.isDeleting())
-			delete(pojo);
-		else if (pojo.isStaged() || pojo.isCommitted())
-			update(parentFilter, pojo, fieldName);
-	}*/
-	
 	public void save(List<T> pojos)
 	{
-		if (isNested())
-			throw new UnsupportedOperationException("Called save() on a nested Pojo.");
 		List<T> toDelete = new ArrayList<T>();
 		List<T> toUpdate = new ArrayList<T>();
 		List<T> toInsert = new ArrayList<T>();
@@ -372,38 +327,28 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		if (!toDelete.isEmpty())
 			delete(toDelete);
 	}
-	
+
 	public void save(@SuppressWarnings("unchecked") T... pojos)
 	{
-		save(varargsToList(pojos));
+		save(Arrays.asList(pojos));
 	}
-	
-	protected List<T> varargsToList(@SuppressWarnings("unchecked") T... pojos)
-	{
-		List<T> pojoList = new ArrayList<T>();
-		if (pojos == null || pojos.length == 0)
-			return pojoList;
-		for (T pojo: pojos)
-			pojoList.add(pojo);
-		return pojoList;
-	}
-	
+
 	protected void commit(T pojo)
 	{
 		pojo.commit();
 	}
-	
+
 	protected void commit(List<T> pojos)
 	{
 		for (T pojo: pojos)
 			commit(pojo);
 	}
-	
+
 	protected void commit(@SuppressWarnings("unchecked") T... pojos)
 	{
-		commit(varargsToList(pojos));
+		commit(Arrays.asList(pojos));
 	}
-	
+
 	protected void insert(T pojo)
 	{
 		getCollection().insertOne(pojo);
@@ -415,12 +360,12 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		getCollection().insertMany(pojos);
 		commit(pojos);
 	}
-	
+
 	protected void insert(@SuppressWarnings("unchecked") T... pojos)
 	{
-		insert(varargsToList(pojos));
+		insert(Arrays.asList(pojos));
 	}
-	
+
 	public static <X extends StorablePojo> Bson getIdFilter(X pojo, String prefix)
 	{
 		if (pojo == null)
@@ -468,7 +413,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		return filters.size() == 1 ? filters.get(0) : Filters.and(filters);
 	}
-	
+
 	public static <X extends StorablePojo> Bson getIdFilter(X pojo)
 	{
 		if (pojo == null)
@@ -498,39 +443,39 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		throw new UnsupportedOperationException("Specified Pojo does not define a BsonId.");
 	}
-	
+
 	protected void delete(T pojo)
 	{
 		getCollection().deleteOne(getIdFilter(pojo));
 		commit(pojo);
 	}
-	
+
 	protected void delete(List<T> pojos)
 	{
 		for (T pojo: pojos)
 			delete(pojo);
 	}
-	
+
 	protected void delete(@SuppressWarnings("unchecked") T... pojos)
 	{
-		delete(varargsToList(pojos));
+		delete(Arrays.asList(pojos));
 	}
-	
+
 	protected UpdateNode getUpdateNode(StorablePojo pojo)
 	{
 		return getUpdateNode(pojo, null);
 	}
-	
+
 	protected UpdateNode getUpdateNode(StorablePojo pojo, String initialPrefix)
 	{
 		return getUpdateNode(pojo, initialPrefix, 0);
 	}
-	
+
 	protected UpdateNode getUpdateNode(StorablePojo pojo, int level)
 	{
 		return getUpdateNode(pojo, null, level);
 	}
-	
+
 	protected UpdateNode getUpdateNode(StorablePojo pojo, String initialPrefix, int level)
 	{
 		UpdateNode node = new UpdateNode(initialPrefix);
@@ -590,7 +535,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		return node;
 	}
-	
+
 	protected ListUpdateNode getListUpdateNode(List<? extends StorablePojo> pojos, int fieldNum, int level)
 	{
 		ListUpdateNode node = new ListUpdateNode();
@@ -616,7 +561,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		return node;
 	}
-	
+
 	protected void update(T pojo)
 	{
 		UpdateNode updateNode = getUpdateNode(pojo);
@@ -634,87 +579,42 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		commit(pojo);
 	}
-	
-	/*protected void update(StorablePojo parent, T pojo, String prefix)
-	{
-		update(getIdFilter(parent), pojo, prefix);
-	}
 
-	protected void update(Bson parentFilter, T pojo, String prefix)
-	{
-		UpdateNode updateNode = getUpdateNode(pojo, prefix + ".$");
-		UpdateInfo update = updateNode.getUpdate();
-		Bson filter;
-		if (parentFilter == null)
-			filter = getIdFilter(pojo, prefix);
-		else
-			filter = Filters.and(parentFilter, getIdFilter(pojo, prefix));
-		while (update != null && update.hasUpdate()) {
-			if (update.hasFilters()) {
-				UpdateOptions options = new UpdateOptions();
-				options.arrayFilters(update.getFilters());
-				getCollection().updateOne(filter, update.getUpdate(), options);
-			} else {
-				getCollection().updateOne(filter, update.getUpdate());
-			}
-			update = updateNode.getUpdate();
-		}
-		commit(pojo);
-	}*/
-	
 	protected void update(List<T> pojos)
 	{
 		for (T pojo: pojos)
 			update(pojo);
 	}
-	
+
 	protected void update(@SuppressWarnings("unchecked") T... pojos)
 	{
-		update(varargsToList(pojos));
+		update(Arrays.asList(pojos));
 	}
-	
+
 	@Override
 	public StorablePojoCursor<T> find(Bson filter, Bson projection, int skip, int limit)
 	{
 		PojoCursor<T> cursor = super.find(filter, projection, skip, limit);
-		if (isNested())
-			return new DetachedPojoCursor<T>(cursor);
 		return new StorablePojoCursor<T>(cursor);
 	}
-	
+
 	public boolean isPresent(T pojo)
 	{
 		return isPresent(getIdFilter(pojo));
 	}
-	
+
 	public boolean isPresent(Bson filter)
 	{
-		if (isNested())
-			throw new IllegalStateException("Can not check presence of a nested Pojo just by having it.");
 		return count(filter) == 1;
 	}
-	
-	public boolean isPresent(Bson parentFilter, T pojo, String prefix)
-	{
-		if (!isNested())
-			return isPresent(pojo);
-		if (parentFilter == null)
-			return count(getIdFilter(pojo, prefix)) == 1;
-		return count(Filters.and(parentFilter, getIdFilter(pojo, prefix))) == 1;
-	}
-	
-	public boolean isPresent(StorablePojo parent, T pojo, String prefix)
-	{
-		return isPresent(getIdFilter(parent), pojo, prefix);
-	}
-	
+
 	@Override
 	public DetachedPojoCursor<T> aggregate(List<Bson> pipeline)
 	{
 		PojoCursor<T> cursor = super.aggregate(pipeline);
 		return new DetachedPojoCursor<T>(cursor);
 	}
-	
+
 	public void push(T pojo, String fieldName, List<? extends StorablePojo> items)
 	{
 		try {
@@ -738,7 +638,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		getCollection().updateOne(getIdFilter(pojo), Updates.push(fieldName, item));
 	}
-	
+
 	public void pull(T pojo, String fieldName, List<? extends StorablePojo> items)
 	{
 		try {
@@ -750,7 +650,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 		getCollection().updateOne(getIdFilter(pojo), Updates.pullAll(fieldName, items));
 	}
-	
+
 	public void pull(T pojo, String fieldName, StorablePojo item)
 	{
 		try {

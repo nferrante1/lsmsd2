@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-
 @CollectionName("MarketData")
 public class Candle extends StorablePojo
 {
@@ -21,7 +20,7 @@ public class Candle extends StorablePojo
 	protected double close;
 	@BsonProperty("v")
 	protected double volume;
-	
+
 	public Candle(Instant time, double open, double high, double low, double close, double volume)
 	{
 		super(StorablePojoState.UNTRACKED);
@@ -32,12 +31,12 @@ public class Candle extends StorablePojo
 		this.close = close;
 		this.volume = volume;
 	}
-	
+
 	public Candle()
 	{
 		super();
 	}
-	
+
 	public void setTime(Instant time)
 	{
 		updateField("time", time);

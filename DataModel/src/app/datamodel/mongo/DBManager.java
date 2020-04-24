@@ -19,10 +19,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-public class DBManager implements Closeable
+public final class DBManager implements Closeable
 {
 	private static DBManager instance;
-	
+
 	private static String hostname;
 	private static int port;
 	private static String username;
@@ -30,7 +30,7 @@ public class DBManager implements Closeable
 	private static String databaseName;
 	private static List<Codec<?>> codecs;
 	private static HashMap<String, String> options;
-	
+
 	private MongoClient mongoClient;
 	private MongoDatabase mongoDatabase;
 
@@ -51,14 +51,8 @@ public class DBManager implements Closeable
 		if (port > 0 && port < 65536)
 			sb.append(":" + port);
 
-		boolean customDbName = databaseName != null && !databaseName.isEmpty();
-		//if (customDbName)
-		//	sb.append("/" + databaseName);
-
 		if (options != null && !options.isEmpty()) {
-		//	if (!customDbName)
-				sb.append("/");
-			sb.append("?");
+			sb.append("/?");
 			for (Map.Entry<String, String> option: options.entrySet())
 				sb.append(option.getKey() + "=" + option.getValue() + "&");
 			sb.deleteCharAt(sb.length() - 1);
@@ -68,7 +62,7 @@ public class DBManager implements Closeable
 		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(/*CodecRegistries.fromCodecs(codecs),*/pojoCodecRegistry)).build();
 		mongoClient = MongoClients.create(settings);
 
-		if (!customDbName)
+		if (databaseName == null || databaseName.isEmpty())
 			databaseName = "admin";
 	}
 
@@ -76,63 +70,63 @@ public class DBManager implements Closeable
 	{
 		DBManager.hostname = hostname;
 	}
-	
+
 	public static synchronized void setPort(int port)
 	{
 		DBManager.port = port;
 	}
-	
+
 	public static synchronized void setUsername(String username)
 	{
 		DBManager.username = username;
 	}
-	
+
 	public static synchronized void setPassword(String password)
 	{
 		DBManager.password = password;
 	}
-	
+
 	public static synchronized void setDatabase(String databaseName)
 	{
 		DBManager.databaseName = databaseName;
 	}
-	
+
 	public static synchronized void setOption(String key, String value)
 	{
 		if (options == null)
 			options = new HashMap<String, String>();
 		options.put(key, value);
 	}
-	
+
 	public static synchronized void setOption(String key, int value)
 	{
 		setOption(key, Integer.toString(value));
 	}
-	
+
 	public static synchronized void setOption(String key, boolean value)
 	{
 		setOption(key, Boolean.toString(value));
 	}
-	
+
 	public static synchronized <E extends Enum<E>> void setOption(String key, E value)
 	{
 		setOption(key, value.toString());
 	}
-	
+
 	public static synchronized void addCodec(Codec<?> codec)
 	{
 		if (codecs == null)
 			codecs = new ArrayList<Codec<?>>();
 		codecs.add(codec);
 	}
-	
+
 	public static synchronized DBManager getInstance()
 	{
 		if (instance == null)
 			instance = new DBManager();
 		return instance;
 	}
-	
+
 	synchronized public MongoDatabase getDatabase()
 	{
 		if (instance == null)
@@ -141,7 +135,7 @@ public class DBManager implements Closeable
 			mongoDatabase = mongoClient.getDatabase(databaseName);
 		return mongoDatabase;
 	}
-	
+
 	@Override
 	public synchronized void close()
 	{
