@@ -3,6 +3,7 @@ package app.server;
 
 
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -17,15 +18,15 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.mongodb.client.model.Filters;
+
 import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.User;
 
 
-public class Server {
-	
-	
-	
+public class Server
+{
 	private static int port = 8888;
 
 	public static void main(String[] args)
@@ -41,14 +42,65 @@ public class Server {
 		} catch (ParseException ex) {
 			Logger.getLogger(Server.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
 		}
-		
+
 		setupDBManager();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		
+
+		createAdmin();
+
 		startServer();
 		Logger.getLogger(Server.class.getName()).exiting(Server.class.getName(), "main", args);
-		
-		
+	}
+
+	private static void createAdmin()
+	{
+		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
+		if (userManager.estimatedCount() > 0 || userManager.count() > 0)
+			return;
+		Scanner scanner = System.console() != null ?
+		new Scanner(System.console().reader()) : new Scanner(System.in);
+		System.out.println("*** CREATE ADMIN USER ***");
+		System.out.println();
+		String username = null;
+		while (username == null) {
+			System.out.print("USERNAME [admin]: ");
+			System.out.flush();
+			username = scanner.nextLine();
+			username.trim();
+			if (username.isBlank()) {
+				username = "admin";
+				break;
+			}
+			if (!username.matches("^[A-Za-z0-9]{3,32}$")) {
+				System.out.println("Invalid username.");
+				username = null;
+				continue;
+			}
+		}
+		String password = null;
+		while (password == null) {
+			System.out.print("PASSWORD: ");
+			System.out.flush();
+			if (System.console() == null)
+				password = scanner.nextLine();
+			else
+				password = new String(System.console().readPassword());
+			if (password.isBlank()) {
+				System.out.println("Invalid password.");
+				password = null;
+				continue;
+			}
+			if (password.length() < 8) {
+				System.out.println("Password must be at least 8 chars long.");
+				password = null;
+				continue;
+			}
+		}
+		User admin = new User(username, password, true);
+		userManager.save(admin);
+		System.out.println();
+		System.out.println("*** ADMIN '" + username + "' CREATED ***");
+		System.out.println();
 	}
 
 	private static void startServer()

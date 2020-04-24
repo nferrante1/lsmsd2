@@ -241,7 +241,12 @@ public class PojoManager<T extends Object>
 		return count(null);
 	}
 
-	protected long count(Bson filter)
+	public long estimatedCount()
+	{
+		return getCollection().estimatedDocumentCount();
+	}
+
+	public long count(Bson filter)
 	{
 		if (filter == null)
 			return getCollection().countDocuments();
