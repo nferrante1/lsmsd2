@@ -11,16 +11,21 @@ import java.util.function.Function;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
+import app.client.ui.menus.forms.ConfigMarketForm;
+import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
 import app.common.net.entities.MarketInfo;
+import app.common.net.entities.SourceInfo;
+import app.common.net.entities.StrategyInfo;
 
 
 public class MarketListMenu extends Menu {
 	
-	protected List<MarketInfo> markets;
+	protected List<MarketInfo> markets = new ArrayList<MarketInfo>();
 	protected String filter;
-	protected String dataSource;
+	protected Entity entity;
 	protected int currentPage;
 	
 	public MarketListMenu(String filter)
@@ -28,10 +33,10 @@ public class MarketListMenu extends Menu {
 		this(filter, null);
 	}
 	
-	public MarketListMenu(String filter, String dataSource)
+	public MarketListMenu(String filter, Entity entity)
 	{
 		super("The list of all markets:");
-		this.dataSource = dataSource;
+		this.entity = entity;
 		this.filter = filter;	
 		this.currentPage = 1;
 	}
@@ -40,11 +45,15 @@ public class MarketListMenu extends Menu {
 	protected SortedSet<MenuEntry> getMenu()
 	{
 		ResponseMessage resMsg;
-		if(this.dataSource  == null) {
+		if(this.entity instanceof StrategyInfo && this.entity != null) {
 			resMsg = Protocol.getInstance().browseMarkets(new BrowseInfo(filter, currentPage));
 		}
 		else {
-			Protocol.getInstance().browseMarketsByDataSource(dataSource, new BrowseInfo(filter, currentPage));
+			HashMap<String, String> filters = new HashMap<String,String>();
+			SourceInfo dataSource = (SourceInfo) entity;
+			filters.put("dataSource", dataSource.getName());
+			filters.put("filter", filter);
+			resMsg = Protocol.getInstance().browseMarkets(new BrowseInfo(filters, currentPage));
 		}
 		
 		if(!resMsg.isSuccess()) {
@@ -52,19 +61,20 @@ public class MarketListMenu extends Menu {
 			return null;
 		}
 		
-		for(int i=0; i<resMsg.getEntityCount(); i++) {
-			markets.add((MarketInfo)resMsg.getEntity(i));
+		markets.clear();
+		for(Entity entity: resMsg.getEntities()) {
+			markets.add((MarketInfo)entity);
 		}
 		
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i=1;
 		for(MarketInfo market : markets) {
-			if(!this.dataSource.equals(null)) {
+			if(this.entity instanceof SourceInfo && this.entity != null) {
 				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity() + " " + market.isSync() + " "
 						+ market.isSelectable(), this::handleConfigMarket, market));
 			}
 			else {
-				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity(), this::handleConfigMarket, market));
+				menu.add(new MenuEntry(i, market.getId() + " " + market.getGranularity(), this::handleSelectMarket, market));
 			}
 		}
 				
@@ -77,11 +87,25 @@ public class MarketListMenu extends Menu {
 	
 	private void handleConfigMarket(MenuEntry entry)
 	{
-		//richiedere informazioni market al server
-		//stampare informazioni market Console.print(strategy.toString);
-		
 		currentPage = 1;
-		new ConfigMarketForm(entry.getHandlerData()).show();
+		MarketInfo market = (MarketInfo) entry.getHandlerData();
+		HashMap<Integer, String> response = new ConfigMarketForm().show();
+		market.setGranularity(Integer.parseInt(response.get(0)));
+		market.setSelectable(Boolean.parseBoolean(response.get(1)));
+		market.setSync(Boolean.parseBoolean(response.get(2)));
+		
+		ResponseMessage resMsg = Protocol.getInstance().configMarket(market);
+		if(!resMsg.isSuccess()) {
+			Console.print(resMsg.getErrorMsg());
+		}
+		else {
+			Console.println("Market correctly configured!");
+		}
+	}
+	
+	private void handleSelectMarket(MenuEntry entry)
+	{
+		
 	}
 	
 	

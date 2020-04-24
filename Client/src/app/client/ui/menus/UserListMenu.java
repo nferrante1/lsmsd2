@@ -1,6 +1,7 @@
 package app.client.ui.menus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedSet;
@@ -11,7 +12,9 @@ import app.client.ui.Console;
 import app.client.ui.menus.MenuEntry;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
 import app.common.net.entities.MarketInfo;
+import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 
 public class UserListMenu extends Menu
@@ -19,7 +22,7 @@ public class UserListMenu extends Menu
 	protected String filter;
 	protected int currentPage;
 	
-	protected List<UserInfo> users;
+	protected List<UserInfo> users = new ArrayList<UserInfo>();;
 
 	public UserListMenu(String filter)
 	{
@@ -39,9 +42,9 @@ public class UserListMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
-		
-		for(int i=0; i<resMsg.getEntityCount(); i++) {
-			users.add((UserInfo)resMsg.getEntity(i));
+		users.clear();
+		for(Entity entity: resMsg.getEntities()) {
+			users.add((UserInfo)entity);
 		}
 		
 		SortedSet<MenuEntry> menu = new TreeSet<>();

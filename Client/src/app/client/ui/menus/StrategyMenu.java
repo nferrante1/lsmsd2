@@ -54,7 +54,7 @@ public class StrategyMenu extends Menu
 
 	private void handleDeleteStrategy(MenuEntry entry)
 	{
-	
+		Protocol.getInstance().deleteStrategy((StrategyInfo)entry.getHandlerData());
 	}
 
 	private void handleDownloadStrategy(MenuEntry entry)

@@ -50,6 +50,6 @@ public class DataSourceMenu extends Menu
 	private void handleBrowseMarket(MenuEntry entry)
 	{
 		HashMap<Integer, String> response = new SearchByNameForm("MarketName").show();
-		new MarketListMenu(response.get(0), dataSource.getName());
+		new MarketListMenu(response.get(0), dataSource);
 	}
 }

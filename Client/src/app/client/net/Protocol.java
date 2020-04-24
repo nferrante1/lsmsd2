@@ -12,7 +12,10 @@ import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.Entity;
 import app.common.net.entities.LoginInfo;
+import app.common.net.entities.MarketInfo;
+import app.common.net.entities.ReportInfo;
 import app.common.net.entities.SourceInfo;
+import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 
 public class Protocol implements AutoCloseable
@@ -95,7 +98,7 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.BROWSE_MARKET, browseInfo);
 	}
-
+	
 	public ResponseMessage browseDataSource() 
 	{
 		return sendRequest(ActionRequest.BROWSE_DATA_SOURCE);
@@ -129,6 +132,24 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage browseStrategy(BrowseInfo info)
 	{
 		return sendRequest(ActionRequest.BROWSE_STRATEGY, info);
+	}
+	
+	public ResponseMessage deleteStrategy(StrategyInfo info)
+	{
+		return sendRequest(ActionRequest.DELETE_STRATEGY);
+	}
+	
+	public ResponseMessage browseReports(BrowseInfo info)
+	{
+		return sendRequest(ActionRequest.BROWSE_REPORT, info);
+	}
+	
+	public ResponseMessage deleteReport(ReportInfo info) {
+		return sendRequest(ActionRequest.DELETE_REPORT, info);
+	}
+	
+	public ResponseMessage configMarket(MarketInfo info) {
+		return sendRequest(ActionRequest.CONFIG_MARKET, info);
 	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)

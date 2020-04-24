@@ -14,7 +14,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import app.client.config.Configuration;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.LoginMenu;
