@@ -30,17 +30,18 @@ the TTL expires).
 \subsection{Sources}
 
 We need to get a source, with all the markets, or a single market inside a
-source. The following compound index can support both queries:
+source. The following \standout{compound unique} index can support both queries:
 
 \begin{lstlisting}[language=json]
-{"_id": 1, "markets.id": 1}
+{"_id": 1, "markets.id": 1}, {unique: true}
 \end{lstlisting}
 
 We may exploit the \mongodb's index intersection feature to support the query
 that gets a single market, but since there is no need to get all the markets
 with a specific \code{id} from all sources (we always get a specific market in a
 specific source), we prefer to define a compound index in order to save
-\mongodb{} the need to access two indexes to perform the query.
+\mongodb{} the need to access two indexes to perform the query. Moreover, this
+index enforces the uniqueness of the combination of the two fields.
 
 \subsection{MarketData}
 
