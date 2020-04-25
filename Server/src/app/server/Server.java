@@ -1,7 +1,5 @@
 package app.server;
 
-
-
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -18,12 +16,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.mongodb.client.model.Filters;
-
 import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.User;
-
 
 public class Server
 {
@@ -106,10 +101,10 @@ public class Server
 	private static void startServer()
 	{
 		Logger.getLogger(Server.class.getName()).entering(Server.class.getName(), "startServer");
-		ClientPool pool = null;
+		RequestHandlerPool pool = null;
 		try {
 			Logger.getLogger(Server.class.getName()).info("Starting server...");
-			pool = new ClientPool(port);
+			pool = new RequestHandlerPool(port);
 			Thread thread = new Thread(pool);
 			thread.start();
 			thread.join();

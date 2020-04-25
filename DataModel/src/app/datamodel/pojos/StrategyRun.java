@@ -5,6 +5,10 @@ import java.util.List;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.annotations.PojoId;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("Strategies")
 public class StrategyRun extends StorablePojo
 {

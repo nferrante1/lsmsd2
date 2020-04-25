@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import app.common.net.ActionRequest;
 import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
@@ -17,6 +16,7 @@ import app.common.net.entities.ReportInfo;
 import app.common.net.entities.SourceInfo;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
+import app.common.net.enums.ActionRequest;
 
 public class Protocol implements AutoCloseable
 {

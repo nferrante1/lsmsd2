@@ -1,8 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>DataModel</groupId>
+	<groupId>Lsmsd2</groupId>
 	<artifactId>DataModel</artifactId>
 	<version>1.0.0</version>
+	<name>DataModel</name>
+	<packaging>jar</packaging>
+	<description>DataModel access library for task 2 application for the course of Large Scale and Multi-Structured Databases (Computer Engineering, UNIPI).</description>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -19,7 +22,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
-			<version>3.12.1</version>
+			<version>4.0.2</version>
 		</dependency>
 	</dependencies>
 </project>

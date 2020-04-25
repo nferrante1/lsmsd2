@@ -2,6 +2,8 @@ package app.datamodel.pojos;
 
 import java.time.Instant;
 
+import app.datamodel.pojos.annotations.CollectionName;
+
 @CollectionName("MarketData")
 public class DataRange
 {

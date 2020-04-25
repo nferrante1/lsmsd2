@@ -5,6 +5,9 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("Users")
 public class User extends StorablePojo
 {

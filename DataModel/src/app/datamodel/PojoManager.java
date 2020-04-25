@@ -14,7 +14,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import app.datamodel.mongo.DBManager;
-import app.datamodel.pojos.CollectionName;
+import app.datamodel.pojos.annotations.CollectionName;
 
 public class PojoManager<T extends Object>
 {

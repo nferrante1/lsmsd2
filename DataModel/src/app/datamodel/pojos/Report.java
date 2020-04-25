@@ -1,5 +1,8 @@
 package app.datamodel.pojos;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("Strategies")
 public class Report extends StorablePojo
 {

@@ -1,40 +1,45 @@
 package app.common.net.entities;
 
-public class StrategyInfo extends Entity {
-
+public class StrategyInfo extends Entity
+{
 	private static final long serialVersionUID = 8337583857656650614L;
-	
+
 	protected String name;
 	protected String username;
 	protected boolean canDelete;
-	
-	public StrategyInfo() 
+
+	public StrategyInfo()
 	{
-		
 	}
-	
-	public StrategyInfo(String name) {
-		
+
+	public StrategyInfo(String name)
+	{
 		this(name, null, false);
 	}
-	
-	public StrategyInfo(String name, String author, boolean canDelete) {
-		
+
+	public StrategyInfo(String name, String author, boolean canDelete)
+	{
 		this.name = name;
 		this.username = author;
 		this.canDelete = canDelete;
 	}
-	
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
-	public String getUsername() {
+
+	public String getUsername()
+	{
 		return username;
 	}
-	public boolean isCanDelete() {
+
+	public boolean isCanDelete()
+	{
 		return canDelete;
 	}
-	public void setCanDelete(boolean del) 
+
+	public void setCanDelete(boolean del)
 	{
 		this.canDelete = del;
 	}
@@ -48,5 +53,4 @@ public class StrategyInfo extends Entity {
 	{
 		this.username = username;
 	}
-
 }

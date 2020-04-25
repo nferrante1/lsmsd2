@@ -2,6 +2,10 @@ package app.datamodel.pojos;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.annotations.PojoId;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("Sources")
 public class Market extends StorablePojo
 {

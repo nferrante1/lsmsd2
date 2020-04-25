@@ -1,4 +1,4 @@
-package app.server;
+package app.server.dm;
 
 import java.util.Arrays;
 
@@ -17,10 +17,9 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 	{
 		super(MarketInfo.class, "Sources");
 	}
-	
+
 	public PojoCursor<MarketInfo> getMarketInfo(String filter, int pageNumber, int perPage)
 	{
-		
 		return aggregate(Arrays.asList(
 				Aggregates.unwind("$markets"),
 				Aggregates.match(Filters.regex("markets.id", filter)),
@@ -35,5 +34,4 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 				Aggregates.limit(perPage)
 				));
 	}
-	
 }

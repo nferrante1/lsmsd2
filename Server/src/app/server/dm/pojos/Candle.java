@@ -1,11 +1,12 @@
-package app.server;
+package app.server.dm.pojos;
 
 import java.time.Instant;
 import java.util.HashMap;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-public class Candle {
+public class Candle
+{
 	@BsonProperty("t")
 	protected Instant time;
 	@BsonProperty("o")
@@ -19,9 +20,11 @@ public class Candle {
 	@BsonProperty("v")
 	protected double volume;
 	protected HashMap<String, Double> ta;
-	
-	public Candle(){}
-	
+
+	public Candle()
+	{
+	}
+
 	public Instant getTime()
 	{
 		return time;
@@ -78,20 +81,19 @@ public class Candle {
 	{
 		this.ta = ta;
 	};
-	
-	public Double ema() 
+
+	public Double ema()
 	{
 		return ta.get("ema");
 	}
-	
-	public Double rs() 
+
+	public Double rs()
 	{
 		return ta.get("rs");
 	}
-	
-	public Double sma() 
+
+	public Double sma()
 	{
 		return ta.get("sma");
 	}
-	
 }

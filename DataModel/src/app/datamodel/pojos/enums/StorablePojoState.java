@@ -1,4 +1,4 @@
-package app.datamodel.pojos;
+package app.datamodel.pojos.enums;
 
 public enum StorablePojoState
 {

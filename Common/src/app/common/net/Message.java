@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
 import app.common.net.entities.Entity;
 
-public class Message implements Serializable
+class Message implements Serializable
 {
 	private static final long serialVersionUID = -5181705765357502182L;
 
@@ -48,14 +48,9 @@ public class Message implements Serializable
 		return (Message)xs.fromXML(xml);
 	}
 
-	/**
-	* Sends the XML-serialized message through the specified output stream.
-	* @param output The output stream.
-	*/
 	public void send(DataOutputStream output)
 	{
 		String xml = this.toXML();
-		
 		try {
 			System.out.println(xml);
 			output.writeUTF(xml);
@@ -64,11 +59,6 @@ public class Message implements Serializable
 		}
 	}
 
-	/**
-	* Receives an XML-serialized message from the specified input stream.
-	* @param input The input stream.
-	* @return An instance of Message representing the deserialized message.
-	*/
 	public static Message receive(DataInputStream input)
 	{
 		String xml;
@@ -81,24 +71,11 @@ public class Message implements Serializable
 		}
 	}
 
-	/**
-	* Returns the list of entities attached to the message.
-	* @return The list of entities attached to the message.
-	*/
 	public List<Entity> getEntities()
 	{
 		return entities;
 	}
 
-	/**
-	* Returns the attached entity at the specified index inside the list.
-	* <p>
-	* NOTE: it's not guaranteed that entities' order is maintained after
-	* deserialization.
-	* </p>
-	* @param index The index of the entity.
-	* @return The entity.
-	*/
 	public Entity getEntity(int index)
 	{
 		if (index < 0 || index >= getEntityCount())
@@ -106,28 +83,16 @@ public class Message implements Serializable
 		return entities.get(index);
 	}
 
-	/**
-	* Returns the first attached entity.
-	* @return The entity.
-	*/
 	public Entity getEntity()
 	{
 		return getEntity(0);
 	}
 
-	/**
-	* Attach an entity to the message.
-	* @param entity The entity to attach.
-	*/
 	public void addEntity(Entity entity)
 	{
 		entities.add(entity);
 	}
 
-	/**
-	* Returns the number of entities attached to this message.
-	* @return The number of entities attached.
-	*/
 	public int getEntityCount()
 	{
 		return entities.size();

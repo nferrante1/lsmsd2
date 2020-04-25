@@ -8,16 +8,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ClientPool implements Runnable
+public class RequestHandlerPool implements Runnable
 {
 	private final ServerSocket serverSocket;
 	private final ExecutorService pool;
 
-	ClientPool(int port) throws IOException
+	RequestHandlerPool(int port) throws IOException
 	{
 		pool = Executors.newCachedThreadPool();
 		serverSocket = new ServerSocket(port);
-		Logger.getLogger(ClientPool.class.getName()).info("Server listening on port " + port + ".");
+		Logger.getLogger(RequestHandlerPool.class.getName()).info("Server listening on port " + port + ".");
 	}
 
 	@Override
@@ -25,24 +25,23 @@ public class ClientPool implements Runnable
 	{
 		try {
 			while (!pool.isShutdown())
-				pool.execute(new Client(serverSocket.accept()));
+				pool.execute(new RequestHandler(serverSocket.accept()));
 		} catch (IOException ex) {
-			Logger.getLogger(ClientPool.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(RequestHandlerPool.class.getName()).log(Level.SEVERE, null, ex);
 			shutdown();
 		}
 	}
 
 	void shutdown()
 	{
-		Logger.getLogger(ClientPool.class.getName()).info("Shutting down...");
+		Logger.getLogger(RequestHandlerPool.class.getName()).info("Shutting down...");
 		pool.shutdown();
 		try {
 			pool.awaitTermination(3, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
-			Logger.getLogger(ClientPool.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(RequestHandlerPool.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {
 			pool.shutdownNow();
 		}
 	}
-
 }

@@ -6,6 +6,9 @@ import java.util.List;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("Strategies")
 public class Strategy extends StorablePojo
 {

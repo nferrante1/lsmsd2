@@ -4,6 +4,10 @@ import java.time.Instant;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.annotations.PojoId;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("MarketData")
 public class Candle extends StorablePojo
 {

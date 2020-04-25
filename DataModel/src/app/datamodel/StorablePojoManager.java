@@ -18,8 +18,8 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
-import app.datamodel.pojos.PojoId;
 import app.datamodel.pojos.StorablePojo;
+import app.datamodel.pojos.annotations.PojoId;
 
 public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 {

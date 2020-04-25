@@ -9,6 +9,8 @@ import java.util.ListIterator;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
+import app.datamodel.pojos.enums.StorablePojoState;
+
 public abstract class StorablePojo
 {
 	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();

@@ -2,10 +2,10 @@ package app.test;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import app.datamodel.pojos.CollectionName;
-import app.datamodel.pojos.PojoId;
 import app.datamodel.pojos.StorablePojo;
-import app.datamodel.pojos.StorablePojoState;
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.annotations.PojoId;
+import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("TestCollection")
 public class Second extends StorablePojo

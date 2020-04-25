@@ -8,6 +8,8 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
+import app.datamodel.pojos.enums.StorablePojoState;
+
 public class MarketData extends StorablePojo
 {
 	@BsonId

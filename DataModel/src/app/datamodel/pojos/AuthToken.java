@@ -7,6 +7,9 @@ import java.time.Instant;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
+import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.enums.StorablePojoState;
+
 @CollectionName("AuthTokens")
 public class AuthToken extends StorablePojo
 {
