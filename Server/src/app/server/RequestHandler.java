@@ -34,6 +34,7 @@ import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
 import app.datamodel.pojos.DataSource;
+import app.datamodel.pojos.Market;
 import app.datamodel.pojos.User;
 import app.server.dm.MarketInfoManager;
 
@@ -163,7 +164,9 @@ public class RequestHandler extends Thread
 			return new ResponseMessage("Source '" + sourceInfo.getName() + "' not found.");
 		DataSource source = cursor.next();
 		source.setEnabled(sourceInfo.isEnabled());
+		ScraperController.stop();
 		dataSourceManager.save(source);
+		ScraperController.start();
 		return new ResponseMessage();
 	}
 
@@ -308,6 +311,7 @@ public class RequestHandler extends Thread
 		List<StrategyInfo> strategies = manager.findPaged(filter == null ? null : 
 				Filters.regex("name", Pattern.compile(filter.getValue(), Pattern.CASE_INSENSITIVE)),
 				Projections.fields(projections),
+				null,
 				browseInfo.getPage(),
 				browseInfo.getPerPage()).toList();
 		
@@ -319,4 +323,29 @@ public class RequestHandler extends Thread
 
 		return new ResponseMessage((Entity[])strategies.toArray(new StrategyInfo[0]));
 	}
+	
+	@SuppressWarnings("unused")
+	private ResponseMessage handleEditMarket(RequestMessage reqMsg)
+	{
+		MarketInfo marketInfo = (MarketInfo)reqMsg.getEntity();
+		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
+		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(marketInfo.getSourceName());
+		if(!cursor.hasNext())
+			return new ResponseMessage("Source '" + marketInfo.getSourceName() + "' not found.");
+		DataSource source = cursor.next();
+		Market market = source.getMarket(marketInfo.getMarketId());
+		if(market == null)
+			return new ResponseMessage("Market '" + marketInfo.getMarketId() + "' not found.");
+		market.setGranularity(marketInfo.getGranularity());
+		market.setSync(marketInfo.isSync());
+		market.setSelectable(marketInfo.isSelectable());
+		ScraperController.stop();
+		dataSourceManager.save(source);
+		ScraperController.start();
+		return new ResponseMessage();
+	}
+	
+	
+	
+	
 }

@@ -17,6 +17,7 @@ public class ScraperController {
 			socket = new Socket("127.0.0.1",5656);
 			input = new DataInputStream(socket.getInputStream());
 			output = new DataOutputStream(socket.getOutputStream());
+			connected = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
@@ -30,6 +31,7 @@ public class ScraperController {
 			input.close();
 			output.close();
 			socket.close();
+			connected = false;
 			
 		} catch (IOException e) {
 			e.printStackTrace();
