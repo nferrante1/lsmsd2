@@ -7,16 +7,19 @@ import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.forms.AmountForm;
 import app.common.net.ResponseMessage;
+import app.common.net.entities.KVParameter;
 import app.common.net.entities.ReportInfo;
 
 public class ReportMenu extends Menu
 {
 	protected ReportInfo report;
+	protected List<KVParameter> parameters;
 
-	public ReportMenu(ReportInfo report)
+	public ReportMenu(ReportInfo report, List<KVParameter> parameters)
 	{
-		super(report.getStrategyName() + ": " + report.getStart() + " - " + report.getEnd() + " on " + report.getMarket() + " by " + report.getAuthor() + " | Select an action");
+		super(report.getStrategyName() + " on " + report.getMarket() + " | Select an action");
 		this.report = report;
+		this.parameters = parameters;
 	}
 
 	@Override
@@ -36,9 +39,8 @@ public class ReportMenu extends Menu
 
 		Console.println("Id: " + report.getRunId());
 		Console.println("Strategy: " + report.getStrategyName());
-		Console.println("Start: " + report.getStart());
-		Console.println("End: " + report.getEnd());
-		//TODO: other report parameters
+		for (KVParameter parameter: parameters)
+			Console.println(parameter.getCapitalizedName() + ": " + parameter.getValue());
 		Console.println("Author: " + report.getAuthor());
 		Console.println("Net Profit: " + report.getNetProfit()*amount);
 		Console.println("Gross Profit: " + report.getGrossProfit()*amount);

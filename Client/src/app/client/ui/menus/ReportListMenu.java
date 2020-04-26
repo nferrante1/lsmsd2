@@ -11,7 +11,7 @@ import app.common.net.entities.Entity;
 import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
 
-public class ReportListMenu extends Menu 
+public class ReportListMenu extends Menu
 {
 	protected StrategyInfo strategy;
 	protected String marketId;
@@ -41,7 +41,7 @@ public class ReportListMenu extends Menu
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
 		for(BaseReportInfo report: reports)
-			menu.add(new MenuEntry(i, report.getStart() + " - " + report.getEnd() + " on " + report.getMarket() + " by " + report.getAuthor(), this::handleSelectReport, report));
+			menu.add(new MenuEntry(i, "on " + report.getMarket() + " (profit: " + report.getNetProfit() + ")", this::handleSelectReport, report));
 		menu.add(new MenuEntry(1, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
@@ -54,6 +54,7 @@ public class ReportListMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
+		//TODO: search for ReportInfo and KVParameters
 		new ReportMenu((ReportInfo)resMsg.getEntity());
 
 	}
