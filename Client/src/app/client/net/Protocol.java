@@ -18,7 +18,6 @@ import app.common.net.entities.BrowseReportInfo;
 import app.common.net.entities.DeleteDataFilter;
 import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
-import app.common.net.entities.Filter;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
@@ -137,12 +136,12 @@ public class Protocol implements AutoCloseable
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(new BrowseInfo(page, perPage));
 		if (sourceName != null && !sourceName.isBlank()) {
-			entities.add(new Filter(sourceName));
-			if (nameFilter == null || nameFilter.isBlank())
-				entities.add(new Filter(""));
+			entities.add(new KVParameter("SOURCE", sourceName));
+			if (nameFilter != null && !nameFilter.isBlank())
+				entities.add(new KVParameter("MARKET", nameFilter));
+		} else if (nameFilter != null && !nameFilter.isBlank()) {
+			entities.add(new KVParameter("FULLID", nameFilter));
 		}
-		if (nameFilter != null && !nameFilter.isBlank())
-			entities.add(new Filter(nameFilter));
 		return sendRequest(ActionRequest.BROWSE_MARKETS, entities);
 	}
 
@@ -176,7 +175,7 @@ public class Protocol implements AutoCloseable
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(new BrowseInfo(page, perPage));
 		if (strategyName != null && !strategyName.isBlank())
-			entities.add(new Filter(strategyName));
+			entities.add(new KVParameter("STRATEGYNAME", strategyName));
 		return sendRequest(ActionRequest.BROWSE_STRATEGIES, entities);
 	}
 
@@ -240,7 +239,7 @@ public class Protocol implements AutoCloseable
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(new BrowseInfo(page, perPage));
 		if (username != null && !username.isBlank())
-			entities.add(new Filter(username.trim()));
+			entities.add(new KVParameter("USERNAME", username));
 		return sendRequest(ActionRequest.BROWSE_USERS, entities);
 	}
 
@@ -307,27 +306,27 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage addStrategy(String strategyName, String fileName) throws FileNotFoundException, IOException
 	{
-		return sendRequest(ActionRequest.ADD_STRATEGY, new Filter(strategyName), new FileContent(fileName));
+		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("STRATEGYNAME", strategyName), new FileContent(fileName));
 	}
 
 	public ResponseMessage downloadStrategy(String strategyName)
 	{
-		return sendRequest(ActionRequest.DOWNLOAD_STRATEGY, new Filter(strategyName));
+		return sendRequest(ActionRequest.DOWNLOAD_STRATEGY, new KVParameter("STRATEGYNAME", strategyName));
 	}
 
 	public ResponseMessage deleteStrategy(String strategyName)
 	{
-		return sendRequest(ActionRequest.DELETE_STRATEGY, new Filter(strategyName));
+		return sendRequest(ActionRequest.DELETE_STRATEGY, new KVParameter("STRATEGYNAME", strategyName));
 	}
 
 	public ResponseMessage viewReport(String reportId)
 	{
-		return sendRequest(ActionRequest.VIEW_REPORT, new Filter(reportId));
+		return sendRequest(ActionRequest.VIEW_REPORT, new KVParameter("REPORTID", reportId));
 	}
 
 	public ResponseMessage deleteReport(String reportId)
 	{
-		return sendRequest(ActionRequest.DELETE_REPORT, new Filter(reportId));
+		return sendRequest(ActionRequest.DELETE_REPORT, new KVParameter("REPORTID", reportId));
 	}
 
 	public ResponseMessage addUser(String username, String password)
@@ -337,7 +336,7 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage deleteUser(String username)
 	{
-		return sendRequest(ActionRequest.DELETE_USER, new Filter(username));
+		return sendRequest(ActionRequest.DELETE_USER, new KVParameter("REPORTID", username));
 	}
 
 	public ResponseMessage editDataSource(String sourceName, boolean enabled)
