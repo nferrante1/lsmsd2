@@ -1,7 +1,6 @@
 package app.client.ui.menus;
 
 import java.util.List;
-import java.util.SortedSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;

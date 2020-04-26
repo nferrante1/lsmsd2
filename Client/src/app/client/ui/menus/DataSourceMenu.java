@@ -3,12 +3,10 @@ package app.client.ui.menus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.SearchByForm;
+import app.client.ui.menus.forms.SearchForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.SourceInfo;
 
@@ -54,7 +52,7 @@ public class DataSourceMenu extends Menu
 
 	private void handleBrowseMarket(MenuEntry entry)
 	{
-		HashMap<String, String> response = new SearchByForm("Market Name").show();
+		HashMap<String, String> response = new SearchForm("Market Name").show();
 		String nameFilter = response.get("Market Name");
 		nameFilter = nameFilter != null ? nameFilter.trim() : null;
 		new MarketListMenu(dataSource.getName(), nameFilter).show();

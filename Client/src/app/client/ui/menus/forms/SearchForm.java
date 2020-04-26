@@ -3,11 +3,11 @@ package app.client.ui.menus.forms;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchByForm extends TextForm
+public class SearchForm extends TextForm
 {
 	protected String searchBy;
 
-	public SearchByForm(String searchBy)
+	public SearchForm(String searchBy)
 	{
 		super("Search by " + searchBy + " (press ENTER to find all entities)");
 		this.searchBy = searchBy;

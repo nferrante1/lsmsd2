@@ -4,6 +4,8 @@ public class BaseReportInfo extends Entity
 {
 	private static final long serialVersionUID = -2889788078149965866L;
 
+	protected String runId;
+	protected String strategyName;
 	protected String market;
 	protected String start;
 	protected String end;
@@ -13,6 +15,26 @@ public class BaseReportInfo extends Entity
 
 	public BaseReportInfo()
 	{
+	}
+
+	public String getRunId()
+	{
+		return runId;
+	}
+
+	public void setRunId(String runId)
+	{
+		this.runId = runId;
+	}
+
+	public String getStrategyName()
+	{
+		return strategyName;
+	}
+
+	public void setStrategyName(String strategyName)
+	{
+		this.strategyName = strategyName;
 	}
 
 	public String getMarket()

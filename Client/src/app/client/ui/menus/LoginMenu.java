@@ -39,6 +39,6 @@ public class LoginMenu extends Menu
 			return;
 		}
 		Console.println("Successfully logged in as " + username);
-		new UserMenu().show();
+		new MainMenu().show();
 	}
 }

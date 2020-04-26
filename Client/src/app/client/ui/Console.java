@@ -3,7 +3,6 @@ package app.client.ui;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.SortedSet;
 import java.util.logging.Logger;
 
 import app.client.ui.menus.MenuEntry;

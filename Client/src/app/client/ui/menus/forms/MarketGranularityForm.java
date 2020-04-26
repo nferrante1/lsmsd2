@@ -3,11 +3,11 @@ package app.client.ui.menus.forms;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigMarketForm extends TextForm
+public class MarketGranularityForm extends TextForm
 {
 	protected int previousGranularity;
 
-	public ConfigMarketForm(int previousGranularity)
+	public MarketGranularityForm(int previousGranularity)
 	{
 		super("Set granularity (minutes)");
 		this.previousGranularity = previousGranularity;

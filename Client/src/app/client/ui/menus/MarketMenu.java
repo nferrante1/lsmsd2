@@ -6,7 +6,7 @@ import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.ConfigMarketForm;
+import app.client.ui.menus.forms.MarketGranularityForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
@@ -47,7 +47,7 @@ public class MarketMenu extends Menu
 
 	private void handleChangeGranularity(MenuEntry entry)
 	{
-		HashMap<String, String> response = new ConfigMarketForm(market.getGranularity()).show();
+		HashMap<String, String> response = new MarketGranularityForm(market.getGranularity()).show();
 		int granularity = Integer.parseInt(response.get("Granularity"));
 		if (granularity == market.getGranularity()) {
 			Console.println("Done!");

@@ -31,11 +31,9 @@ public abstract class TextForm
 		Console.newLine();
 		fields = createFields();
 		HashMap<String, String> hm = new HashMap<String, String>();
-		int i = 0;
 		for (FormField field: fields) {
 			field.show();
 			hm.put(field.getName(), field.getValue());
-			i++;
 		}
 		return hm;
 	}

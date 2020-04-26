@@ -180,9 +180,19 @@ public class Protocol implements AutoCloseable
 		return sendRequest(ActionRequest.BROWSE_STRATEGIES, entities);
 	}
 
+	public ResponseMessage browseReports(int page, String strategyName, String marketId)
+	{
+		return browseReports(page, 20, strategyName, marketId);
+	}
+
+	public ResponseMessage browseReports(int page, int perPage, String strategyName)
+	{
+		return browseReports(page, perPage, strategyName, null);
+	}
+
 	public ResponseMessage browseReports(int page, String strategyName)
 	{
-		return browseReports(page, 20, strategyName, null);
+		return browseReports(page, strategyName, null);
 	}
 
 	public ResponseMessage browseReports(String strategyName)
