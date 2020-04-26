@@ -226,12 +226,12 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage browseUsers(int page, String username)
 	{
-		return browseMarkets(page, 20, username);
+		return browseUsers(page, 20, username);
 	}
 
 	public ResponseMessage browseUsers(String username)
 	{
-		return browseMarkets(0, 20, username);
+		return browseUsers(0, 20, username);
 	}
 
 	public ResponseMessage browseUsers(int page, int perPage, String username)

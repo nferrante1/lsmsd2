@@ -22,13 +22,13 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.Entity;
+import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.SourceInfo;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
-import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
@@ -39,7 +39,7 @@ import app.server.dm.MarketInfoManager;
 
 public class RequestHandler extends Thread
 {
-	private final int perPage = 20;
+
 	private Socket socket;
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
@@ -118,6 +118,7 @@ public class RequestHandler extends Thread
 		} catch (IllegalAccessException | IllegalArgumentException
 			| InvocationTargetException | SecurityException e) {
 			resMsg = new ResponseMessage("Can not run action handler.");
+			e.printStackTrace();
 		}
 
 		resMsg.send(outputStream);
@@ -131,11 +132,11 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleDeleteUser(RequestMessage reqMsg)
 	{
-		UserInfo userInfo = (UserInfo)reqMsg.getEntity();
+		KVParameter userInfo = (KVParameter)reqMsg.getEntity();
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
-		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
+		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getValue());
 		if(!cursor.hasNext())
-			return new ResponseMessage("User '" + userInfo.getUsername() + "' does not exists.");
+			return new ResponseMessage("User '" + userInfo.getValue() + "' does not exists.");
 		User user = cursor.next();
 		user.delete();
 		userManager.save(user);
@@ -169,17 +170,30 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseUsers(RequestMessage reqMsg)
 	{
-		BrowseInfo browseInfo = (BrowseInfo)reqMsg.getEntity();
+		BrowseInfo browseInfo = null;
+		KVParameter filter = null;
+		for(Entity entity: reqMsg.getEntities()) 
+		{
+			if(entity instanceof BrowseInfo)
+				browseInfo = (BrowseInfo)entity;
+			else if(entity instanceof KVParameter)
+				filter = (KVParameter)entity;
+		}
+		
+		List<Bson> stages = new ArrayList<Bson>();
+		if(filter != null)
+			stages.add(Aggregates.match(Filters.regex("_id", Pattern.compile(filter.getValue(), Pattern.CASE_INSENSITIVE))));
+			
+		stages.add(Aggregates.project(Projections.fields(
+						Projections.computed("username", "$_id"),
+						Projections.include("admin")
+						
+			)));
+		stages.add(Aggregates.sort(Sorts.ascending("username")));
+		stages.add(Aggregates.skip((browseInfo.getPage()-1)*(browseInfo.getPerPage())));
+		stages.add(Aggregates.limit(browseInfo.getPerPage()));
 		PojoManager<UserInfo> userInfoManager = new PojoManager<UserInfo>(UserInfo.class, "Users");
-		List<UserInfo> userInfos = userInfoManager.findPaged(
-			null,
-			Projections.fields(
-				Projections.excludeId(),
-				Projections.computed("username", "$_id"),
-				Projections.include("isAdmin")
-			), Sorts.ascending("username"),
-			browseInfo.getPage(),
-			perPage).toList();
+		List<UserInfo> userInfos = userInfoManager.aggregate(stages).toList();
 		return new ResponseMessage(userInfos.toArray(new UserInfo[0]));
 	}
 
@@ -213,12 +227,48 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseMarkets(RequestMessage reqMsg)
 	{
-		BrowseInfo browseInfo = (BrowseInfo)reqMsg.getEntity();
+		
+		KVParameter sourceFilter= null;
+		KVParameter marketFilter= null;
+		KVParameter fullIdFilter= null;
+		BrowseInfo browseInfo = null;
+		for(Entity entity : reqMsg.getEntities()) {
+			if(entity instanceof BrowseInfo)
+				browseInfo = (BrowseInfo)entity;
+			if(entity instanceof KVParameter) {
+				KVParameter parameter = (KVParameter)entity;
+				if(parameter.getName().equals("SOURCE"))
+					sourceFilter = parameter;
+				else if(parameter.getName().equals("MARKET"))
+					marketFilter = parameter;
+				else if(parameter.getName().equals("FULLID"))
+					fullIdFilter = parameter;
+			}
+				
+		}		
+		String sourceName = null;
+		String marketName = null;
+		if(fullIdFilter != null)
+		{
+			String fullId = fullIdFilter.getValue();
+			if(fullId.contains(":"))
+			{
+				String[] split = fullId.split(":", 2);
+				sourceName = split[0];
+				marketName = split[1];
+			}
+		} else {
+			if(sourceFilter != null)
+				sourceName = sourceFilter.getValue();
+			if(marketFilter != null)
+				marketName = marketFilter.getValue();
+		}
+		
 		MarketInfoManager marketInfoManager = new MarketInfoManager();
-		List<MarketInfo> marketInfos = marketInfoManager.getMarketInfo(
-			browseInfo.getFilter(),
-			browseInfo.getPage(),
-			perPage).toList();
+		List<MarketInfo> marketInfos;
+		
+		marketInfos = marketInfoManager.getMarketInfo(sourceName, marketName ,browseInfo.getPage(), browseInfo.getPerPage()).toList();
+		
 		return new ResponseMessage(marketInfos.toArray(new MarketInfo[0]));
 	}
 
@@ -242,32 +292,29 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseStrategies(RequestMessage reqMsg)
 	{
-		BrowseInfo info = (BrowseInfo)reqMsg.getEntity();
-
+		BrowseInfo browseInfo = null;
+		KVParameter filter = null;
+		for(Entity entity: reqMsg.getEntities()) 
+		{
+			if(entity instanceof BrowseInfo)
+				browseInfo = (BrowseInfo)entity;
+			else if(entity instanceof KVParameter)
+				filter = (KVParameter)entity;
+		}
+		
 		List<Bson> projections = new ArrayList<Bson>();
 		projections.add(Projections.excludeId());	
-		//projections.add(Projections.computed("canDelete", false));
-
-		//Equality condition on author, if eq canDelete == true else canDelete = false
-		/*List<Document> eq = new ArrayList<Document>();
-		eq.add(new Document("if",new Document("$eq", Arrays.asList("$author",authToken.getUsername()))));
-		eq.add(new Document ("then", true));
-		eq.add(new Document ("else", false));
-
-		List<Document> cond = new ArrayList<Document>();
-		cond.add(new Document("$cond", eq.toArray()));
-		projections.add(Projections.computed("canDelete", cond));
-		*/
 		PojoManager<StrategyInfo> manager = new PojoManager<StrategyInfo>(StrategyInfo.class, "Strategies");
-		List<StrategyInfo> strategies = manager.find(
-				Filters.regex("name", Pattern.compile(info.getFilter(), Pattern.CASE_INSENSITIVE)),
+		List<StrategyInfo> strategies = manager.findPaged(filter == null ? null : 
+				Filters.regex("name", Pattern.compile(filter.getValue(), Pattern.CASE_INSENSITIVE)),
 				Projections.fields(projections),
-				(info.getPage()-1)*perPage,
-				perPage).toList();
+				browseInfo.getPage(),
+				browseInfo.getPerPage()).toList();
+		
 		for(StrategyInfo strategy : strategies)
 		{
-			if(authToken.isAdmin() || authToken.getUsername() == strategy.getUsername())
-				strategy.setCanDelete(true);
+			if(authToken.isAdmin() || authToken.getUsername().equals(strategy.getUsername()))
+				strategy.setDeletable(true);
 		}
 
 		return new ResponseMessage((Entity[])strategies.toArray(new StrategyInfo[0]));

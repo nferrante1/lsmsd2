@@ -7,8 +7,6 @@ public class BaseReportInfo extends Entity
 	protected String runId;
 	protected String strategyName;
 	protected String market;
-	protected String start;
-	protected String end;
 	protected String author;
 	protected boolean deletable;
 	protected double netProfit;
@@ -45,26 +43,6 @@ public class BaseReportInfo extends Entity
 	public void setMarket(String market)
 	{
 		this.market = market;
-	}
-
-	public String getStart()
-	{
-		return start;
-	}
-
-	public void setStart(String start)
-	{
-		this.start = start;
-	}
-
-	public String getEnd()
-	{
-		return end;
-	}
-
-	public void setEnd(String end)
-	{
-		this.end = end;
 	}
 
 	public String getAuthor()

@@ -8,6 +8,7 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.BaseReportInfo;
 import app.common.net.entities.Entity;
+import app.common.net.entities.KVParameter;
 import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
 
@@ -54,8 +55,18 @@ public class ReportListMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		//TODO: search for ReportInfo and KVParameters
-		new ReportMenu((ReportInfo)resMsg.getEntity());
+		
+		ReportInfo info = null;
+		List<KVParameter> parameters = new ArrayList<KVParameter>();
+		
+		for(Entity entity : resMsg.getEntities()) {
+			if(entity instanceof ReportInfo)
+				info = (ReportInfo) entity;
+			else if (entity instanceof KVParameter)
+				parameters.add((KVParameter)entity);
+		}
+		
+		new ReportMenu(info, parameters);
 
 	}
 

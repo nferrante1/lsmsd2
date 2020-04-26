@@ -30,7 +30,7 @@ public class MarketMenu extends Menu
 		menu.add(new MenuEntry(4, (market.isSync() ? "Dis" : "En") + "able data sync", this::handleChangeSync, !market.isSync()));
 		menu.add(new MenuEntry(5, "Delete data", this::handleDeleteData));
 		menu.add(new MenuEntry(0, "Go back", true));
-		return null;
+		return menu;
 	}
 
 	private void handleViewDetails(MenuEntry entry)

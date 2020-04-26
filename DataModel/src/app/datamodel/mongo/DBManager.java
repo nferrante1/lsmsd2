@@ -176,7 +176,7 @@ public final class DBManager implements Closeable
 		keys = new Document("runs.id", 1);
 		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 
-		indexOptions = new IndexOptions().name("reportNetProfitIndex")
+		indexOptions = new IndexOptions().name("reportNetProfitIndex");
 		keys = new Document("runs.report.netProfit", 1);
 		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 	}

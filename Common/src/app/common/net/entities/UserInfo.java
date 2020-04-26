@@ -5,7 +5,7 @@ public class UserInfo extends Entity
 	private static final long serialVersionUID = -6433251173793910131L;
 
 	private String username;
-	private boolean isAdmin;
+	private boolean admin;
 
 	public UserInfo()
 	{
@@ -23,11 +23,11 @@ public class UserInfo extends Entity
 
 	public boolean isAdmin()
 	{
-		return isAdmin;
+		return admin;
 	}
 
 	public void setAdmin(boolean isAdmin)
 	{
-		this.isAdmin = isAdmin;
+		this.admin = isAdmin;
 	}
 }

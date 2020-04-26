@@ -16,7 +16,8 @@ public class MarketListMenu extends Menu
 	protected String nameFilter;
 	protected int currentPage;
 	protected boolean justSelect;
-
+	protected String selectedMarketId;
+	
 	public MarketListMenu(String nameFilter, boolean justSelect)
 	{
 		this(null, nameFilter);
@@ -33,14 +34,18 @@ public class MarketListMenu extends Menu
 
 	public MarketListMenu(String nameFilter)
 	{
-		this(null, nameFilter);
+		this(nameFilter, true);
 	}
 
 	public MarketListMenu()
 	{
-		this(null);
+		this(null, true);
 	}
-
+	
+	public String getSelectedMarketId() 
+	{
+		return this.selectedMarketId;
+	}
 	@Override
 	protected List<MenuEntry> getMenu()
 	{
@@ -69,12 +74,13 @@ public class MarketListMenu extends Menu
 
 	private void handleViewMarket(MenuEntry entry)
 	{
-		new MarketMenu((MarketInfo)entry.getHandlerData()).show();
+		this.selectedMarketId = ((MarketInfo) entry.getHandlerData()).getFullId();
+		new MarketMenu((MarketInfo)entry.getHandlerData()).show();		
 	}
 
 	private void handleSelectMarket(MenuEntry entry)
 	{
-		// TODO: market selection for strategy run configuration
+		this.selectedMarketId = ((MarketInfo) entry.getHandlerData()).getFullId();
 	}
 
 	private void handleLoadNewPage(MenuEntry entry)

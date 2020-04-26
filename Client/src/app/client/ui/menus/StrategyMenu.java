@@ -1,10 +1,12 @@
 package app.client.ui.menus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.SearchForm;
 import app.common.net.entities.StrategyInfo;
 
 
@@ -42,9 +44,11 @@ public class StrategyMenu extends Menu
 
 	private void handleBrowseReports(MenuEntry entry)
 	{
-		/*HashMap<String, String> response = new UserForm("Market Name").show();
-		new ReportListMenu((StrategyInfo)entry.getHandlerData(), response.get("")).show();*/
-		//TODO: nope, we should select the market from a list
+		HashMap<String, String> response = new SearchForm("Market Name").show();
+		MarketListMenu list = new MarketListMenu(response.get("Market Name"));
+		list.show();
+		String market = list.getSelectedMarketId();
+		new ReportListMenu((StrategyInfo)entry.getHandlerData(), market).show();
 	}
 
 	private void handleRunStrategy(MenuEntry entry)

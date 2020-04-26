@@ -36,9 +36,11 @@ public class UserListMenu extends Menu
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i =1;
-		for(UserInfo user : users)
+		for(UserInfo user : users) {
 			menu.add(new MenuEntry(i, user.getUsername() + " (admin: " + user.isAdmin() + ")", true, this::handleDeleteUser, user));
-		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
+			++i;
+		}
+			menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}

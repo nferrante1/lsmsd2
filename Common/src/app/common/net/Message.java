@@ -20,14 +20,14 @@ class Message implements Serializable
 {
 	private static final long serialVersionUID = -5181705765357502182L;
 
-	protected final List<Entity> entities;
+	protected final List<Entity> entities = new ArrayList<Entity>();
 
 	protected Message(List<Entity> entities)
 	{
 		if (entities == null)
-			this.entities = new ArrayList<Entity>();
-		else
-			this.entities = entities;
+			return;
+		for(Entity entity : entities)
+			this.entities.add(entity);
 	}
 
 	protected Message(Entity... entities)
@@ -48,9 +48,12 @@ class Message implements Serializable
 		xs.addPermission(NullPermission.NULL);
 		xs.addPermission(PrimitiveTypePermission.PRIMITIVES);
 		xs.allowTypeHierarchy(Collection.class);
+		//xs.addImplicitArray(Message.class, "entities", Entity.class);
 		xs.allowTypesByWildcard(new String[] {
 			"app.common.net.entities.**",
-			"app.common.net.**"
+			"app.common.net.**",
+			"app.common.net.enums.**",
+			"app.common.net.entities.enums.**"
 		});
 		return (Message)xs.fromXML(xml);
 	}
