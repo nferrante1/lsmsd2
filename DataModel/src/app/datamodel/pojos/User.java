@@ -124,4 +124,9 @@ public class User extends StorablePojo
 	{
 		setAdmin(false);
 	}
+	
+	public AuthToken generateToken()
+	{
+		return new AuthToken(username, admin);
+	}
 }

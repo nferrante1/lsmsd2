@@ -4,37 +4,80 @@ public class MarketInfo extends Entity
 {
 	private static final long serialVersionUID = 4212262098735608977L;
 
-	String id;
-	int granularity;
-	boolean sync;
-	boolean selectable;
+	protected String sourceName;
+	protected String marketId;
+	protected String baseCurrency;
+	protected String quoteCurrency;
+	protected int granularity;
+	protected boolean sync;
+	protected boolean selectable;
 
 	public MarketInfo()
 	{
 	}
 
-	public MarketInfo(String id, int granularity, boolean sync, boolean enabled)
+	public MarketInfo(String sourceName, String marketId, int granularity, boolean sync, boolean enabled)
 	{
-		this.id = id;
+		this.sourceName = sourceName;
+		this.marketId = marketId;
 		this.granularity = granularity;
 		this.sync = sync;
 		this.selectable = enabled;
 	}
 
-	public MarketInfo(String id, int granularity)
+	public String getMarketDisplayName()
 	{
-		this.id = id;
-		this.granularity = granularity;
+		return getBaseCurrency() + "/" + getQuoteCurrency();
 	}
 
-	public String getId()
+	public String getDisplayName()
 	{
-		return id;
+		return getSourceName() + ":" + getMarketDisplayName();
 	}
 
-	public void setId(String id)
+	public String getSourceName()
 	{
-		this.id = id;
+		return sourceName;
+	}
+
+	public void setSourceName(String sourceName)
+	{
+		this.sourceName = sourceName;
+	}
+	
+	public String getFullId()
+	{
+		return getSourceName() + ":" + getMarketId();
+	}
+
+	public String getMarketId()
+	{
+		return marketId;
+	}
+
+	public void setMarketId(String marketId)
+	{
+		this.marketId = marketId;
+	}
+
+	public String getBaseCurrency()
+	{
+		return baseCurrency;
+	}
+
+	public void setBaseCurrency(String baseCurrency)
+	{
+		this.baseCurrency = baseCurrency;
+	}
+
+	public String getQuoteCurrency()
+	{
+		return quoteCurrency;
+	}
+
+	public void setQuoteCurrency(String quoteCurrency)
+	{
+		this.quoteCurrency = quoteCurrency;
 	}
 
 	public int getGranularity()

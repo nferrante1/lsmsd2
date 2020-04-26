@@ -6,22 +6,10 @@ public class StrategyInfo extends Entity
 
 	protected String name;
 	protected String username;
-	protected boolean canDelete;
+	protected boolean deletable;
 
 	public StrategyInfo()
 	{
-	}
-
-	public StrategyInfo(String name)
-	{
-		this(name, null, false);
-	}
-
-	public StrategyInfo(String name, String author, boolean canDelete)
-	{
-		this.name = name;
-		this.username = author;
-		this.canDelete = canDelete;
 	}
 
 	public String getName()
@@ -34,14 +22,14 @@ public class StrategyInfo extends Entity
 		return username;
 	}
 
-	public boolean isCanDelete()
+	public boolean isDeletable()
 	{
-		return canDelete;
+		return deletable;
 	}
 
-	public void setCanDelete(boolean del)
+	public void setDeletable(boolean deletable)
 	{
-		this.canDelete = del;
+		this.deletable = deletable;
 	}
 
 	public void setName(String name)

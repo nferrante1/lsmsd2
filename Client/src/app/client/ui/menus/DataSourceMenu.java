@@ -1,13 +1,14 @@
 package app.client.ui.menus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.SearchByNameForm;
+import app.client.ui.menus.forms.SearchByForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.SourceInfo;
 
@@ -17,39 +18,45 @@ public class DataSourceMenu extends Menu
 
 	public DataSourceMenu(SourceInfo dataSource)
 	{
-		super("Selected Data Source is: "  + dataSource.getName() + "Enabled: " + dataSource.isEnabled() + " | select an action");
+		super(dataSource.getName() + " | select an action");
 		this.dataSource = dataSource;
 	}
 
 	@Override
-	protected SortedSet<MenuEntry> getMenu()
+	protected List<MenuEntry> getMenu()
 	{
-		SortedSet<MenuEntry> menu = new TreeSet<>();
-		if(dataSource.isEnabled()) {
-			menu.add(new MenuEntry(1, "Disable Data Source", true, this::changeDataSource, dataSource));
-		}
-		else {
-			menu.add(new MenuEntry(1, "Enable Data Source", true, this::changeDataSource, dataSource));
-		}
-		menu.add(new MenuEntry(3, "Browse Markets", true, this::handleBrowseMarket, dataSource));
+		List<MenuEntry> menu = new ArrayList<MenuEntry>();
+		menu.add(new MenuEntry(1, "View details", this::handleViewDataSource));
+		menu.add(new MenuEntry(2, (dataSource.isEnabled() ? "Dis" : "En") + "able Data Source", this::handleEditDataSource, !dataSource.isEnabled()));
+		menu.add(new MenuEntry(3, "Browse Markets", this::handleBrowseMarket, dataSource));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-
-	private void changeDataSource(MenuEntry entry)
+	
+	private void handleViewDataSource(MenuEntry entry)
 	{
-		ResponseMessage resMsg = Protocol.getInstance().changeDataSource((SourceInfo)entry.getHandlerData());
+		Console.println("Name: " + dataSource.getName());
+		Console.println("Enabled: " + dataSource.isEnabled());
+		Console.pause();
+	}
+
+	private void handleEditDataSource(MenuEntry entry)
+	{
+		boolean enable = (boolean)entry.getHandlerData();
+		ResponseMessage resMsg = Protocol.getInstance().editDataSource(dataSource.getName(), enable);
 		if(!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
+			return;
 		}
-		else {
-			Console.println("data source correctly setted");
-		}
+		dataSource.setEnabled(enable);
+		Console.println("Done!");
 	}
-	
+
 	private void handleBrowseMarket(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new SearchByNameForm("MarketName").show();
-		new MarketListMenu(response.get(0), dataSource);
+		HashMap<String, String> response = new SearchByForm("Market Name").show();
+		String nameFilter = response.get("Market Name");
+		nameFilter = nameFilter != null ? nameFilter.trim() : null;
+		new MarketListMenu(dataSource.getName(), nameFilter).show();
 	}
 }

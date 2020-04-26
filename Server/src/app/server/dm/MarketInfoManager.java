@@ -33,5 +33,24 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 				Aggregates.skip((pageNumber-1)*perPage),
 				Aggregates.limit(perPage)
 				));
+		/*
+		+		List<Bson> stages = new ArrayList<Bson>();
+		+		if(dataSource!= null && !dataSource.isEmpty())
+		+			stages.add(Aggregates.match(Filters.regex("_id", Pattern.compile(dataSource, Pattern.CASE_INSENSITIVE))));
+		+		stages.add(Aggregates.unwind("$markets"));
+		+		if(marketName!=null && !marketName.isEmpty())
+		+			stages.add(Aggregates.match(Filters.regex("markets.id", Pattern.compile(marketName, Pattern.CASE_INSENSITIVE))));
+		+		stages.add(Aggregates.project(
+		+				Projections.fields(Arrays.asList(
+		+						Projections.excludeId(),
+		+						Projections.computed("id", Filters.eq("$concat", Arrays.asList("$_id",":","$markets.id"))),
+		+						Projections.computed("granularity", "$markets.granularity"), Projections.computed("selectable", "$markets.selectable"),
+		+						Projections.computed("sync", "$markets.sync"))))
+		+				);
+		+		stages.add(Aggregates.sort(Sorts.ascending("id")));
+		+		stages.add(Aggregates.skip((pageNumber-1)*perPage));
+		+		stages.add(Aggregates.limit(perPage));
+		+		return aggregate(stages);
+		*/
 	}
 }

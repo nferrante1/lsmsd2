@@ -3,16 +3,16 @@ package app.client.ui.menus.forms;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import app.client.ui.Console;
 
 public abstract class TextForm
 {
 	protected String prompt;
-	private LinkedHashSet<FormField> fields;
+	private List<FormField> fields;
 
-	protected abstract LinkedHashSet<FormField> createFields();
+	protected abstract List<FormField> createFields();
 
 	protected TextForm()
 	{
@@ -24,17 +24,17 @@ public abstract class TextForm
 		this.prompt = prompt;
 	}
 
-	public HashMap<Integer, String> show()
+	public HashMap<String, String> show()
 	{
 		if (!prompt.isBlank())
 			Console.println(prompt + ":");
 		Console.newLine();
 		fields = createFields();
-		HashMap<Integer, String> hm = new HashMap<Integer, String>();
+		HashMap<String, String> hm = new HashMap<String, String>();
 		int i = 0;
 		for (FormField field: fields) {
 			field.show();
-			hm.put(i, field.getValue());
+			hm.put(field.getName(), field.getValue());
 			i++;
 		}
 		return hm;

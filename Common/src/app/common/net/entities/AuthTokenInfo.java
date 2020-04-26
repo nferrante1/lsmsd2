@@ -4,7 +4,7 @@ public class AuthTokenInfo extends Entity
 {
 	private static final long serialVersionUID = 1467121217034301020L;
 
-	protected final String authToken;
+	private final String authToken;
 
 	public AuthTokenInfo(String authToken)
 	{

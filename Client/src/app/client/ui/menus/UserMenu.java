@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.SearchByNameForm;
+import app.client.ui.menus.forms.SearchByForm;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.LoginInfo;
@@ -14,9 +14,9 @@ import app.common.net.entities.LoginInfo;
 public class UserMenu extends Menu
 {
 	@Override
-	protected SortedSet<MenuEntry> getMenu()
+	protected List<MenuEntry> getMenu()
 	{
-		SortedSet<MenuEntry> menu = new TreeSet<>();
+		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		menu.add(new MenuEntry(1, "Find all strategies", this::handleBrowseStrategies));
 		menu.add(new MenuEntry(2, "Add a new strategy", this::handleAddStrategy));
 		if (Protocol.getInstance().isAdmin()) {
@@ -36,8 +36,8 @@ public class UserMenu extends Menu
 
 	private void handleBrowseStrategies(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new SearchByNameForm("Strategy Name").show();
-		new StrategyListMenu(response.get(0)).show();
+		HashMap<String, String> response = new SearchByForm("Strategy Name").show();
+		new StrategyListMenu(response.get("Strategy Name")).show();
 	}
 
 	private void handleAddStrategy(MenuEntry entry)
@@ -46,14 +46,14 @@ public class UserMenu extends Menu
 
 	private void handleBrowseUsers(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new SearchByNameForm("Username").show();
-		new UserListMenu(response.get(0)).show();
+		HashMap<String, String> response = new SearchByForm("Username").show();
+		new UserListMenu(response.get("Username")).show();
 	}
 
 	private void handleAddUser(MenuEntry entry)
 	{
-		HashMap<Integer, String> response = new UserForm("Create user").show();
-		ResponseMessage resMsg = Protocol.getInstance().addUser(new LoginInfo(response.get(0), response.get(1)));
+		HashMap<String, String> response = new UserForm("Create user").show();
+		ResponseMessage resMsg = Protocol.getInstance().addUser(response.get("USERNAME"), response.get("PASSWORD"));
 		if(!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;

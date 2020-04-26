@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,13 +20,19 @@ class Message implements Serializable
 {
 	private static final long serialVersionUID = -5181705765357502182L;
 
-	protected final List<Entity> entities = new ArrayList<Entity>();
+	protected final List<Entity> entities;
+
+	protected Message(List<Entity> entities)
+	{
+		if (entities == null)
+			this.entities = new ArrayList<Entity>();
+		else
+			this.entities = entities;
+	}
 
 	protected Message(Entity... entities)
 	{
-		if (entities != null)
-			for (Entity entity: entities)
-				this.entities.add(entity);
+		this(Arrays.asList(entities));
 	}
 
 	protected String toXML()

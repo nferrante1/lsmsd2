@@ -1,6 +1,7 @@
 package app.client.ui;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.SortedSet;
 import java.util.logging.Logger;
@@ -107,7 +108,7 @@ public final class Console
 		println(entry.getKey() + ")\t" + entry.getText());
 	}
 
-	public static MenuEntry printMenu(String prompt, SortedSet<MenuEntry> entries)
+	public static MenuEntry printMenu(String prompt, List<MenuEntry> entries)
 	{
 		printPrompt(prompt);
 		newLine();

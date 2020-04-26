@@ -1,16 +1,9 @@
 package app.common.net.entities;
 
-public class ReportInfo extends Entity
+public class ReportInfo extends BaseReportInfo
 {
 	private static final long serialVersionUID = 7958042541743504580L;
 
-	protected String Marketname;
-	protected String start;
-	protected String end;
-	protected String author;
-	protected boolean canDelete;
-
-	protected double netProfit;
 	protected double grossProfit;
 	protected double grossLoss;
 	protected double hodlProfit;
@@ -24,55 +17,7 @@ public class ReportInfo extends Entity
 
 	public ReportInfo()
 	{
-	}
-
-	public ReportInfo(String Marketname, String start, String end, String author, boolean canDelete)
-	{
-		this.Marketname = Marketname;
-		this.start = start;
-		this.end = end;
-		this.author = author;
-		this.canDelete = canDelete;
-	}
-
-	public String getStart()
-	{
-		return start;
-	}
-
-	public String getEnd()
-	{
-		return end;
-	}
-
-	public String getAuthor()
-	{
-		return author;
-	}
-
-	public boolean isCanDelete()
-	{
-		return canDelete;
-	}
-
-	public String getMarketname()
-	{
-		return Marketname;
-	}
-
-	public void setMarketname(String marketname)
-	{
-		Marketname = marketname;
-	}
-
-	public double getNetProfit()
-	{
-		return netProfit;
-	}
-
-	public void setNetProfit(double netProfit)
-	{
-		this.netProfit = netProfit;
+		super();
 	}
 
 	public double getGrossProfit()
@@ -155,11 +100,6 @@ public class ReportInfo extends Entity
 		this.maxDrawdown = maxDrawdown;
 	}
 
-	public void setStart(String start)
-	{
-		this.start = start;
-	}
-
 	public double getAvgAmount()
 	{
 		return avgAmount;
@@ -178,20 +118,5 @@ public class ReportInfo extends Entity
 	public void setAvgDuration(double avgDuration)
 	{
 		this.avgDuration = avgDuration;
-	}
-
-	public void setEnd(String end)
-	{
-		this.end = end;
-	}
-
-	public void setAuthor(String author)
-	{
-		this.author = author;
-	}
-
-	public void setCanDelete(boolean canDelete)
-	{
-		this.canDelete = canDelete;
 	}
 }

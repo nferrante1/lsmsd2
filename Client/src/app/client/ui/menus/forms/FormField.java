@@ -50,6 +50,11 @@ public class FormField
 		this.validator = validator;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
 	public String getValue()
 	{
 		if (value == null || value.isBlank())

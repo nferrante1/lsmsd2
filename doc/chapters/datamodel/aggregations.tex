@@ -39,6 +39,10 @@ To accomplish this, the following aggregation pipeline can be used:
 	\item \code{\$skip} and \code{\$limit} stages to paginate the result.
 \end{enumerate}
 
+Other aggregations that reformat the result of queries may be employed in order
+to make the output match the structure of Java classes (this allows \mongodb{}
+to automatically convert the output of queries in  Java classes).
+
 \subsection{Queries on MarketData}\label{subsec:marketdata-aggregations}
 
 When the server queries the database for market data \exgratia{when running a

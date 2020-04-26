@@ -11,6 +11,12 @@ public class SourceInfo extends Entity
 	{
 	}
 
+	public SourceInfo(String name, boolean enabled)
+	{
+		this.name = name;
+		this.enabled = enabled;
+	}
+
 	public String getName()
 	{
 		return name;

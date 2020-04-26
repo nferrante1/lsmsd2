@@ -1,5 +1,6 @@
 package app.client.ui.menus;
 
+import java.util.List;
 import java.util.SortedSet;
 
 import app.client.net.Protocol;
@@ -8,13 +9,16 @@ import app.client.ui.Console;
 public abstract class Menu
 {
 	protected String prompt;
-	protected abstract SortedSet<MenuEntry> getMenu();
+	protected abstract List<MenuEntry> getMenu();
 	protected static Protocol protocol = Protocol.getInstance();
 
 	protected MenuEntry printMenu()
 	{
 		Console.newLine();
-		MenuEntry selection = Console.printMenu(prompt, getMenu());
+		List<MenuEntry> menus = getMenu();
+		if (menus == null || menus.isEmpty())
+			return new MenuEntry(0, "dummy", true);
+		MenuEntry selection = Console.printMenu(prompt, menus);
 		selection.triggerHandler();
 		return selection;
 	}

@@ -93,8 +93,13 @@ public class RequestHandler extends Thread
 		}
 
 		switch(reqMsg.getAction()) {
+		case BROWSE_USERS:
 		case ADD_USER:
-		case BROWSE_DATA_SOURCE:
+		case DELETE_USER:
+		case DELETE_DATA:
+		case BROWSE_DATA_SOURCES:
+		case EDIT_DATA_SOURCE:
+		case EDIT_MARKET:
 			if(!authToken.isAdmin()) {
 				new ResponseMessage("This action requires admin privileges.").send(outputStream);
 				return;
@@ -103,11 +108,11 @@ public class RequestHandler extends Thread
 		}
 
 		ResponseMessage resMsg;
-		String methodName = "handle" + reqMsg.getAction().toCamelCaseString();
+		String handlerName = "handle" + reqMsg.getAction().toCamelCaseString();
 		try {
-			Method method = getClass().getDeclaredMethod(methodName, RequestMessage.class);
-			method.setAccessible(true);
-			resMsg = (ResponseMessage)method.invoke(this, reqMsg);
+			Method handler = getClass().getDeclaredMethod(handlerName, RequestMessage.class);
+			handler.setAccessible(true);
+			resMsg = (ResponseMessage)handler.invoke(this, reqMsg);
 		} catch (NoSuchMethodException e) {
 			resMsg = new ResponseMessage("Invalid action.");
 		} catch (IllegalAccessException | IllegalArgumentException
@@ -116,71 +121,81 @@ public class RequestHandler extends Thread
 		}
 
 		resMsg.send(outputStream);
+		try {
+			outputStream.flush();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleDeleteUser(RequestMessage reqMsg)
 	{
-		UserInfo userinfo = (UserInfo)reqMsg.getEntity();
-		StorablePojoManager<User> user_manager = new StorablePojoManager<User>(User.class);
-		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)user_manager.find(userinfo.getUsername());
+		UserInfo userInfo = (UserInfo)reqMsg.getEntity();
+		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
+		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
 		if(!cursor.hasNext())
-			return new ResponseMessage("User not found");
+			return new ResponseMessage("User '" + userInfo.getUsername() + "' does not exists.");
 		User user = cursor.next();
 		user.delete();
-		user_manager.save(user);
+		userManager.save(user);
 		return new ResponseMessage();
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleAddUser(RequestMessage reqMsg)
 	{
-		LoginInfo logininfo = (LoginInfo)reqMsg.getEntity();
-		User user = new User(logininfo.getUsername(), logininfo.getPassword());
-		StorablePojoManager<User> user_manager = new StorablePojoManager<User>(User.class);
-		user_manager.save(user);
+		LoginInfo loginInfo = (LoginInfo)reqMsg.getEntity();
+		User user = new User(loginInfo.getUsername(), loginInfo.getPassword());
+		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
+		userManager.save(user);
 		return new ResponseMessage();
 	}
 
 	@SuppressWarnings("unused")
-	private ResponseMessage handleChangeDataSource(RequestMessage reqMsg)
+	private ResponseMessage handleEditDataSource(RequestMessage reqMsg)
 	{
-		SourceInfo sourceinfo = (SourceInfo)reqMsg.getEntity();
-		StorablePojoManager<DataSource> data_source_manager = new StorablePojoManager<DataSource>(DataSource.class);
-		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)data_source_manager.find(sourceinfo.getName());
+		SourceInfo sourceInfo = (SourceInfo)reqMsg.getEntity();
+		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
+		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(sourceInfo.getName());
 		if(!cursor.hasNext())
-			return new ResponseMessage("Source not found");
+			return new ResponseMessage("Source '" + sourceInfo.getName() + "' not found.");
 		DataSource source = cursor.next();
-		source.setEnabled(sourceinfo.isEnabled());
-		data_source_manager.save(source);
+		source.setEnabled(sourceInfo.isEnabled());
+		dataSourceManager.save(source);
 		return new ResponseMessage();
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseUsers(RequestMessage reqMsg)
 	{
-		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
-		PojoManager<UserInfo> manager = new PojoManager<UserInfo>(UserInfo.class, "Users");
-		PojoCursor<UserInfo> cursor = manager.findPaged(null, Projections.fields(Projections.computed("username", "$_id"), 
-				Projections.include("isAdmin"), Projections.excludeId()), Sorts.ascending("username"), (browse.getPage()-1)*perPage, perPage);
-		List<UserInfo> users = cursor.toList();
-		return new ResponseMessage(users.toArray(new UserInfo[0]));
+		BrowseInfo browseInfo = (BrowseInfo)reqMsg.getEntity();
+		PojoManager<UserInfo> userInfoManager = new PojoManager<UserInfo>(UserInfo.class, "Users");
+		List<UserInfo> userInfos = userInfoManager.findPaged(
+			null,
+			Projections.fields(
+				Projections.excludeId(),
+				Projections.computed("username", "$_id"),
+				Projections.include("isAdmin")
+			), Sorts.ascending("username"),
+			browseInfo.getPage(),
+			perPage).toList();
+		return new ResponseMessage(userInfos.toArray(new UserInfo[0]));
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
-		LoginInfo userInfo = (LoginInfo)reqMsg.getEntity(0);
-
+		LoginInfo loginInfo = (LoginInfo)reqMsg.getEntity();
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
-		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getUsername());
+		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(loginInfo.getUsername());
 		if (!cursor.hasNext())
-			return new ResponseMessage("User not registered.");
+			return new ResponseMessage("User '" + loginInfo.getUsername() + "' not registered.");
 		User user = cursor.next();
-		if(!user.checkPassword(userInfo.getPassword()))
+		if(!user.checkPassword(loginInfo.getPassword()))
 			return new ResponseMessage("Invalid password.");
 		StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
-		AuthToken authToken = new AuthToken(user.getUsername(), user.isAdmin());
+		authToken = user.generateToken();
 		authTokenManager.save(authToken);
 		return new ResponseMessage(new AuthTokenInfo(authToken.getId()));
 	}
@@ -196,25 +211,36 @@ public class RequestHandler extends Thread
 	}
 
 	@SuppressWarnings("unused")
-	private ResponseMessage handleBrowseMarket(RequestMessage reqMsg)
+	private ResponseMessage handleBrowseMarkets(RequestMessage reqMsg)
 	{
-		BrowseInfo browse = (BrowseInfo)reqMsg.getEntity();
-		MarketInfoManager manager = new MarketInfoManager();
-		PojoCursor<MarketInfo> cursor = manager.getMarketInfo(browse.getFilter(), browse.getPage(), perPage);
-		List<MarketInfo> markets = cursor.toList();
-		return new ResponseMessage(markets.toArray(new MarketInfo[0]));
+		BrowseInfo browseInfo = (BrowseInfo)reqMsg.getEntity();
+		MarketInfoManager marketInfoManager = new MarketInfoManager();
+		List<MarketInfo> marketInfos = marketInfoManager.getMarketInfo(
+			browseInfo.getFilter(),
+			browseInfo.getPage(),
+			perPage).toList();
+		return new ResponseMessage(marketInfos.toArray(new MarketInfo[0]));
 	}
 
 	@SuppressWarnings("unused")
-	private ResponseMessage handleBrowseDataSource(RequestMessage reqMsg)
+	private ResponseMessage handleBrowseDataSources(RequestMessage reqMsg)
 	{
 		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
-		List<SourceInfo> sources = manager.aggregate(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))).toList();
+		List<SourceInfo> sources = manager.aggregate(
+			Aggregates.project(
+				Projections.fields(
+					Projections.excludeId(),
+					Projections.include("enabled"),
+					Projections.computed("name", "$_id")
+				)
+			)
+		).toList();
 		return new ResponseMessage(sources.toArray(new SourceInfo[0]));
 	}
 
+	//TODO: rewrite
 	@SuppressWarnings("unused")
-	private ResponseMessage handleBrowseStrategy(RequestMessage reqMsg)
+	private ResponseMessage handleBrowseStrategies(RequestMessage reqMsg)
 	{
 		BrowseInfo info = (BrowseInfo)reqMsg.getEntity();
 

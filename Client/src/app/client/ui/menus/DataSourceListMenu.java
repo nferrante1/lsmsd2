@@ -2,8 +2,6 @@ package app.client.ui.menus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
@@ -11,42 +9,40 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.Entity;
 import app.common.net.entities.SourceInfo;
 
-public class DataSourceListMenu extends Menu {
+public class DataSourceListMenu extends Menu
+{
 	List<SourceInfo> sources = new ArrayList<SourceInfo>();
 
 	DataSourceListMenu()
 	{
-		super("This is the list of all available Data Sources");
-		
+		super("Select a Data Source");
 	}
+
 	@Override
-	protected SortedSet<MenuEntry> getMenu()
+	protected List<MenuEntry> getMenu()
 	{
-		ResponseMessage resMsg = Protocol.getInstance().browseDataSource();
-		
+		ResponseMessage resMsg = Protocol.getInstance().browseDataSources();
 		if(!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
+
 		sources.clear();
-		for(Entity entity : resMsg.getEntities())
+		for(Entity entity: resMsg.getEntities())
 			this.sources.add((SourceInfo)entity);
-		
-		SortedSet<MenuEntry> menu = new TreeSet<>();
+
+		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
-		for(SourceInfo source : sources) {
+		for(SourceInfo source: sources) {
 			menu.add(new MenuEntry(i, source.getName(), this::handleDataSourceSelection, source));
-			++i;
+			i++;
 		}
-		
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	void handleDataSourceSelection(MenuEntry entry)
 	{
-		new DataSourceMenu((SourceInfo)entry.getHandlerData()).show();;
-		
+		new DataSourceMenu((SourceInfo)entry.getHandlerData()).show();
 	}
-
 }
