@@ -5,6 +5,8 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.common.io.Files;
+
 import app.client.ui.Console;
 
 public abstract class TextForm
@@ -82,5 +84,14 @@ public abstract class TextForm
 			return false;
 		}
 		return true;
-	}	
+	}
+	
+	protected boolean validatePathJava(String filepath) 
+	{
+		if(!Files.getFileExtension(filepath).equals("java")) {
+			Console.println("Invalid file format (must be .java).");
+			return false;
+		}
+		return true;
+	}
 }

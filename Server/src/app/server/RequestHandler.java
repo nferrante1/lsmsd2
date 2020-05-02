@@ -309,7 +309,4 @@ public class RequestHandler extends Thread
 		return new ResponseMessage();
 	}
 	
-	
-	
-	
 }

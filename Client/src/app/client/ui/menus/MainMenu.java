@@ -1,11 +1,14 @@
 package app.client.ui.menus;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.PathForm;
 import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
@@ -40,6 +43,19 @@ public class MainMenu extends Menu
 
 	private void handleAddStrategy(MenuEntry entry)
 	{
+		HashMap<String, String> response = new PathForm("Path of the file").show();
+		try {
+			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("Strategy Name"), response.get("Path"));
+			if(!resMsg.isSuccess()) {
+				Console.println(resMsg.getErrorMsg());
+				return;
+			}
+			Console.println("Strategy correctly added");
+		} catch (IOException e) {
+			Console.println("Error: " + e.getMessage());
+		}
+	
+		
 	}
 
 	private void handleBrowseUsers(MenuEntry entry)
