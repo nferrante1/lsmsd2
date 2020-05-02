@@ -4,6 +4,7 @@ public class ReportInfo extends BaseReportInfo
 {
 	private static final long serialVersionUID = 7958042541743504580L;
 
+	protected String user;
 	protected double grossProfit;
 	protected double grossLoss;
 	protected double hodlProfit;
@@ -14,6 +15,7 @@ public class ReportInfo extends BaseReportInfo
 	protected double avgAmount;
 	protected double avgDuration;
 	protected double maxDrawdown;
+	protected boolean deletable;
 
 	public ReportInfo()
 	{
@@ -118,5 +120,25 @@ public class ReportInfo extends BaseReportInfo
 	public void setAvgDuration(double avgDuration)
 	{
 		this.avgDuration = avgDuration;
+	}
+
+	public String getUser()
+	{
+		return user;
+	}
+
+	public void setUser(String user)
+	{
+		this.user = user;
+	}
+
+	public boolean isDeletable()
+	{
+		return deletable;
+	}
+
+	public void setDeletable(boolean deletable)
+	{
+		this.deletable = deletable;
 	}
 }

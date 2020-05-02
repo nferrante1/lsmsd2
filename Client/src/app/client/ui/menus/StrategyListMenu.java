@@ -30,16 +30,14 @@ public class StrategyListMenu extends Menu
 			return null;
 		}
 
-		List<StrategyInfo> strategies = new ArrayList<StrategyInfo>();
-		for(Entity entity: resMsg.getEntities())
-			strategies.add((StrategyInfo)entity);
+		List<StrategyInfo> strategies = resMsg.getEntities(StrategyInfo.class);
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
 		for(StrategyInfo strategy: strategies) {
-			menu.add(new MenuEntry(i, strategy.getName() + " (by: " + strategy.getUsername() + ")", true, this::handleStrategySelection, strategy));
+			menu.add(new MenuEntry(i, strategy.getName() + " (by: " + strategy.getAuthor() + ")", true, this::handleStrategySelection, strategy));
 			++i;
-		}		
+		}
 		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;

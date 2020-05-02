@@ -55,9 +55,7 @@ public class MarketListMenu extends Menu
 			return null;
 		}
 
-		List<MarketInfo> markets = new ArrayList<MarketInfo>();
-		for(Entity entity: resMsg.getEntities())
-			markets.add((MarketInfo)entity);
+		List<MarketInfo> markets = resMsg.getEntities(MarketInfo.class);
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
@@ -75,7 +73,7 @@ public class MarketListMenu extends Menu
 	private void handleViewMarket(MenuEntry entry)
 	{
 		this.selectedMarketId = ((MarketInfo) entry.getHandlerData()).getFullId();
-		new MarketMenu((MarketInfo)entry.getHandlerData()).show();		
+		new MarketMenu((MarketInfo)entry.getHandlerData()).show();
 	}
 
 	private void handleSelectMarket(MenuEntry entry)

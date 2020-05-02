@@ -38,7 +38,7 @@ public class StrategyMenu extends Menu
 	private void handleViewStrategy(MenuEntry entry)
 	{
 		Console.println("Name: " + strategy.getName());
-		Console.println("Author: " + strategy.getUsername());
+		Console.println("Author: " + strategy.getAuthor());
 		Console.pause();
 	}
 

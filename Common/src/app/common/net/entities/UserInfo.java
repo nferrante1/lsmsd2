@@ -10,6 +10,12 @@ public class UserInfo extends Entity
 	public UserInfo()
 	{
 	}
+	
+	public UserInfo(String username, boolean admin)
+	{
+		this.username = username;
+		this.admin = admin;
+	}
 
 	public String getUsername()
 	{

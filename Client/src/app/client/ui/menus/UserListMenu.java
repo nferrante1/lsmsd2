@@ -30,12 +30,10 @@ public class UserListMenu extends Menu
 			return null;
 		}
 
-		List<UserInfo> users = new ArrayList<UserInfo>();
-		for(Entity entity: resMsg.getEntities())
-			users.add((UserInfo)entity);
+		List<UserInfo> users = resMsg.getEntities(UserInfo.class);
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
-		int i =1;
+		int i = 1;
 		for(UserInfo user : users) {
 			menu.add(new MenuEntry(i, user.getUsername() + " (admin: " + user.isAdmin() + ")", true, this::handleDeleteUser, user));
 			++i;

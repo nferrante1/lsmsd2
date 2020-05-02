@@ -35,9 +35,7 @@ public class ReportListMenu extends Menu
 			return null;
 		}
 
-		List<BaseReportInfo> reports = new ArrayList<BaseReportInfo>();
-		for(Entity entity: resMsg.getEntities())
-			reports.add((BaseReportInfo)entity);
+		List<BaseReportInfo> reports = resMsg.getEntities(BaseReportInfo.class);
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
@@ -50,22 +48,14 @@ public class ReportListMenu extends Menu
 
 	private void handleSelectReport(MenuEntry entry)
 	{
-		ResponseMessage resMsg = Protocol.getInstance().viewReport(((BaseReportInfo)entry.getHandlerData()).getRunId());
+		ResponseMessage resMsg = Protocol.getInstance().viewReport(((BaseReportInfo)entry.getHandlerData()).getId());
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		
-		ReportInfo info = null;
-		List<KVParameter> parameters = new ArrayList<KVParameter>();
-		
-		for(Entity entity : resMsg.getEntities()) {
-			if(entity instanceof ReportInfo)
-				info = (ReportInfo) entity;
-			else if (entity instanceof KVParameter)
-				parameters.add((KVParameter)entity);
-		}
-		
+
+		ReportInfo info = resMsg.getEntity(ReportInfo.class);
+		List<KVParameter> parameters = resMsg.getEntities(KVParameter.class);
 		new ReportMenu(info, parameters);
 
 	}

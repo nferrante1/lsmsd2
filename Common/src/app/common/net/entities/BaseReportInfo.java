@@ -4,25 +4,23 @@ public class BaseReportInfo extends Entity
 {
 	private static final long serialVersionUID = -2889788078149965866L;
 
-	protected String runId;
+	protected String id;
 	protected String strategyName;
 	protected String market;
-	protected String author;
-	protected boolean deletable;
 	protected double netProfit;
 
 	public BaseReportInfo()
 	{
 	}
 
-	public String getRunId()
+	public String getId()
 	{
-		return runId;
+		return id;
 	}
 
-	public void setRunId(String runId)
+	public void setId(String id)
 	{
-		this.runId = runId;
+		this.id = id;
 	}
 
 	public String getStrategyName()
@@ -45,26 +43,6 @@ public class BaseReportInfo extends Entity
 		this.market = market;
 	}
 
-	public String getAuthor()
-	{
-		return author;
-	}
-
-	public void setAuthor(String author)
-	{
-		this.author = author;
-	}
-
-	public boolean isDeletable()
-	{
-		return deletable;
-	}
-
-	public void setDeletable(boolean deletable)
-	{
-		this.deletable = deletable;
-	}
-
 	public double getNetProfit()
 	{
 		return netProfit;
@@ -74,5 +52,4 @@ public class BaseReportInfo extends Entity
 	{
 		this.netProfit = netProfit;
 	}
-
 }

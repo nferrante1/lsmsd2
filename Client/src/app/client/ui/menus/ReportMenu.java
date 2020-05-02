@@ -37,11 +37,11 @@ public class ReportMenu extends Menu
 	{
 		int amount = Integer.parseInt(new AmountForm().show().get("Amount"));
 
-		Console.println("Id: " + report.getRunId());
+		Console.println("Id: " + report.getId());
 		Console.println("Strategy: " + report.getStrategyName());
 		for (KVParameter parameter: parameters)
 			Console.println(parameter.getCapitalizedName() + ": " + parameter.getValue());
-		Console.println("Author: " + report.getAuthor());
+		Console.println("Author: " + report.getUser());
 		Console.println("Net Profit: " + report.getNetProfit()*amount);
 		Console.println("Gross Profit: " + report.getGrossProfit()*amount);
 		Console.println("Gross Loss: "  + report.getGrossLoss()*amount);
@@ -62,7 +62,7 @@ public class ReportMenu extends Menu
 			Console.println("Aborting...");
 			return;
 		}
-		ResponseMessage resMsg = Protocol.getInstance().deleteReport(report.getRunId());
+		ResponseMessage resMsg = Protocol.getInstance().deleteReport(report.getId());
 		if(!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;

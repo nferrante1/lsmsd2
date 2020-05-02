@@ -53,27 +53,24 @@ public class MarketMenu extends Menu
 			Console.println("Done!");
 			return;
 		}
-		boolean delete = false;
-		if (granularity < market.getGranularity() || granularity % market.getGranularity() != 0) {
-			if (!Console.askConfirm("Setting a granularity that is not a multiple of the previous granularity (" + market.getGranularity() + ") will delete all downloaded market data. Are you sure?")) {
+		if ((granularity < market.getGranularity() || granularity % market.getGranularity() != 0)
+			&& !Console.askConfirm("Setting a granularity that is not a multiple of the previous granularity (" + market.getGranularity() + ") will delete all downloaded market data. Are you sure?")) {
 				Console.println("Aborting...");
 				return;
 			}
-			delete = true;
-		}
 		ResponseMessage resMsg = Protocol.getInstance().editMarket(market.getSourceName(), market.getMarketId(), granularity, market.isSelectable(), market.isSync());
 		if(!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
 		market.setGranularity(granularity);
-		if (delete) {
+		/*if (delete) {
 			resMsg = Protocol.getInstance().deleteData(market.getFullId());
 			if(!resMsg.isSuccess()) {
 				Console.println("Error while deleting data: " + resMsg.getErrorMsg());
 				return;
 			}
-		}
+		}*/
 		Console.println("Done!");
 	}
 

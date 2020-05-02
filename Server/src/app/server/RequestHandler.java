@@ -116,8 +116,10 @@ public class RequestHandler extends Thread
 			resMsg = (ResponseMessage)handler.invoke(this, reqMsg);
 		} catch (NoSuchMethodException e) {
 			resMsg = new ResponseMessage("Invalid action.");
+		} catch (InvocationTargetException e) {
+			resMsg = new ResponseMessage(e.getCause().getMessage());
 		} catch (IllegalAccessException | IllegalArgumentException
-			| InvocationTargetException | SecurityException e) {
+			| SecurityException e) {
 			resMsg = new ResponseMessage("Can not run action handler.");
 			e.printStackTrace();
 		}
@@ -133,7 +135,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleDeleteUser(RequestMessage reqMsg)
 	{
-		KVParameter userInfo = (KVParameter)reqMsg.getEntity();
+		KVParameter userInfo = reqMsg.getEntity(KVParameter.class);
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
 		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getValue());
 		if(!cursor.hasNext())
@@ -147,7 +149,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleAddUser(RequestMessage reqMsg)
 	{
-		LoginInfo loginInfo = (LoginInfo)reqMsg.getEntity();
+		LoginInfo loginInfo = reqMsg.getEntity(LoginInfo.class);
 		User user = new User(loginInfo.getUsername(), loginInfo.getPassword());
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
 		userManager.save(user);
@@ -157,7 +159,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleEditDataSource(RequestMessage reqMsg)
 	{
-		SourceInfo sourceInfo = (SourceInfo)reqMsg.getEntity();
+		SourceInfo sourceInfo = reqMsg.getEntity(SourceInfo.class);
 		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
 		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(sourceInfo.getName());
 		if(!cursor.hasNext())
@@ -173,37 +175,24 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseUsers(RequestMessage reqMsg)
 	{
-		BrowseInfo browseInfo = null;
-		KVParameter filter = null;
-		for(Entity entity: reqMsg.getEntities()) 
-		{
-			if(entity instanceof BrowseInfo)
-				browseInfo = (BrowseInfo)entity;
-			else if(entity instanceof KVParameter)
-				filter = (KVParameter)entity;
-		}
-		
-		List<Bson> stages = new ArrayList<Bson>();
-		if(filter != null)
-			stages.add(Aggregates.match(Filters.regex("_id", Pattern.compile(filter.getValue(), Pattern.CASE_INSENSITIVE))));
-			
-		stages.add(Aggregates.project(Projections.fields(
-						Projections.computed("username", "$_id"),
-						Projections.include("admin")
-						
-			)));
-		stages.add(Aggregates.sort(Sorts.ascending("username")));
-		stages.add(Aggregates.skip((browseInfo.getPage()-1)*(browseInfo.getPerPage())));
-		stages.add(Aggregates.limit(browseInfo.getPerPage()));
-		PojoManager<UserInfo> userInfoManager = new PojoManager<UserInfo>(UserInfo.class, "Users");
-		List<UserInfo> userInfos = userInfoManager.aggregate(stages).toList();
+		BrowseInfo browseInfo = reqMsg.getEntity(BrowseInfo.class);
+		KVParameter filter = reqMsg.getEntity(KVParameter.class);
+		String filterValue = filter == null ? null : filter.getValue();
+		List<User> users = new StorablePojoManager<User>(User.class).findPaged(
+			filterValue == null ? null : Filters.regex("_id", Pattern.compile(filterValue, Pattern.CASE_INSENSITIVE)),
+			Projections.exclude("passwordHash"),
+			Sorts.ascending("username"),
+			browseInfo.getPage(), browseInfo.getPerPage()).toList();
+		List<UserInfo> userInfos = new ArrayList<UserInfo>(users.size());
+		for (User user: users)
+			userInfos.add(new UserInfo(user.getUsername(), user.isAdmin()));
 		return new ResponseMessage(userInfos.toArray(new UserInfo[0]));
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
-		LoginInfo loginInfo = (LoginInfo)reqMsg.getEntity();
+		LoginInfo loginInfo = reqMsg.getEntity(LoginInfo.class);
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
 		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(loginInfo.getUsername());
 		if (!cursor.hasNext())
@@ -230,96 +219,72 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseMarkets(RequestMessage reqMsg)
 	{
-		
 		KVParameter sourceFilter= null;
 		KVParameter marketFilter= null;
 		KVParameter fullIdFilter= null;
-		BrowseInfo browseInfo = null;
-		for(Entity entity : reqMsg.getEntities()) {
-			if(entity instanceof BrowseInfo)
-				browseInfo = (BrowseInfo)entity;
-			if(entity instanceof KVParameter) {
-				KVParameter parameter = (KVParameter)entity;
-				if(parameter.getName().equals("SOURCE"))
-					sourceFilter = parameter;
-				else if(parameter.getName().equals("MARKET"))
-					marketFilter = parameter;
-				else if(parameter.getName().equals("FULLID"))
-					fullIdFilter = parameter;
-			}
-				
-		}		
-		String sourceName = null;
-		String marketName = null;
-		if(fullIdFilter != null)
-		{
-			String fullId = fullIdFilter.getValue();
+		BrowseInfo browseInfo = reqMsg.getEntity(BrowseInfo.class);
+		List<KVParameter> filters = reqMsg.getEntities(KVParameter.class);
+		for (KVParameter filter: filters)
+			if (filter.getName().equals("SOURCE"))
+				sourceFilter = filter;
+			else if (filter.getName().equals("MARKET"))
+				marketFilter = filter;
+			else if (filter.getName().equals("FULLID"))
+				fullIdFilter = filter;
+
+		String sourceName = sourceFilter == null ? null : sourceFilter.getValue();
+		String marketName = marketFilter == null ? null : marketFilter.getValue();
+		String fullId = fullIdFilter == null ? null : fullIdFilter.getValue();
+		if(fullId != null)
 			if(fullId.contains(":"))
 			{
 				String[] split = fullId.split(":", 2);
 				sourceName = split[0];
 				marketName = split[1];
+			} else {
+				sourceName = null;
+				marketName = fullId;
 			}
-		} else {
-			if(sourceFilter != null)
-				sourceName = sourceFilter.getValue();
-			if(marketFilter != null)
-				marketName = marketFilter.getValue();
-		}
-		
+
 		MarketInfoManager marketInfoManager = new MarketInfoManager();
 		List<MarketInfo> marketInfos;
-		
+
 		marketInfos = marketInfoManager.getMarketInfo(sourceName, marketName ,browseInfo.getPage(), browseInfo.getPerPage()).toList();
-		
+
 		return new ResponseMessage(marketInfos.toArray(new MarketInfo[0]));
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseDataSources(RequestMessage reqMsg)
 	{
-		PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
-		List<SourceInfo> sources = manager.aggregate(
-			Aggregates.project(
-				Projections.fields(
-					Projections.excludeId(),
-					Projections.include("enabled"),
-					Projections.computed("name", "$_id")
-				)
-			)
-		).toList();
-		return new ResponseMessage(sources.toArray(new SourceInfo[0]));
+		List<DataSource> sources = new StorablePojoManager<DataSource>(DataSource.class).find(
+			null,
+			Projections.exclude("markets"),
+			null, 0, 0).toList();
+		List<SourceInfo> sourceInfos = new ArrayList<SourceInfo>(sources.size());
+		for (DataSource source: sources)
+			sourceInfos.add(new SourceInfo(source.getName(), source.isEnabled()));
+		return new ResponseMessage(sourceInfos.toArray(new SourceInfo[0]));
 	}
 
 	//TODO: rewrite
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseStrategies(RequestMessage reqMsg)
 	{
-		BrowseInfo browseInfo = null;
-		KVParameter filter = null;
-		for(Entity entity: reqMsg.getEntities()) 
-		{
-			if(entity instanceof BrowseInfo)
-				browseInfo = (BrowseInfo)entity;
-			else if(entity instanceof KVParameter)
-				filter = (KVParameter)entity;
-		}
-		
-		List<Bson> projections = new ArrayList<Bson>();
-		projections.add(Projections.excludeId());	
+		BrowseInfo browseInfo = reqMsg.getEntity(BrowseInfo.class);
+		KVParameter filter = reqMsg.getEntity(KVParameter.class);
+		String filterValue = filter == null ? null : filter.getValue();
 		PojoManager<StrategyInfo> manager = new PojoManager<StrategyInfo>(StrategyInfo.class, "Strategies");
-		List<StrategyInfo> strategies = manager.findPaged(filter == null ? null : 
-				Filters.regex("name", Pattern.compile(filter.getValue(), Pattern.CASE_INSENSITIVE)),
-				Projections.fields(projections),
-				null,
+		List<StrategyInfo> strategies = manager.findPaged(filterValue == null ? null :
+				Filters.regex("name", Pattern.compile(filterValue, Pattern.CASE_INSENSITIVE)),
+				Projections.excludeId(),
+				Sorts.ascending("name"),
 				browseInfo.getPage(),
 				browseInfo.getPerPage()).toList();
-		
-		for(StrategyInfo strategy : strategies)
-		{
-			if(authToken.isAdmin() || authToken.getUsername().equals(strategy.getUsername()))
+
+		for(StrategyInfo strategy: strategies)
+			if(authToken.isAdmin() || authToken.getUsername().equals(strategy.getAuthor()))
 				strategy.setDeletable(true);
-		}
 
 		return new ResponseMessage((Entity[])strategies.toArray(new StrategyInfo[0]));
 	}
@@ -327,7 +292,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleEditMarket(RequestMessage reqMsg)
 	{
-		MarketInfo marketInfo = (MarketInfo)reqMsg.getEntity();
+		MarketInfo marketInfo = reqMsg.getEntity(MarketInfo.class);
 		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
 		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(marketInfo.getSourceName());
 		if(!cursor.hasNext())

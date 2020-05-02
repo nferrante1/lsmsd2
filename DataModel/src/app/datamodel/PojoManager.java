@@ -96,14 +96,24 @@ public class PojoManager<T extends Object>
 		return new PojoCursor<T>(getFindIterable(filter, projection, sort, skip, limit).cursor());
 	}
 
-	public PojoCursor<T> find(Bson filter, Bson projection, int skip, int limit)
+	public PojoCursor<T> find(Bson filter, Bson sort, int skip, int limit)
 	{
-		return find(filter, projection, null, skip, limit);
+		return find(filter, null, sort, skip, limit);
 	}
 
-	public PojoCursor<T> find(Object id, Bson projection, int skip, int limit)
+	public PojoCursor<T> find(Object id, Bson sort, int skip, int limit)
 	{
-		return find(Filters.eq("_id", id), projection, skip, limit);
+		return find(Filters.eq("_id", id), sort, skip, limit);
+	}
+
+	public PojoCursor<T> find(Object id, Bson projection, Bson sort)
+	{
+		return find(Filters.eq("_id", id), projection, sort);
+	}
+
+	public PojoCursor<T> find(Bson filter, Bson projection, Bson sort)
+	{
+		return find(filter, projection, sort, 0, 0);
 	}
 
 	public PojoCursor<T> find(Object id, Bson projection, Bson sort, int skip, int limit)
@@ -121,7 +131,7 @@ public class PojoManager<T extends Object>
 		return find(Filters.eq("_id", id), skip, limit);
 	}
 
-	public PojoCursor<T> find(Bson filter, Bson projection, Bson sort, int limit)
+	/*public PojoCursor<T> find(Bson filter, Bson projection, Bson sort, int limit)
 	{
 		return find(filter, projection, sort, 0, limit);
 	}
@@ -134,9 +144,9 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> find(Object id, Bson projection, Bson sort, int limit)
 	{
 		return find(Filters.eq("_id", id), projection, sort, limit);
-	}
+	}*/
 
-	public PojoCursor<T> find(Object id, Bson projection, int limit)
+	/*public PojoCursor<T> find(Object id, Bson projection, int limit)
 	{
 		return find(Filters.eq("_id", id), projection, limit);
 	}
@@ -149,29 +159,29 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> find(int limit, Bson sort)
 	{
 		return find(0, limit, sort);
-	}
+	}*/
 
-	public PojoCursor<T> find(Bson filter, Bson projection, Bson sort)
+	public PojoCursor<T> find(Bson filter, Bson sort)
 	{
-		return find(filter, projection, sort, 0);
+		return find(filter, sort, 0, 0);
 	}
 
-	public PojoCursor<T> find(Bson filter, Bson projection)
+	/*public PojoCursor<T> find(Bson filter, Bson projection)
 	{
 		return find(filter, projection, null);
-	}
+	}*/
 
-	public PojoCursor<T> find(Object id, Bson projection)
+	/*public PojoCursor<T> find(Object id, Bson projection)
 	{
 		return find(Filters.eq("_id", id), projection);
-	}
+	}*/
 
 	public PojoCursor<T> find(int skip, int limit)
 	{
 		return find(null, skip, limit);
 	}
 
-	public PojoCursor<T> find(Bson filter, int limit)
+	/*public PojoCursor<T> find(Bson filter, int limit)
 	{
 		return find(filter, 0, limit);
 	}
@@ -179,19 +189,19 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> find(Object id, int limit)
 	{
 		return find(Filters.eq("_id", id), limit);
-	}
+	}*/
 
 	public PojoCursor<T> find(int limit)
 	{
-		return find(null, limit);
+		return find(0, limit);
 	}
 
 	public PojoCursor<T> find(Bson filter)
 	{
-		return find(filter, 0);
+		return find(filter, null);
 	}
 
-	public PojoCursor<T> findSorted(Bson sort)
+	/*public PojoCursor<T> findSorted(Bson sort)
 	{
 		return findSorted(null, sort);
 	}
@@ -199,7 +209,7 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> findSorted(Bson projection, Bson sort)
 	{
 		return find(null, projection, sort);
-	}
+	}*/
 
 	public PojoCursor<T> find(Object id)
 	{

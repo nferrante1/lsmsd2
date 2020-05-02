@@ -5,7 +5,7 @@ public class StrategyInfo extends Entity
 	private static final long serialVersionUID = 8337583857656650614L;
 
 	protected String name;
-	protected String username;
+	protected String author;
 	protected boolean deletable;
 
 	public StrategyInfo()
@@ -17,9 +17,9 @@ public class StrategyInfo extends Entity
 		return name;
 	}
 
-	public String getUsername()
+	public String getAuthor()
 	{
-		return username;
+		return author;
 	}
 
 	public boolean isDeletable()
@@ -37,8 +37,8 @@ public class StrategyInfo extends Entity
 		this.name = name;
 	}
 
-	public void setUsername(String username)
+	public void setAuthor(String username)
 	{
-		this.username = username;
+		this.author = username;
 	}
 }

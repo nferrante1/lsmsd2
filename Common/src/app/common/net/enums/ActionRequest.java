@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public enum ActionRequest implements Serializable
 {
-	LOGIN, // req={loginInfo} res={authToken}
+	LOGIN,
 	LOGOUT,
-	BROWSE_MARKETS, // req={(browseInfo)page, perPage; (filter)nameFilter} res={marketInfoList}
-	BROWSE_STRATEGIES, // req={(browseInfo)page, perPage; (filter)nameFilter} res={strategyInfoList}
+	BROWSE_MARKETS,
+	BROWSE_STRATEGIES,
 	VIEW_STRATEGY, // TODO: req={(filter)strategyName} res={(ParameterInfoList)name, enum:type}
 	RUN_STRATEGY, // req={(filter)strategyName; kvParameterList} res={(progressInfo)percentage}/{reportInfo} //TODO: add type to KVParameter
 	ADD_STRATEGY, // req={(filter)strategyName; file}
@@ -16,12 +16,12 @@ public enum ActionRequest implements Serializable
 	BROWSE_REPORTS, // req={(browseReportsInfo)page, perPage[from browseInfo], strategyName, marketName} res={baseReportInfoList}
 	VIEW_REPORT, // req={(filter)reportId} res={reportInfo; KVParameterList}
 	DELETE_REPORT, // req={(filter)reportId}
-	BROWSE_USERS, // req={(browseInfo)page, perPage, (filter)nameFilter} res={userInfoList}
-	ADD_USER, // req={loginInfo}
-	DELETE_USER, // req={(filter)username}
-	BROWSE_DATA_SOURCES, // res={sourceInfoList}
-	EDIT_DATA_SOURCE, // req={sourceInfo}
-	EDIT_MARKET, // req={marketInfo}
+	BROWSE_USERS,
+	ADD_USER,
+	DELETE_USER,
+	BROWSE_DATA_SOURCES,
+	EDIT_DATA_SOURCE,
+	EDIT_MARKET,
 	DELETE_DATA; // req={(deleteDataFilter)sourceId, marketId, date}
 
 	public String toCamelCaseString()
