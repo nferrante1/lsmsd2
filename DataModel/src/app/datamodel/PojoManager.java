@@ -7,6 +7,9 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoNamespace;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -67,6 +70,54 @@ public class PojoManager<T extends Object>
 	{
 		return getDB().getCollection(name, clazz);
 	}
+	
+	protected MongoCollection<T> getCollection(ReadConcern readConcern, WriteConcern writeConcern, ReadPreference readPreference)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withReadConcern(readConcern)
+				.withWriteConcern(writeConcern)
+				.withReadPreference(readPreference);
+	}
+	
+	protected MongoCollection<T> getCollection(ReadConcern readConcern, WriteConcern writeConcern)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withReadConcern(readConcern)
+				.withWriteConcern(writeConcern);
+	}
+	
+	protected MongoCollection<T> getCollection(ReadConcern readConcern, ReadPreference readPreference)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withReadConcern(readConcern)
+				.withReadPreference(readPreference);
+	}
+	
+	protected MongoCollection<T> getCollection(WriteConcern writeConcern, ReadPreference readPreference)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withWriteConcern(writeConcern)
+				.withReadPreference(readPreference);
+	}
+	
+	protected MongoCollection<T> getCollection(ReadConcern readConcern)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withReadConcern(readConcern);
+	}
+	
+	protected MongoCollection<T> getCollection(WriteConcern writeConcern)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withWriteConcern(writeConcern);
+				
+	}
+	
+	protected MongoCollection<T> getCollection(ReadPreference readPreference)
+	{
+		return getCollection(getCollectionName(), pojoClass)
+				.withReadPreference(readPreference);
+	}	
 
 	protected MongoCollection<T> getCollection()
 	{

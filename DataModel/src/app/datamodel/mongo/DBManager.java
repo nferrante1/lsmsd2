@@ -18,6 +18,9 @@ import org.bson.conversions.Bson;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -26,97 +29,34 @@ import com.mongodb.client.model.IndexOptions;
 public final class DBManager implements Closeable
 {
 	private static DBManager instance;
-
-	private static String hostname;
-	private static int port;
-	private static String username;
-	private static String password;
-	private static String databaseName;
+	
+	private static String connectionString = "mongodb://localhost:27017,localhost:27018";
+	private static String databaseName = "mydb";
 	private static List<Codec<?>> codecs;
-	private static HashMap<String, String> options;
 
 	private MongoClient mongoClient;
 	private MongoDatabase mongoDatabase;
-
+	
+	private static ReadConcern readConcern = ReadConcern.LOCAL;
+	private static WriteConcern writeConcern = WriteConcern.MAJORITY;
+	private static ReadPreference readPreference = ReadPreference.primary();
+	
 	private DBManager()
 	{
-		if (hostname == null || hostname.isEmpty())
-			hostname = "localhost";
-
-		StringBuilder sb = new StringBuilder("mongodb://");
-
-		if (username != null && !username.isEmpty()) {
-			sb.append(username);
-			if (password != null && !password.isEmpty())
-				sb.append(":" + password + "@");
-		}
-
-		sb.append(hostname);
-		if (port > 0 && port < 65536)
-			sb.append(":" + port);
-
-		if (options != null && !options.isEmpty()) {
-			sb.append("/?");
-			for (Map.Entry<String, String> option: options.entrySet())
-				sb.append(option.getKey() + "=" + option.getValue() + "&");
-			sb.deleteCharAt(sb.length() - 1);
-		}
+		
 		CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 						CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()));
-		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(sb.toString())).codecRegistry(CodecRegistries.fromRegistries(/*CodecRegistries.fromCodecs(codecs),*/pojoCodecRegistry)).build();
+		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(connectionString)).codecRegistry(CodecRegistries.fromRegistries(pojoCodecRegistry)).build();
 		mongoClient = MongoClients.create(settings);
-
-		if (databaseName == null || databaseName.isEmpty())
-			databaseName = "admin";
 	}
-
-	public static synchronized void setHostname(String hostname)
-	{
-		DBManager.hostname = hostname;
+	
+	public static synchronized void setDatabaseName(String name) {
+		databaseName = name;
 	}
-
-	public static synchronized void setPort(int port)
-	{
-		DBManager.port = port;
+	
+	public static synchronized void setConnectionString(String conn) {
+		connectionString = conn;
 	}
-
-	public static synchronized void setUsername(String username)
-	{
-		DBManager.username = username;
-	}
-
-	public static synchronized void setPassword(String password)
-	{
-		DBManager.password = password;
-	}
-
-	public static synchronized void setDatabase(String databaseName)
-	{
-		DBManager.databaseName = databaseName;
-	}
-
-	public static synchronized void setOption(String key, String value)
-	{
-		if (options == null)
-			options = new HashMap<String, String>();
-		options.put(key, value);
-	}
-
-	public static synchronized void setOption(String key, int value)
-	{
-		setOption(key, Integer.toString(value));
-	}
-
-	public static synchronized void setOption(String key, boolean value)
-	{
-		setOption(key, Boolean.toString(value));
-	}
-
-	public static synchronized <E extends Enum<E>> void setOption(String key, E value)
-	{
-		setOption(key, value.toString());
-	}
-
 	public static synchronized void addCodec(Codec<?> codec)
 	{
 		if (codecs == null)
@@ -136,7 +76,11 @@ public final class DBManager implements Closeable
 		if (instance == null)
 			throw new IllegalStateException("Called getDatabase() on a uninitialized instance.");
 		if (mongoDatabase == null) {
-			mongoDatabase = mongoClient.getDatabase(databaseName);
+			mongoDatabase = mongoClient.getDatabase(databaseName).
+					withReadPreference(getReadPreference()).
+					withReadConcern(getReadConcern()).
+					withWriteConcern(getWriteConcern());
+			
 			init();
 		}
 		return mongoDatabase;
@@ -191,5 +135,35 @@ public final class DBManager implements Closeable
 			mongoClient = null;
 		}
 		instance = null;
+	}
+
+	public static ReadConcern getReadConcern()
+	{
+		return readConcern;
+	}
+
+	public static void setReadConcern(ReadConcern readConcern)
+	{
+		DBManager.readConcern = readConcern;
+	}
+
+	public static WriteConcern getWriteConcern()
+	{
+		return writeConcern;
+	}
+
+	public static void setWriteConcern(WriteConcern writeConcern)
+	{
+		DBManager.writeConcern = writeConcern;
+	}
+
+	public static ReadPreference getReadPreference()
+	{
+		return readPreference;
+	}
+
+	public static void setReadPreference(ReadPreference readPreference)
+	{
+		DBManager.readPreference = readPreference;
 	}
 }

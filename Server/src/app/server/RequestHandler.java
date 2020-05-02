@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.bson.conversions.Bson;
-
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -29,6 +26,8 @@ import app.common.net.entities.SourceInfo;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
+import app.datamodel.AuthTokenManager;
+import app.datamodel.DataSourceManager;
 import app.datamodel.PojoManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
@@ -83,7 +82,7 @@ public class RequestHandler extends Thread
 		}
 
 		if(reqMsg.getAction() != ActionRequest.LOGIN) {
-			StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+			AuthTokenManager authTokenManager = new AuthTokenManager();
 			StorablePojoCursor<AuthToken> cursor = (StorablePojoCursor<AuthToken>)authTokenManager.find(reqMsg.getAuthToken());
 
 			if(!cursor.hasNext()) {
@@ -160,7 +159,7 @@ public class RequestHandler extends Thread
 	private ResponseMessage handleEditDataSource(RequestMessage reqMsg)
 	{
 		SourceInfo sourceInfo = reqMsg.getEntity(SourceInfo.class);
-		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
+		DataSourceManager dataSourceManager = new DataSourceManager();
 		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(sourceInfo.getName());
 		if(!cursor.hasNext())
 			return new ResponseMessage("Source '" + sourceInfo.getName() + "' not found.");
@@ -200,7 +199,7 @@ public class RequestHandler extends Thread
 		User user = cursor.next();
 		if(!user.checkPassword(loginInfo.getPassword()))
 			return new ResponseMessage("Invalid password.");
-		StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+		AuthTokenManager authTokenManager = new AuthTokenManager();
 		authToken = user.generateToken();
 		authTokenManager.save(authToken);
 		return new ResponseMessage(new AuthTokenInfo(authToken.getId()));
@@ -209,7 +208,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleLogout(RequestMessage reqMsg)
 	{
-		StorablePojoManager<AuthToken> authTokenManager = new StorablePojoManager<AuthToken>(AuthToken.class);
+		AuthTokenManager authTokenManager = new AuthTokenManager();
 		authToken.delete();
 		authTokenManager.save(authToken);
 		authToken = null;
@@ -257,7 +256,7 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleBrowseDataSources(RequestMessage reqMsg)
 	{
-		List<DataSource> sources = new StorablePojoManager<DataSource>(DataSource.class).find(
+		List<DataSource> sources = new DataSourceManager().find(
 			null,
 			Projections.exclude("markets"),
 			null, 0, 0).toList();
@@ -293,7 +292,7 @@ public class RequestHandler extends Thread
 	private ResponseMessage handleEditMarket(RequestMessage reqMsg)
 	{
 		MarketInfo marketInfo = reqMsg.getEntity(MarketInfo.class);
-		StorablePojoManager<DataSource> dataSourceManager = new StorablePojoManager<DataSource>(DataSource.class);
+		DataSourceManager dataSourceManager = new DataSourceManager();
 		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)dataSourceManager.find(marketInfo.getSourceName());
 		if(!cursor.hasNext())
 			return new ResponseMessage("Source '" + marketInfo.getSourceName() + "' not found.");

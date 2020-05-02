@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import app.datamodel.DataSourceManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
@@ -22,32 +23,51 @@ import app.scraper.net.SourceConnector;
 
 public final class Scraper
 {
+	
 	private static Map<String, Class<? extends SourceConnector>> sourceConnectorMap = Map.ofEntries(
 			Map.entry("COINBASE", CoinbaseConnector.class),
 			Map.entry("BINANCE", BinanceConnector.class)
 		);
 	private static List<Worker> workers = new ArrayList<Worker>();
+	private static int stopCount = 1;
 
 	public static void main(String[] args)
 	{
 		setupDBManager();
 
+		start();
+		listenForSync();
+		System.err.println("Unknown error. Stopping...");
+		stop();
+	}
+
+	private static void start() {
+		stopCount--;
+		if(stopCount >= 1)
+			return;
+		System.out.println("Starting Workers...");
 		createWorkers();
 		for (Worker worker: workers)
 			worker.start();
-		listenForSync();
-		System.err.println("Unknown error. Stopping...");
-		for (Worker worker: workers)
-			if (worker.isAlive())
-				worker.interrupt();
-		for (Worker worker: workers)
-			try {
-				worker.join();
-			} catch (InterruptedException e) {
-				System.exit(1);
-			}
 	}
-
+	private static void stop() 
+	{
+		stopCount++;
+		if(stopCount > 1)
+			return;
+		System.out.println("Stopping workers...");
+		for (Worker worker: workers)
+			worker.interrupt();
+		for (Worker worker: workers)
+			while (worker.isAlive())
+				try {
+					worker.join();
+				} catch (InterruptedException e) {
+				}
+		workers.clear();
+		System.out.println("All threads stopped.");		
+	}
+	
 	private static void listenForSync()
 	{
 		ServerSocket listeningSocket = null;
@@ -59,45 +79,24 @@ public final class Scraper
 				DataInputStream dis = new DataInputStream(is);
 
 				String msg = dis.readUTF();
-				if (!msg.equals("STOP")) {
-					System.err.println("Received invalid SYNC command from server: " + msg + ".");
-					dis.close();
-					socket.close();
-					continue;
+				if(msg.equals("START")) {
+					start();
+				}
+				else if (msg.equals("STOP")) {
+					stop();
 				}
 
-				System.out.println("Stopping workers...");
-				for (Worker worker: workers)
-					worker.interrupt();
-				for (Worker worker: workers)
-					while (worker.isAlive())
-						try {
-							worker.join();
-						} catch (InterruptedException e) {
-						}
-				workers.clear();
-				System.out.println("All threads stopped.");
+				
 
 				OutputStream os = socket.getOutputStream();
 				DataOutputStream dos = new DataOutputStream(os);
 				dos.writeUTF("ACK");
 				dos.flush();
 
-				msg = dis.readUTF();
-				if (!msg.equals("START")) {
-					System.err.println("Received invalid SYNC command from server: " + msg + ".");
-					dos.close();
-					dis.close();
-					socket.close();
-					throw new RuntimeException("Invalid message from server.");
-				}
 				dos.close();
 				dis.close();
 				socket.close();
-				System.out.println("Restarting...");
-				createWorkers();
-				for (Worker worker: workers)
-					worker.start();
+				
 			}
 		} catch (Throwable ex) {
 			ex.printStackTrace();
@@ -113,16 +112,11 @@ public final class Scraper
 
 	private static void setupDBManager()
 	{
-		DBManager.setHostname("127.0.0.1");
-		DBManager.setPort(27017);
-		DBManager.setUsername("root");
-		DBManager.setPassword("rootpass");
-		DBManager.setDatabase("mydb");
 	}
 
 	private static void createWorkers()
 	{
-		StorablePojoManager<DataSource> manager = new StorablePojoManager<DataSource>(DataSource.class);
+		DataSourceManager manager = new DataSourceManager();
 		StorablePojoCursor<DataSource> cursor = (StorablePojoCursor<DataSource>)manager.find();
 		List<DataSource> sources = cursor.toList();
 		cursor.close();

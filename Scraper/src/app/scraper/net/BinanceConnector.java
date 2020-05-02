@@ -30,9 +30,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BinanceConnector implements SourceConnector
 {
+	private final int[] ACCEPTED_GRANULARITY = {1, 3, 5, 15, 30, 60, 120, 240, 360, 480, 720, 1440, 4320, 10080};
 	private Retrofit retrofit;
 	private BinanceInterface apiInterface;
 	private int additionalRateLimit = 0;
+	
+	protected int getAcceptedGranularity(int granularity) 
+	{
+		for(int i = ACCEPTED_GRANULARITY.length - 1; i >= 0 ; --i ) {
+			if(granularity % ACCEPTED_GRANULARITY[i] == 0)
+				return granularity;
+		}
+		return ACCEPTED_GRANULARITY[0];
+	}
 
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
@@ -157,6 +167,7 @@ public class BinanceConnector implements SourceConnector
 	@Override
 	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
+		granularity = getAcceptedGranularity(granularity);
 		if (start != null && !start.isBefore(Instant.now()))
 			return new ArrayList<APICandle>();
 		List<APICandle> retCandles = _getCandles(marketId, granularity, start);

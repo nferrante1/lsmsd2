@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.datamodel.DataRangeManager;
+import app.datamodel.DataSourceManager;
 import app.datamodel.MarketDataManager;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.Candle;
@@ -22,13 +23,13 @@ final class Worker extends Thread
 {
 	private final DataSource source;
 	private final SourceConnector connector;
-	private StorablePojoManager<DataSource> sourceManager;
+	private DataSourceManager sourceManager;
 
 	public Worker(DataSource source, SourceConnector connector)
 	{
 		this.source = source;
 		this.connector = connector;
-		sourceManager = new StorablePojoManager<DataSource>(DataSource.class);
+		sourceManager = new DataSourceManager();
 	}
 
 	@Override
@@ -157,7 +158,6 @@ final class Worker extends Thread
 		if (lastCandlesCount < 0)
 			lastCandlesCount = marketDataManager.countLastCandles(fullMarketId);
 		int sourceCandlesCount = sourceCandles.size();
-
 		int toUpsert = lastCandlesCount == 0 ? 0 : 1000 - lastCandlesCount;
 		toUpsert = Math.min(toUpsert, sourceCandlesCount);
 		if (toUpsert > 0) {

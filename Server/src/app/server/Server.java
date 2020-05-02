@@ -16,6 +16,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.mongodb.ReadPreference;
+
 import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.User;
@@ -122,26 +124,6 @@ public class Server
 	{
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "Print this message."));
-		Option hostOpt = new Option("H", "host", true, "Specify MongoDB database hostname (default: localhost).");
-		hostOpt.setType(String.class);
-		hostOpt.setArgName("HOST");
-		options.addOption(hostOpt);
-		Option dbNameOpt = new Option("d", "dbname", true, "Specify MongoDB database name (default: admin).");
-		dbNameOpt.setType(String.class);
-		dbNameOpt.setArgName("DBNAME");
-		options.addOption(dbNameOpt);
-		Option dbportOpt = new Option("dbport", true, "Specify MongoDB database port (default: 27017).");
-		hostOpt.setType(Integer.class);
-		hostOpt.setArgName("PORT");
-		options.addOption(dbportOpt);
-		Option userOpt = new Option("u", "user", true, "Specify MongoDB database username (default: root).");
-		userOpt.setType(String.class);
-		userOpt.setArgName("USER");
-		options.addOption(userOpt);
-		Option passOpt = new Option("p", "pass", true, "Specify MongoDB database password (default: <empty>).");
-		passOpt.setType(String.class);
-		passOpt.setArgName("PASS");
-		options.addOption(passOpt);
 		Option portOpt = new Option("P", "port", true, "Set listening port (default: 8888).");
 		portOpt.setType(Integer.class);
 		portOpt.setArgName("PORT");
@@ -184,43 +166,6 @@ public class Server
 			setLogLevel(logLevel);
 		}
 
-		if (cmd.hasOption("host")) {
-			String host = cmd.getOptionValue("host");
-			if (!host.isBlank()) {
-				DBManager.setHostname(host);
-			}
-		}
-		if(cmd.hasOption("dbname")) {
-			String dbname = cmd.getOptionValue("dbname");
-			if (!dbname.isBlank()) {
-				DBManager.setDatabase(dbname);
-			}
-		}
-		if (cmd.hasOption("dbport")) {
-			String dbport = cmd.getOptionValue("dbport");
-			try {
-				int intdbport = Integer.parseInt(dbport);
-				if (intdbport < 0 || intdbport > 65535) {
-					NumberFormatException ex = new NumberFormatException("The dbport must be a number between 0 and 65535.");
-					Logger.getLogger(Server.class.getName()).throwing(Server.class.getName(), "parseOptions", ex);
-					throw ex;
-				}
-				DBManager.setPort(intdbport);
-			} catch (NumberFormatException ex) {
-	
-			}
-		}
-
-		if (cmd.hasOption("user")) {
-			String user = cmd.getOptionValue("user");
-			if (!user.isBlank())
-				DBManager.setUsername(user);
-			
-		}
-		if (cmd.hasOption("pass")) {
-			String pass = cmd.getOptionValue("pass");
-			DBManager.setPassword(pass);
-		}
 		if (cmd.hasOption("port")) {
 			try {
 				port = Integer.parseInt(cmd.getOptionValue("port", "8888"));
@@ -251,11 +196,7 @@ public class Server
 	
 	public static void setupDBManager()
 	{
-		DBManager.setHostname("127.0.0.1");
-		DBManager.setPort(27017);
-		 DBManager.setUsername("root");
-		DBManager.setPassword("rootpass");
-		DBManager.setDatabase("mydb");
+		DBManager.setReadPreference(ReadPreference.nearest());
 	}
 	
 

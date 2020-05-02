@@ -6,59 +6,41 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ScraperController {
-	private static Socket socket;
-	private static DataInputStream input;
-	private static DataOutputStream output;
-	private static boolean connected;
-	static private synchronized void connect() {
-		if(connected)
-			return;
-		try {
-			socket = new Socket("127.0.0.1",5656);
-			input = new DataInputStream(socket.getInputStream());
-			output = new DataOutputStream(socket.getOutputStream());
-			connected = true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-	}
 	
-	static private synchronized void close() {
-		if(!connected)
-			return;
-		try {		
+	static public void start() {
+		try {
+			Socket socket = new Socket("127.0.0.1", 5656);
+			DataInputStream input = new DataInputStream(socket.getInputStream());
+			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+			
+			output.writeUTF("START");
+			output.flush();
+			String msg = "";
+			while(!msg.equals("ACK"))
+				msg= input.readUTF();
 			input.close();
 			output.close();
 			socket.close();
-			connected = false;
-			
 		} catch (IOException e) {
 			e.printStackTrace();
-			return;
 		}
-	}
-	static public synchronized void start() {
-		try {
-		output.writeUTF("START");
-		output.flush();
-		} catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		close();
 	};
-	static public synchronized void stop() {
-		connect();
+	static public void stop() {
+		
 		try {
-		output.writeUTF("STOP");
-		output.flush();
-		String ack = input.readUTF();
-		if(!ack.equals("ACK"))
-			//Errore
-			return;
-		} catch (IOException e) 
-		{
+			Socket socket = new Socket("127.0.0.1", 5656);
+			DataInputStream input = new DataInputStream(socket.getInputStream());
+			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+			
+			output.writeUTF("STOP");
+			output.flush();
+			String msg = "";
+			while(!msg.equals("ACK"))
+				msg= input.readUTF();
+			input.close();
+			output.close();
+			socket.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

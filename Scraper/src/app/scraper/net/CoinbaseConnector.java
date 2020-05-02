@@ -29,10 +29,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CoinbaseConnector implements SourceConnector
 {
+	private final int[] ACCEPTED_GRANULARITY = {1, 5, 15, 60, 360, 1440};
 	private Retrofit retrofit;
 	private CoinbaseInterface apiInterface;
 	private int additionalRateLimit = 0;
 
+	
+	protected int getAcceptedGranularity(int granularity) 
+	{
+		for(int i = ACCEPTED_GRANULARITY.length - 1; i >= 0 ; --i ) {
+			if(granularity % ACCEPTED_GRANULARITY[i] == 0)
+				return granularity;
+		}
+		return ACCEPTED_GRANULARITY[0];
+	}
 	private class CandleDeserializer implements JsonDeserializer<APICandle>
 	{
 		@Override
@@ -135,6 +145,7 @@ public class CoinbaseConnector implements SourceConnector
 	@Override
 	public List<APICandle> getCandles(String marketId, int granularity, Instant start) throws InterruptedException
 	{
+		granularity = getAcceptedGranularity(granularity);
 		if(start == null)
 			start = findFirstInstant(marketId, granularity);
 		if (!start.isBefore(Instant.now()))
@@ -154,7 +165,7 @@ public class CoinbaseConnector implements SourceConnector
 		}
 
 		List<APICandle> candles = new ArrayList<APICandle>();
-		end = retCandles.get(retCandles.size() - 1).getTime().plusSeconds(1);
+		end = retCandles.get(0).getTime().plusSeconds(1);
 		int index = retCandles.size() - 1;
 		for (Instant curTime = start; curTime.isBefore(end); curTime = curTime.plusSeconds(granularity * 60)) {
 			APICandle curCandle = retCandles.get(recursive ? 0 : index);
