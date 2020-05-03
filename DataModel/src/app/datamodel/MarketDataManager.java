@@ -61,7 +61,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 		getCollection().deleteMany(Filters.regex("name", Pattern.compile("^" + sourceName + ":", Pattern.CASE_INSENSITIVE)));
 	}
 	
-	protected void delete(String sourceName, String marketName)
+	public void delete(String sourceName, String marketName)
 	{
 		if (marketName == null) {
 			delete(sourceName);
@@ -70,7 +70,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 		getCollection().deleteMany(Filters.eq("market", sourceName + ":" + marketName));
 	}
 	
-	protected void delete(String sourceName, String marketName, Instant date)
+	public void delete(String sourceName, String marketName, Instant date)
 	{
 		if (date == null) {
 			delete(sourceName, marketName);

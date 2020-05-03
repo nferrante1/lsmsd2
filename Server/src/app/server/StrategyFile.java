@@ -41,7 +41,7 @@ public class StrategyFile {
 		String directoryName = this.hashFile.substring(0, 2);
 		String fileName = this.hashFile.substring(3);
 		File dir =  new File(mainDirectory + "/" + directoryName);
-		dir.mkdir();
+		dir.mkdirs();
 		try (FileOutputStream fos = new FileOutputStream(new File(dir.getAbsolutePath() + "/" + fileName + ".java"))) {
 			fos.write(this.file);
 			fos.close();

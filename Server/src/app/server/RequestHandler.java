@@ -340,7 +340,6 @@ public class RequestHandler extends Thread
 	private ResponseMessage handleDownloadStrategy(RequestMessage reqMsg)
 	{
 		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
-		
 		//TODO come lo prendo l'id se strategyInfo non ce l'ha???
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
@@ -353,7 +352,7 @@ public class RequestHandler extends Thread
 		Strategy strategy = strategies.next();
 		
 		try {
-			FileContent file = new FileContent(strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3));
+			FileContent file = new FileContent("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3) + ".java");
 			return new ResponseMessage(file);
 			
 		} catch (IOException e) {

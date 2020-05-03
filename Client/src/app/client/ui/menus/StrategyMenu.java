@@ -76,11 +76,11 @@ public class StrategyMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		try (FileOutputStream fos = new FileOutputStream(response.get("Path") + "/" + strategy.getName())) {
+		try (FileOutputStream fos = new FileOutputStream(response.get("Path"))) {
 			FileContent file = resMsg.getEntity(FileContent.class);
 			fos.write(file.getContent());
 			fos.close();
-			Console.println("Strategy correctly added");
+			Console.println("Strategy correctly downloaded");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

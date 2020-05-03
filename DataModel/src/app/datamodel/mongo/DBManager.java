@@ -16,6 +16,7 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadConcern;
@@ -93,6 +94,26 @@ public final class DBManager implements Closeable
 			.expireAfter(0L, TimeUnit.SECONDS);
 		Bson keys = new Document("expireTime", 1);
 		mongoDatabase.getCollection("AuthTokens").createIndex(keys, indexOptions);
+		
+		indexOptions = new IndexOptions().name("startIndex");
+		keys = new Document("start", 1);
+		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions()
+			.name("runIdIndex")
+			.unique(true);
+		keys = new Document("runs.id", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("reportNetProfitIndex");
+		keys = new Document("runs.report.netProfit", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+		
+		indexOptions = new IndexOptions()
+				.name("nameIndex")
+				.unique(true);
+			keys = new Document("name", 1);
+			mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 
 		indexOptions = new IndexOptions()
 			.name("marketIdIndex")
@@ -104,25 +125,19 @@ public final class DBManager implements Closeable
 		keys = new Document("market", "hashed");
 		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
 
-		indexOptions = new IndexOptions().name("startIndex");
-		keys = new Document("start", 1);
-		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
+		
+		// Enable sharding on a collection. ///////////////////////////////////////////////
+	        mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
 
-		indexOptions = new IndexOptions()
-			.name("nameIndex")
-			.unique(true);
-		keys = new Document("name", 1);
-		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+	        final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
+	        //shardKey.put("hash", 1);
 
-		indexOptions = new IndexOptions()
-			.name("runIdIndex")
-			.unique(true);
-		keys = new Document("runs.id", 1);
-		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+	        final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
 
-		indexOptions = new IndexOptions().name("reportNetProfitIndex");
-		keys = new Document("runs.report.netProfit", 1);
-		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+	        cmd.put("key", shardKey);
+
+	        mongoClient.getDatabase("admin").runCommand(cmd);
+	        //////////////////////////////////////////////////////////////////////////////////
 	}
 
 	@Override

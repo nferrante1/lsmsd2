@@ -54,4 +54,29 @@ public class Strategy extends StorablePojo
 	public String getId() {
 		return this.id;
 	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public List<StrategyRun> getRuns()
+	{
+		return runs;
+	}
+
+	public void setRuns(List<StrategyRun> runs)
+	{
+		this.runs = runs;
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 }
