@@ -2,6 +2,7 @@ package app.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,10 +20,12 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.Entity;
+import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.SourceInfo;
+import app.common.net.entities.StrategyFile;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
@@ -34,6 +37,7 @@ import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
+import app.datamodel.pojos.Strategy;
 import app.datamodel.pojos.User;
 import app.server.dm.MarketInfoManager;
 
@@ -307,6 +311,26 @@ public class RequestHandler extends Thread
 		dataSourceManager.save(source);
 		ScraperController.start();
 		return new ResponseMessage();
+	}
+	
+	@SuppressWarnings("unused")
+	private ResponseMessage handleAddStrategy(RequestMessage reqMsg) 
+	{
+		KVParameter strategyName = reqMsg.getEntity(KVParameter.class);
+		FileContent strategyContent = reqMsg.getEntity(FileContent.class);
+		StrategyFile file = new StrategyFile(strategyContent.getContent());
+		try {
+			file.save();
+			Strategy strategy = new Strategy(file.getHash(), strategyName.getValue(), authToken.getUsername());
+			StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
+			strategyManager.save(strategy);
+			return new ResponseMessage();	
+			
+		} catch (IOException e) {
+			// TODO
+		}
+		
+		return null;
 	}
 	
 }

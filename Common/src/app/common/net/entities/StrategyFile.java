@@ -9,13 +9,11 @@ import java.security.NoSuchAlgorithmException;
 
 public class StrategyFile {
 	
-	protected String strategyName;
 	protected byte[] file;
 	protected String hashFile;
 	
 	
-	public StrategyFile(String strategyName, byte[] file) {
-		this.strategyName = strategyName;
+	public StrategyFile(byte[] file) {
 		this.file = file;
 		this.hashFile = doHash(file);
 		
@@ -37,8 +35,10 @@ public class StrategyFile {
 	}
 	
 	
-	public void save(String mainDirectory) throws FileNotFoundException, IOException {
+	public void save() throws FileNotFoundException, IOException {
 		
+		String mainDirectory = ":::";
+		//TODO add main directory
 		String directoryName = this.hashFile.substring(0, 2);
 		String fileName = this.hashFile.substring(3);
 		File dir =  new File(mainDirectory + "/" + directoryName);
@@ -48,6 +48,22 @@ public class StrategyFile {
 			fos.close();
 		}
 	}
+	
+	
+	public String getHash() 
+	{
+		return this.hashFile;
+	}
+	
+	public String getDirectoryName() 
+	{
+		return this.hashFile.substring(0, 2);
+	}
+	
+	public String getFileName() {
+		return this.hashFile.substring(3);
+	}
+	
 	
 
 }

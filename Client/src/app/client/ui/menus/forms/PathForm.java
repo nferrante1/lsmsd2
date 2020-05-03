@@ -16,6 +16,7 @@ public class PathForm extends TextForm {
 		List<FormField> fields = new ArrayList<FormField>();
 		fields.add(new FormField("Strategy Name"));
 		fields.add(new FormField("Path", "...", this::validatePathJava));
+		//TODO add defaultPath 
 		return fields;
 	}
 

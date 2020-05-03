@@ -22,12 +22,12 @@ public class Strategy extends StorablePojo
 	{
 	}
 
-	public Strategy(String name, String username, byte[] file)
+	public Strategy(String id, String name, String username)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.name = name;
 		this.username = username;
-		this.id = "STRATEGIONA";
+		this.id = id;
 	}
 
 	public void addRun(StrategyRun run)
@@ -49,5 +49,9 @@ public class Strategy extends StorablePojo
 	public String getName()
 	{
 		return this.name;
+	}
+	
+	public String getId() {
+		return this.id;
 	}
 }
