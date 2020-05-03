@@ -105,10 +105,10 @@ public class MarketMenu extends Menu
 		HashMap<String, String> response = new DateForm().show();
 		ResponseMessage resMsg;
 		if(response.get("Date") == null) {
-			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketDisplayName());
+			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketId());
 		}
 		else {
-			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketDisplayName(), Instant.parse(response.get("Date")));
+			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketId(), Instant.parse(response.get("Date")));
 		}
 		
 		if(!resMsg.isSuccess()) {

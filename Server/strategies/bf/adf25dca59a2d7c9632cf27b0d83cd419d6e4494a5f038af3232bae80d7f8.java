@@ -359,7 +359,7 @@ public class Protocol implements AutoCloseable
 	
 	public ResponseMessage deleteData(String source, String market)
 	{
-		return deleteData(source, market, null);
+		return deleteData(market, null);
 	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)

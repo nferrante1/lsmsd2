@@ -1,5 +1,6 @@
 package app.client.ui.menus.forms;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -73,8 +74,10 @@ public abstract class TextForm
 	
 	protected boolean validateDate(String date)
 	{
+		if(date == null || date.isBlank())
+			return true;
 		try {
-			LocalDate converted = LocalDate.parse(date);
+			Instant converted = Instant.parse(date);
 		} catch (DateTimeParseException ex) {
 			Console.println("Invalid date (use format YYYY-MM-DD).");
 			return false;
