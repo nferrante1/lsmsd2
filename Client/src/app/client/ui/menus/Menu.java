@@ -11,10 +11,9 @@ public abstract class Menu
 	protected abstract List<MenuEntry> getMenu();
 	protected static Protocol protocol = Protocol.getInstance();
 
-	protected MenuEntry printMenu()
+	protected MenuEntry printMenu(List<MenuEntry> menus)
 	{
 		Console.newLine();
-		List<MenuEntry> menus = getMenu();
 		if (menus == null || menus.isEmpty())
 			return new MenuEntry(0, "dummy", true);
 		MenuEntry selection = Console.printMenu(prompt, menus);
@@ -34,7 +33,7 @@ public abstract class Menu
 
 	public void show()
 	{
-		while (!printMenu().isExit());
+		while (!printMenu(getMenu()).isExit());
 	}
 
 	public void setPrompt(String prompt)
