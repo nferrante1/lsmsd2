@@ -1,11 +1,13 @@
 package app.client.ui.menus;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.DateForm;
 import app.client.ui.menus.forms.MarketGranularityForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
@@ -100,7 +102,20 @@ public class MarketMenu extends Menu
 
 	private void handleDeleteData(MenuEntry entry)
 	{
-		//TODO: form to ask for date and delete
+		HashMap<String, String> response = new DateForm().show();
+		ResponseMessage resMsg;
+		if(response.get("Date") == null) {
+			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketDisplayName());
+		}
+		else {
+			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketDisplayName(), Instant.parse(response.get("Date")));
+		}
+		
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		Console.println("Done!");
 	}
 
 }

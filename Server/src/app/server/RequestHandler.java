@@ -20,6 +20,7 @@ import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.DeleteDataFilter;
 import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
@@ -31,6 +32,7 @@ import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
 import app.datamodel.AuthTokenManager;
 import app.datamodel.DataSourceManager;
+import app.datamodel.MarketDataManager;
 import app.datamodel.PojoManager;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
@@ -340,7 +342,6 @@ public class RequestHandler extends Thread
 	private ResponseMessage handleDownloadStrategy(RequestMessage reqMsg)
 	{
 		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
-		//TODO come lo prendo l'id se strategyInfo non ce l'ha???
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
 				Filters.eq("name", strategyName));
@@ -358,9 +359,41 @@ public class RequestHandler extends Thread
 		} catch (IOException e) {
 			return new ResponseMessage("File not found.");
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private ResponseMessage handleDeleteStrategy(RequestMessage reqMsg) 
+	{
+		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
+		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
+				Filters.eq("name", strategyName));
 		
+		if(!strategies.hasNext()) {
+			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
+		}
 		
+		Strategy strategy = strategies.next();
+		strategy.delete();
+		manager.save(strategy);
 		
+		return new ResponseMessage();
+	}
+	
+	
+	@SuppressWarnings("unused")
+	private ResponseMessage handleDeleteData(RequestMessage reqMsg) 
+	{
+		DeleteDataFilter filter = reqMsg.getEntity(DeleteDataFilter.class);
+		MarketDataManager manager = new MarketDataManager();
+		if(filter.getDate() == null) {
+			manager.delete(filter.getSource(), filter.getMarketId());
+		}
+		else {
+			manager.delete(filter.getSource(), filter.getMarketId(), filter.getDate());
+		}
+		
+		return new ResponseMessage();	
 	}
 	
 }
