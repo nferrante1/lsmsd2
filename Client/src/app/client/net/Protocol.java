@@ -349,12 +349,12 @@ public class Protocol implements AutoCloseable
 		return sendRequest(ActionRequest.EDIT_MARKET, new MarketInfo(sourceName, marketId, granularity, selectable, sync));
 	}
 
-	public ResponseMessage deleteData(String market, Instant date)
+	public ResponseMessage deleteData(String source, String market, Instant date)
 	{
-		return sendRequest(ActionRequest.DELETE_DATA, new DeleteDataFilter(market, date));
+		return sendRequest(ActionRequest.DELETE_DATA, new DeleteDataFilter(source,market,date));
 	}
 	
-	public ResponseMessage deleteData(String market)
+	public ResponseMessage deleteData(String source, String market)
 	{
 		return deleteData(market, null);
 	}

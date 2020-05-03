@@ -70,6 +70,17 @@ public abstract class TextForm
 		}
 		return true;
 	}
+	
+	protected boolean validateDate(String date)
+	{
+		try {
+			LocalDate converted = LocalDate.parse(date);
+		} catch (DateTimeParseException ex) {
+			Console.println("Invalid date (use format YYYY-MM-DD).");
+			return false;
+		}
+		return true;
+	}
 
 	protected boolean validateFutureDate(String date)
 	{
