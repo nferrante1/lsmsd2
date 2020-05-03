@@ -43,9 +43,9 @@ public class MainMenu extends Menu
 
 	private void handleAddStrategy(MenuEntry entry)
 	{
-		HashMap<String, String> response = new PathForm("Path of the file").show();
+		HashMap<String, String> response = new PathForm("Select a strategy to upload (the file must be .java):").show();
 		try {
-			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("Strategy Name"), response.get("Path"));
+			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("Path"));
 			if(!resMsg.isSuccess()) {
 				Console.println(resMsg.getErrorMsg());
 				return;

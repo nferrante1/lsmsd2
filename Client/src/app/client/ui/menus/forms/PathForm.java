@@ -5,17 +5,16 @@ import java.util.List;
 
 public class PathForm extends TextForm {
 
-	public PathForm(String path)
+	public PathForm(String prompt)
 	{
-		super("Select a strategy to upload (the file must be .java):");
+		super(prompt);
 	}
 
 	@Override
 	protected List<FormField> createFields()
 	{
 		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new FormField("Strategy Name"));
-		fields.add(new FormField("Path", "...", this::validatePathJava));
+		fields.add(new FormField("Path", "Strategy.java", this::validatePathJava));
 		//TODO add defaultPath 
 		return fields;
 	}

@@ -1,12 +1,19 @@
 package app.client.ui.menus;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.PathForm;
 import app.client.ui.menus.forms.SearchForm;
+import app.common.net.ResponseMessage;
+import app.common.net.entities.FileContent;
 import app.common.net.entities.StrategyInfo;
 
 
@@ -63,6 +70,23 @@ public class StrategyMenu extends Menu
 
 	private void handleDownloadStrategy(MenuEntry entry)
 	{
-		//TODO
+		HashMap<String, String> response = new PathForm("Select a path where store the strategy:").show();
+		ResponseMessage resMsg = Protocol.getInstance().downloadStrategy(strategy.getName());
+		if(!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		try (FileOutputStream fos = new FileOutputStream(response.get("Path") + "/" + strategy.getName())) {
+			FileContent file = resMsg.getEntity(FileContent.class);
+			fos.write(file.getContent());
+			fos.close();
+			Console.println("Strategy correctly added");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -25,7 +26,6 @@ import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.SourceInfo;
-import app.common.net.entities.StrategyFile;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
@@ -316,21 +316,52 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleAddStrategy(RequestMessage reqMsg) 
 	{
-		KVParameter strategyName = reqMsg.getEntity(KVParameter.class);
 		FileContent strategyContent = reqMsg.getEntity(FileContent.class);
 		StrategyFile file = new StrategyFile(strategyContent.getContent());
 		try {
 			file.save();
-			Strategy strategy = new Strategy(file.getHash(), strategyName.getValue(), authToken.getUsername());
+			//TODO compile file and check if it is ok. Then extract the name of the class
+			String strategyName = "ciccio";
+			
+			Strategy strategy = new Strategy(file.getHash(), strategyName, authToken.getUsername());
 			StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 			strategyManager.save(strategy);
 			return new ResponseMessage();	
 			
 		} catch (IOException e) {
-			// TODO
+			return new ResponseMessage("Strategy impossible to save.");
+		}
+		catch(DuplicateKeyException e) {
+			return new ResponseMessage("Strategy already exists");
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private ResponseMessage handleDownloadStrategy(RequestMessage reqMsg)
+	{
+		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
+		
+		//TODO come lo prendo l'id se strategyInfo non ce l'ha???
+		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
+				Filters.eq("name", strategyName));
+		
+		if(!strategies.hasNext()) {
+			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
 		}
 		
-		return null;
+		Strategy strategy = strategies.next();
+		
+		try {
+			FileContent file = new FileContent(strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3));
+			return new ResponseMessage(file);
+			
+		} catch (IOException e) {
+			return new ResponseMessage("File not found.");
+		}
+		
+		
+		
 	}
 	
 }
