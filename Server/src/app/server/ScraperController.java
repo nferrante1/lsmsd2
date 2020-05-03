@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ScraperController {
+	private static String address = "localhost";
+	private static int port = 5656;
+	
 	
 	static public void start() {
 		try {
-			Socket socket = new Socket("127.0.0.1", 5656);
+			Socket socket = new Socket(address, port);
 			DataInputStream input = new DataInputStream(socket.getInputStream());
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 			
@@ -28,7 +31,7 @@ public class ScraperController {
 	static public void stop() {
 		
 		try {
-			Socket socket = new Socket("127.0.0.1", 5656);
+			Socket socket = new Socket(address, port);
 			DataInputStream input = new DataInputStream(socket.getInputStream());
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 			
@@ -43,5 +46,13 @@ public class ScraperController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public static void setAddress(String address)
+	{
+		ScraperController.address = address;
+	}
+	public static void setPort(int port)
+	{
+		ScraperController.port = port;
 	}
 }

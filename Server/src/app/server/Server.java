@@ -49,6 +49,7 @@ public class Server
 		Logger.getLogger(Server.class.getName()).exiting(Server.class.getName(), "main", args);
 	}
 
+	
 	private static void createAdmin()
 	{
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
@@ -124,7 +125,7 @@ public class Server
 	{
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "Print this message."));
-		Option portOpt = new Option("P", "port", true, "Set listening port (default: 8888).");
+		Option portOpt = new Option("p", "port", true, "Set listening port (default: 8888).");
 		portOpt.setType(Integer.class);
 		portOpt.setArgName("PORT");
 		options.addOption(portOpt);
@@ -132,7 +133,28 @@ public class Server
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
-
+		Option connectionString = new Option("c", "connection-string", true, "Set MongoDB connection string");
+		connectionString.setType(String.class);
+		connectionString.setArgName("CONNSTR");
+		options.addOption(connectionString);
+		Option dbName = new Option("d", "dbname", true, "Set MongoDB database name");
+		dbName.setArgName("DBNAME");
+		dbName.setType(String.class);
+		options.addOption(dbName);
+		Option directory = new Option("D", "strategies-dir", true, "Set directory where strategies will be saved");
+		directory.setArgName("DIR");
+		directory.setType(String.class);
+		options.addOption(directory);
+		Option scraperPort = new Option("P", "scraper-port",true,"Set scraper connection port");
+		scraperPort.setType(Integer.class);
+		scraperPort.setArgName("PORT");
+		options.addOption(scraperPort);
+		Option scraperAddress = new Option("H", "scraper-host", true, "Set scraper hostname or ip address");
+		scraperAddress.setType(String.class);
+		scraperAddress.setArgName("HOST");
+		options.addOption(scraperAddress);
+		Option standalone = new Option("s", "standalone", false, "Disable MongoDB sharding");
+		options.addOption(standalone);
 		return options;
 	}
 
@@ -140,7 +162,14 @@ public class Server
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("Server [-h | --help] [-H <HOST> | --host <HOST>] [-d <DBNAME> | --dbname <DBNAME>] [--dbport <PORT>] [-u <USER> | --user <USER>] [-p <PASS> | --pass <PASS>] [-P <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
+			formatter.printHelp("Server [-h | --help] "
+					+ "[-d <DBNAME> | --dbname <DBNAME>] "
+					+ "[-c <CONNSTR> | --connection-string <CONNSTR>] "
+					+ "[-D <DIR> | --strategies-dir <DIR>] "
+					+ "[-P <PORT> | --scraper-port <PORT>] "
+					+ "[-H <HOST> | --scraper-host <HOST>] "
+					+ "[-p <PORT> | --port <PORT>] "
+					+ "[-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
 				"ALL: print all logs.\n" +
 				"FINEST: print all tracing logs.\n" +
@@ -181,6 +210,37 @@ public class Server
 		} else {
 			Logger.getLogger(Server.class.getName()).config("Using default port 8888.");
 			port = 8888;
+		}
+		if(cmd.hasOption("connection-string")) {
+			String conn = cmd.getOptionValue("connection-string");
+			if(!conn.isBlank())
+				DBManager.setConnectionString(conn);
+		}
+		if(cmd.hasOption("dbname")) {
+			String name = cmd.getOptionValue("dbname");
+			if(!name.isBlank())
+				DBManager.setDatabaseName(name);
+		}
+		if(cmd.hasOption("scraper-port")) {
+			int port = Integer.parseInt(cmd.getOptionValue("scraper-port"));
+			if(port <= 0 || port > 65535) {}
+			else {
+				ScraperController.setPort(port);
+			}				
+		}
+		if(cmd.hasOption("scraper-host")) {
+			String name = cmd.getOptionValue("scraper-host");
+			if(!name.isBlank())
+				ScraperController.setAddress(name);
+		}
+		if(cmd.hasOption("strategies-dir")) {
+			String dir = cmd.getOptionValue("strategies-dir");
+			if(!dir.isBlank());
+			//TODO add handling
+		}
+		if(cmd.hasOption("standalone"))
+		{
+			DBManager.setStandalone(true);
 		}
 	}
 

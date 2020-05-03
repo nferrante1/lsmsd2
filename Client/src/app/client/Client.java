@@ -14,6 +14,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.LoginMenu;
 
@@ -45,7 +46,13 @@ public final class Client
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
-
+		Option serverAddress = new Option("H", "host", true, "Server host name or ip address");
+		serverAddress.setType(String.class);
+		serverAddress.setArgName("HOST");
+		options.addOption(serverAddress);
+		Option serverPort = new Option("p", "port", true, "Server port");
+		serverPort.setType(Integer.class);
+		serverPort.setArgName("PORT");
 		return options;
 	}
 
@@ -53,7 +60,7 @@ public final class Client
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("app [-h | --help] [-l <LEVEL> | --log-level <LEVEL>]",
+			formatter.printHelp("app [-h | --help] [-l <LEVEL> | --log-level <LEVEL>] [-H <HOST> | --host <HOST>] [-p <PORT> | --port <PORT>]",
 				"", options, "\nLOG LEVELS:\n" +
 				"ALL: print all logs.\n" +
 				"FINEST: print all tracing logs.\n" +
@@ -63,7 +70,7 @@ public final class Client
 				"INFO: print all informational logs.\n" +
 				"WARNING: print all warnings and errors. (default)\n" +
 				"SEVERE: print only errors.\n" +
-				"OFF: disable all logs."
+				"OFF: disable all logs." 
 			);
 			close();
 		}
@@ -77,6 +84,19 @@ public final class Client
 				logLevel = Level.WARNING;
 			}
 			setLogLevel(logLevel);
+		}
+		if(cmd.hasOption("host")) {
+			String host = cmd.getOptionValue("host");
+			if(!host.isBlank())
+				Protocol.getInstance().setServerAddress(host);
+		}
+		if(cmd.hasOption("port")) {
+			int port = Integer.parseInt(cmd.getOptionValue("port"));
+			if(port <= 0 || port > 65535) {
+				
+			}else {
+				Protocol.getInstance().setServerPort(port);
+			}
 		}
 		launchCLI(cmd.getArgs());
 	}

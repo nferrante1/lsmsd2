@@ -34,6 +34,9 @@ public class Protocol implements AutoCloseable
 	private static Protocol instance;
 	private String authToken;
 	private LoginInfo loginInfo;
+	private String serverAddress = "localhost";
+	private int serverPort = 8888;
+	
 
 	private Protocol()
 	{
@@ -51,7 +54,7 @@ public class Protocol implements AutoCloseable
 		if (connected)
 			return;
 		try {
-			socket = new Socket("127.0.0.1", 8888); // TODO: get ip and port from cmdline
+			socket = new Socket(serverAddress, serverPort);
 			inputStream = new DataInputStream(socket.getInputStream());
 			outputStream = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException ex) {
@@ -408,5 +411,15 @@ public class Protocol implements AutoCloseable
 			ex.printStackTrace();
 		}
 		connected = false;
+	}
+
+	public void setServerAddress(String serverAddress)
+	{
+		this.serverAddress = serverAddress;
+	}
+
+	public void setServerPort(int serverPort)
+	{
+		this.serverPort = serverPort;
 	}
 }

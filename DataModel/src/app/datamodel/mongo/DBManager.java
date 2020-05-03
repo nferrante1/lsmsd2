@@ -31,7 +31,7 @@ public final class DBManager implements Closeable
 {
 	private static DBManager instance;
 	
-	private static String connectionString = "mongodb://localhost:27017,localhost:27018";
+	private static String connectionString;
 	private static String databaseName = "mydb";
 	private static List<Codec<?>> codecs;
 
@@ -42,9 +42,12 @@ public final class DBManager implements Closeable
 	private static WriteConcern writeConcern = WriteConcern.MAJORITY;
 	private static ReadPreference readPreference = ReadPreference.primary();
 	
+	private static boolean standalone = false;
+	
 	private DBManager()
 	{
-		
+		if(connectionString == null)
+			connectionString = "mongodb://localhost:27017" + (standalone ? "" : ",localhost:27018");
 		CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 						CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()));
 		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(connectionString)).codecRegistry(CodecRegistries.fromRegistries(pojoCodecRegistry)).build();
@@ -125,19 +128,21 @@ public final class DBManager implements Closeable
 		keys = new Document("market", "hashed");
 		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
 
-		
-		// Enable sharding on a collection. ///////////////////////////////////////////////
-	        mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
+		if (!standalone) {
+			// Enable sharding on a collection.
+			
+			mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
 
-	        final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
-	        //shardKey.put("hash", 1);
+			final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
+			// shardKey.put("hash", 1);
 
-	        final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
+			final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
 
-	        cmd.put("key", shardKey);
+			cmd.put("key", shardKey);
 
-	        mongoClient.getDatabase("admin").runCommand(cmd);
-	        //////////////////////////////////////////////////////////////////////////////////
+			mongoClient.getDatabase("admin").runCommand(cmd);
+		}
+	       
 	}
 
 	@Override
@@ -180,5 +185,10 @@ public final class DBManager implements Closeable
 	public static void setReadPreference(ReadPreference readPreference)
 	{
 		DBManager.readPreference = readPreference;
+	}
+
+	public static void setStandalone(boolean standalone)
+	{
+		DBManager.standalone = standalone;
 	}
 }
