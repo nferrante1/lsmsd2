@@ -15,14 +15,19 @@ public class StrategyRun extends StorablePojo
 	@PojoId
 	protected ObjectId id;
 	protected String user;
-	protected List<Parameter<?>> config;
-	protected transient Report report;
+	protected List<Parameter<?>> parameters;
+	protected Report report;
 
-	public StrategyRun(String user, List<Parameter<?>> config, Report report)
+	public StrategyRun()
+	{
+		super();
+	}
+
+	public StrategyRun(String user, List<Parameter<?>> parameters, Report report)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.user = user;
-		this.config = config;
+		this.parameters = parameters;
 		this.report = report;
 	}
 
@@ -46,14 +51,14 @@ public class StrategyRun extends StorablePojo
 		updateField("user", user);
 	}
 
-	public List<Parameter<?>> getConfig()
+	public List<Parameter<?>> getParameters()
 	{
-		return this.config;
+		return this.parameters;
 	}
 
-	public void setConfig(List<Parameter<?>> config)
+	public void setParameters(List<Parameter<?>> parameters)
 	{
-		this.config = config;
+		this.parameters = parameters;
 	}
 
 	public Report getReport()
@@ -69,7 +74,7 @@ public class StrategyRun extends StorablePojo
 	@BsonIgnore
 	public Parameter<?> getParameter(String name)
 	{
-		for (Parameter<?> parameter: config)
+		for (Parameter<?> parameter: parameters)
 			if (parameter.getName().equals(name))
 				return parameter;
 		return null;

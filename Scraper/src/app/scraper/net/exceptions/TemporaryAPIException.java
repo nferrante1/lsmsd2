@@ -4,7 +4,7 @@ public class TemporaryAPIException extends RuntimeException
 {
 	private static final long serialVersionUID = -2717916708119571937L;
 	protected long millisToWait;
-	
+
 	public TemporaryAPIException(long millisToWait)
 	{
 		super();

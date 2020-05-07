@@ -1,16 +1,10 @@
 package app.test;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.stream.Collectors;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;

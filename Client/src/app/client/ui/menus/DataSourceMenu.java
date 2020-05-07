@@ -30,7 +30,7 @@ public class DataSourceMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	private void handleViewDataSource(MenuEntry entry)
 	{
 		Console.println("Name: " + dataSource.getName());
@@ -42,7 +42,7 @@ public class DataSourceMenu extends Menu
 	{
 		boolean enable = (boolean)entry.getHandlerData();
 		ResponseMessage resMsg = Protocol.getInstance().editDataSource(dataSource.getName(), enable);
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}

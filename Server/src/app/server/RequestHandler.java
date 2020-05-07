@@ -2,7 +2,6 @@ package app.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -222,7 +221,7 @@ public class RequestHandler extends Thread
 	}
 
 	@SuppressWarnings("unused")
-	private ResponseMessage handleBrowseMarkets(RequestMessage reqMsg)
+	private ResponseMessage handleBrowseMarkets(RequestMessage reqMsg) // TODO: check selectability; return only selectable markets to non-admin users
 	{
 		KVParameter sourceFilter= null;
 		KVParameter marketFilter= null;
@@ -293,7 +292,7 @@ public class RequestHandler extends Thread
 
 		return new ResponseMessage((Entity[])strategies.toArray(new StrategyInfo[0]));
 	}
-	
+
 	@SuppressWarnings("unused")
 	private ResponseMessage handleEditMarket(RequestMessage reqMsg)
 	{
@@ -314,9 +313,9 @@ public class RequestHandler extends Thread
 		ScraperController.start();
 		return new ResponseMessage();
 	}
-	
+
 	@SuppressWarnings("unused")
-	private ResponseMessage handleAddStrategy(RequestMessage reqMsg) 
+	private ResponseMessage handleAddStrategy(RequestMessage reqMsg)
 	{
 		FileContent strategyContent = reqMsg.getEntity(FileContent.class);
 		StrategyFile file = new StrategyFile(strategyContent.getContent());
@@ -324,20 +323,19 @@ public class RequestHandler extends Thread
 			file.save();
 			//TODO compile file and check if it is ok. Then extract the name of the class
 			String strategyName = "ciccio";
-			
+
 			Strategy strategy = new Strategy(file.getHash(), strategyName, authToken.getUsername());
 			StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 			strategyManager.save(strategy);
-			return new ResponseMessage();	
-			
+			return new ResponseMessage();
 		} catch (IOException e) {
 			return new ResponseMessage("Strategy impossible to save.");
 		}
 		catch(DuplicateKeyException e) {
-			return new ResponseMessage("Strategy already exists");
+			return new ResponseMessage("Strategy already exists.");
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	private ResponseMessage handleDownloadStrategy(RequestMessage reqMsg)
 	{
@@ -345,55 +343,42 @@ public class RequestHandler extends Thread
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
 				Filters.eq("name", strategyName));
-		
-		if(!strategies.hasNext()) {
+
+		if(!strategies.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
-		}
-		
+
 		Strategy strategy = strategies.next();
-		
 		try {
 			FileContent file = new FileContent("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3) + ".java");
 			return new ResponseMessage(file);
-			
 		} catch (IOException e) {
 			return new ResponseMessage("File not found.");
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
-	private ResponseMessage handleDeleteStrategy(RequestMessage reqMsg) 
+	private ResponseMessage handleDeleteStrategy(RequestMessage reqMsg)
 	{
 		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
-				Filters.eq("name", strategyName));
-		
-		if(!strategies.hasNext()) {
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
+		if(!cursor.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
-		}
-		
-		Strategy strategy = strategies.next();
+
+		Strategy strategy = cursor.next();
 		strategy.delete();
 		manager.save(strategy);
-		
+
 		return new ResponseMessage();
 	}
-	
-	
+
 	@SuppressWarnings("unused")
-	private ResponseMessage handleDeleteData(RequestMessage reqMsg) 
+	private ResponseMessage handleDeleteData(RequestMessage reqMsg) //TODO: use KVParameter(s)
 	{
 		DeleteDataFilter filter = reqMsg.getEntity(DeleteDataFilter.class);
 		MarketDataManager manager = new MarketDataManager();
-		if(filter.getDate() == null) {
-			manager.delete(filter.getSource(), filter.getMarketId());
-		}
-		else {
-			manager.delete(filter.getSource(), filter.getMarketId(), filter.getDate());
-		}
-		
-		return new ResponseMessage();	
+		manager.delete(filter.getSource(), filter.getMarketId(), filter.getDate());
+		return new ResponseMessage();
 	}
 	
 }

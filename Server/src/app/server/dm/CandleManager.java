@@ -22,7 +22,7 @@ public class CandleManager extends PojoManager<Candle>
 		super(Candle.class, "MarketData");
 	}
 
-	public PojoCursor<Candle> getCandles(String marketId)
+	public PojoCursor<Candle> getCandles(String marketId) //TODO
 	{
 		return aggregate(Aggregates.match(Filters.eq("market", "ETH-EUR")), //Sostituire ETH-EUR con marketid
 				Aggregates.sort(Sorts.ascending("start")),

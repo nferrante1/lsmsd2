@@ -2,18 +2,18 @@ package app.client.ui.menus;
 
 import java.util.List;
 
-import app.client.net.Protocol;
 import app.client.ui.Console;
 
 public abstract class Menu
 {
 	protected String prompt;
-	protected abstract List<MenuEntry> getMenu();
-	protected static Protocol protocol = Protocol.getInstance();
 
-	protected MenuEntry printMenu(List<MenuEntry> menus)
+	protected abstract List<MenuEntry> getMenu();
+
+	protected MenuEntry printMenu()
 	{
 		Console.newLine();
+		List<MenuEntry> menus = getMenu();
 		if (menus == null || menus.isEmpty())
 			return new MenuEntry(0, "dummy", true);
 		MenuEntry selection = Console.printMenu(prompt, menus);
@@ -33,7 +33,7 @@ public abstract class Menu
 
 	public void show()
 	{
-		while (!printMenu(getMenu()).isExit());
+		while (!printMenu().isExit());
 	}
 
 	public void setPrompt(String prompt)

@@ -40,7 +40,7 @@ public class RequestMessage extends Message
 	{
 		return action;
 	}
-	
+
 	public String getAuthToken()
 	{
 		return authToken;
@@ -53,7 +53,8 @@ public class RequestMessage extends Message
 
 	public boolean isValid()
 	{
-		switch(action) {
+		switch (action) {
+		// TODO: check validity
 		default:
 			return true;
 		}

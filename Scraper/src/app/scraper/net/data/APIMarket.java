@@ -6,9 +6,9 @@ public class APIMarket
 {
 	@SerializedName(value = "id", alternate = "symbol")
 	protected String id;
-	@SerializedName(value = "baseCurrency", alternate = {"base_currency", "baseAsset"})
+	@SerializedName(value = "baseCurrency", alternate = { "base_currency", "baseAsset" })
 	protected String baseCurrency;
-	@SerializedName(value = "quoteCurrency", alternate = {"quote_currency", "quoteAsset"})
+	@SerializedName(value = "quoteCurrency", alternate = { "quote_currency", "quoteAsset" })
 	protected String quoteCurrency;
 
 	private APIMarket()

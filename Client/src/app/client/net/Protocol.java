@@ -2,7 +2,6 @@ package app.client.net;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
@@ -36,7 +35,6 @@ public class Protocol implements AutoCloseable
 	private LoginInfo loginInfo;
 	private String serverAddress = "localhost";
 	private int serverPort = 8888;
-	
 
 	private Protocol()
 	{
@@ -44,7 +42,7 @@ public class Protocol implements AutoCloseable
 
 	public static Protocol getInstance()
 	{
-		if(instance == null)
+		if (instance == null)
 			instance = new Protocol();
 		return instance;
 	}
@@ -58,7 +56,7 @@ public class Protocol implements AutoCloseable
 			inputStream = new DataInputStream(socket.getInputStream());
 			outputStream = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			System.err.println("ERROR: error while trying to connect to the server: " + ex.getMessage());
 			System.exit(1);
 		}
 		connected = true;
@@ -276,7 +274,8 @@ public class Protocol implements AutoCloseable
 		return runStrategy(strategyName, market, inverseCross, granularity);
 	}
 
-	public ResponseMessage runStrategy(String strategyName, String market, boolean inverseCross, int granularity, List<KVParameter> parameters)
+	public ResponseMessage runStrategy(String strategyName, String market, boolean inverseCross, int granularity,
+		List<KVParameter> parameters)
 	{
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(new KVParameter("market", market));
@@ -299,15 +298,14 @@ public class Protocol implements AutoCloseable
 				return resMsg;
 			}
 			new RequestMessage(ActionRequest.RUN_STRATEGY, authToken, entities).send(outputStream);
-			if (resMsg == null || !resMsg.isSuccess()
-				|| !resMsg.isValid(ActionRequest.RUN_STRATEGY)
+			if (resMsg == null || !resMsg.isSuccess() || !resMsg.isValid(ActionRequest.RUN_STRATEGY)
 				|| resMsg.getEntity() instanceof ReportInfo)
 				close();
 		}
 		return resMsg != null && resMsg.isValid(ActionRequest.RUN_STRATEGY) ? resMsg : getProtocolErrorMessage();
 	}
 
-	public ResponseMessage addStrategy(String fileName) throws FileNotFoundException, IOException
+	public ResponseMessage addStrategy(String fileName) throws IOException
 	{
 		return sendRequest(ActionRequest.ADD_STRATEGY, new FileContent(fileName));
 	}
@@ -347,16 +345,17 @@ public class Protocol implements AutoCloseable
 		return sendRequest(ActionRequest.EDIT_DATA_SOURCE, new SourceInfo(sourceName, enabled));
 	}
 
-	public ResponseMessage editMarket(String sourceName, String marketId, int granularity, boolean selectable, boolean sync)
+	public ResponseMessage editMarket(String sourceName, String marketId, int granularity, boolean selectable,
+		boolean sync)
 	{
 		return sendRequest(ActionRequest.EDIT_MARKET, new MarketInfo(sourceName, marketId, granularity, selectable, sync));
 	}
 
 	public ResponseMessage deleteData(String source, String market, Instant date)
 	{
-		return sendRequest(ActionRequest.DELETE_DATA, new DeleteDataFilter(source,market,date));
+		return sendRequest(ActionRequest.DELETE_DATA, new DeleteDataFilter(source, market, date));
 	}
-	
+
 	public ResponseMessage deleteData(String source, String market)
 	{
 		return deleteData(source, market, null);
@@ -408,7 +407,7 @@ public class Protocol implements AutoCloseable
 			outputStream.close();
 			socket.close();
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			System.err.println("ERROR: error while closing the connection with the server: " + ex.getMessage());
 		}
 		connected = false;
 	}

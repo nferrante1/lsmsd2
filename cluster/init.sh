@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$EUID" -ne 0 ]; then
+	echo "This script must be run as root!"
+	exit
+fi
+
 rm -rf /var/lib/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}
 rm -rf /var/log/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}.log
 

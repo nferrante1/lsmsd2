@@ -8,12 +8,12 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
-public class MarketListMenu extends PagedMenu
+public class SelectMarketMenu extends SelectMenu<String>
 {
 	protected String dataSource;
 	protected String nameFilter;
 
-	public MarketListMenu(String dataSource, String nameFilter)
+	public SelectMarketMenu(String dataSource, String nameFilter)
 	{
 		super("Select a market");
 		this.dataSource = dataSource;
@@ -23,12 +23,12 @@ public class MarketListMenu extends PagedMenu
 			this.nameFilter = nameFilter;
 	}
 
-	public MarketListMenu(String nameFilter)
+	public SelectMarketMenu(String nameFilter)
 	{
 		this(null, nameFilter);
 	}
 
-	public MarketListMenu()
+	public SelectMarketMenu()
 	{
 		this(null, null);
 	}
@@ -47,15 +47,15 @@ public class MarketListMenu extends PagedMenu
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
 		for (MarketInfo market : markets) {
-			menu.add(new MenuEntry(i, market.getDisplayName(), true, this::handleViewMarket, market));
+			menu.add(new MenuEntry(i, market.getDisplayName(), true, this::handleSelectMarket, market));
 			i++;
 		}
 
 		return menu;
 	}
 
-	private void handleViewMarket(MenuEntry entry)
+	private void handleSelectMarket(MenuEntry entry)
 	{
-		new MarketMenu((MarketInfo)entry.getHandlerData()).show();
+		setSelection(((MarketInfo)entry.getHandlerData()).getFullId());
 	}
 }

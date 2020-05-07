@@ -34,11 +34,11 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>logging-interceptor</artifactId>
 			<version>3.14.4</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>Lsmsd2</groupId>
 			<artifactId>DataModel</artifactId>

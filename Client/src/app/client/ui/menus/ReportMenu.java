@@ -27,7 +27,7 @@ public class ReportMenu extends Menu
 	{
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		menu.add(new MenuEntry(1, "View report", this::handleViewReport));
-		if(report.isDeletable())
+		if (report.isDeletable())
 			menu.add(new MenuEntry(2, "Delete report", true, this::handleDeleteReport));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
@@ -39,20 +39,21 @@ public class ReportMenu extends Menu
 
 		Console.println("Id: " + report.getId());
 		Console.println("Strategy: " + report.getStrategyName());
+		Console.println("Parameters:");
 		for (KVParameter parameter: parameters)
-			Console.println(parameter.getCapitalizedName() + ": " + parameter.getValue());
+			Console.println("\t" + parameter.getCapitalizedName() + ": " + parameter.getValue());
 		Console.println("Author: " + report.getUser());
-		Console.println("Net Profit: " + report.getNetProfit()*amount);
-		Console.println("Gross Profit: " + report.getGrossProfit()*amount);
-		Console.println("Gross Loss: "  + report.getGrossLoss()*amount);
-		Console.println("Hodl Profit: " + report.getHodlProfit()*amount);
+		Console.println("Net Profit: " + report.getNetProfit() * amount);
+		Console.println("Gross Profit: " + report.getGrossProfit() * amount);
+		Console.println("Gross Loss: " + report.getGrossLoss() * amount);
+		Console.println("Hodl Profit: " + report.getHodlProfit() * amount);
 		Console.println("Total Trades: " + report.getTotalTrades());
 		Console.println("Open Trades: " + report.getOpenTrades());
 		Console.println("Winning Trades: " + report.getWinningTrades());
 		Console.println("Max Consecutive Loosing: " + report.getMaxConsecutiveLosing());
-		Console.println(" Average Amount: " + report.getAvgAmount()*amount);
+		Console.println(" Average Amount: " + report.getAvgAmount() * amount);
 		Console.println("Average Duration: " + report.getAvgDuration());
-		Console.println("Max Drawdown: " + report.getMaxDrawdown()*amount);
+		Console.println("Max Drawdown: " + report.getMaxDrawdown() * amount);
 		Console.pause();
 	}
 
@@ -63,7 +64,7 @@ public class ReportMenu extends Menu
 			return;
 		}
 		ResponseMessage resMsg = Protocol.getInstance().deleteReport(report.getId());
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}

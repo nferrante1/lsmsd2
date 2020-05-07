@@ -6,26 +6,23 @@ import java.util.List;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.common.net.ResponseMessage;
-import app.common.net.entities.Entity;
 import app.common.net.entities.StrategyInfo;
 
-public class StrategyListMenu extends Menu
+public class StrategyListMenu extends PagedMenu
 {
 	protected String filter;
-	protected int currentPage;
 
 	public StrategyListMenu(String filter)
 	{
 		super("Select a strategy");
 		this.filter = filter;
-		this.currentPage = 1;
 	}
 
 	@Override
-	protected List<MenuEntry> getMenu()
+	protected List<MenuEntry> getEntries()
 	{
-		ResponseMessage resMsg = Protocol.getInstance().browseStrategies(currentPage, filter);
-		if(!resMsg.isSuccess()) {
+		ResponseMessage resMsg = Protocol.getInstance().browseStrategies(getPage(), getPerPage(), filter);
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
@@ -34,22 +31,15 @@ public class StrategyListMenu extends Menu
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
-		for(StrategyInfo strategy: strategies) {
+		for (StrategyInfo strategy : strategies) {
 			menu.add(new MenuEntry(i, strategy.getName() + " (by: " + strategy.getAuthor() + ")", true, this::handleStrategySelection, strategy));
 			++i;
 		}
-		menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
-		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
 
 	private void handleStrategySelection(MenuEntry entry)
 	{
 		new StrategyMenu((StrategyInfo)entry.getHandlerData()).show();
-	}
-
-	private void handleLoadNewPage(MenuEntry entry) 
-	{
-		currentPage++;
 	}
 }

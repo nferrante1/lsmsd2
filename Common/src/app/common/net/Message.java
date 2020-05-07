@@ -26,7 +26,7 @@ class Message implements Serializable
 	{
 		if (entities == null)
 			return;
-		for(Entity entity : entities)
+		for (Entity entity : entities)
 			this.entities.add(entity);
 	}
 
@@ -48,13 +48,8 @@ class Message implements Serializable
 		xs.addPermission(NullPermission.NULL);
 		xs.addPermission(PrimitiveTypePermission.PRIMITIVES);
 		xs.allowTypeHierarchy(Collection.class);
-		//xs.addImplicitArray(Message.class, "entities", Entity.class);
-		xs.allowTypesByWildcard(new String[] {
-			"app.common.net.entities.**",
-			"app.common.net.**",
-			"app.common.net.enums.**",
-			"app.common.net.entities.enums.**"
-		});
+		xs.allowTypesByWildcard(new String[] { "app.common.net.entities.**", "app.common.net.**",
+			"app.common.net.enums.**", "app.common.net.entities.enums.**" });
 		return (Message)xs.fromXML(xml);
 	}
 
@@ -62,7 +57,7 @@ class Message implements Serializable
 	{
 		String xml = this.toXML();
 		try {
-			System.out.println(xml);
+			System.out.println(xml); // TODO: remove
 			output.writeUTF(xml);
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -97,19 +92,19 @@ class Message implements Serializable
 	{
 		return getEntity(0);
 	}
-	
+
 	public <E extends Entity> E getEntity(Class<E> clazz)
 	{
-		for (Entity entity: entities)
+		for (Entity entity : entities)
 			if (clazz.isAssignableFrom(entity.getClass()))
 				return clazz.cast(entity);
 		return null;
 	}
-	
+
 	public <E extends Entity> List<E> getEntities(Class<E> clazz)
 	{
 		List<E> entityList = new ArrayList<E>();
-		for (Entity entity: entities)
+		for (Entity entity : entities)
 			if (clazz.isAssignableFrom(entity.getClass()))
 				entityList.add(clazz.cast(entity));
 		return entityList;

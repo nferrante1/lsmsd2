@@ -1,11 +1,13 @@
 package app.datamodel.pojos;
 
 import app.datamodel.pojos.annotations.CollectionName;
+import app.datamodel.pojos.annotations.PojoId;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Strategies")
 public class Parameter<T> extends StorablePojo
 {
+	@PojoId
 	private String name;
 	private T value;
 
@@ -23,7 +25,7 @@ public class Parameter<T> extends StorablePojo
 
 	public void setName(String name)
 	{
-		this.name = name;
+		updateField("name", name);
 	}
 
 	public T getValue()
@@ -33,6 +35,6 @@ public class Parameter<T> extends StorablePojo
 
 	public void setValue(T value)
 	{
-		this.value = value;
+		updateField("value", value);
 	}
 }

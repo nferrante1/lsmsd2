@@ -8,21 +8,21 @@ public enum ActionRequest implements Serializable
 	LOGOUT,
 	BROWSE_MARKETS,
 	BROWSE_STRATEGIES,
-	VIEW_STRATEGY, // TODO: req={(filter)strategyName} res={(ParameterInfoList)name, enum:type}
-	RUN_STRATEGY, // req={(filter)strategyName; kvParameterList} res={(progressInfo)percentage}/{reportInfo} //TODO: add type to KVParameter
-	ADD_STRATEGY, // req={(filter)strategyName; file}
-	DOWNLOAD_STRATEGY, // req={(filter)strategyName}, res={file}
-	DELETE_STRATEGY, // req={(filter)strategyName}
-	BROWSE_REPORTS, // req={(browseReportsInfo)page, perPage[from browseInfo], strategyName, marketName} res={baseReportInfoList}
-	VIEW_REPORT, // req={(filter)reportId} res={reportInfo; KVParameterList}
-	DELETE_REPORT, // req={(filter)reportId}
+	VIEW_STRATEGY,
+	RUN_STRATEGY,
+	ADD_STRATEGY,
+	DOWNLOAD_STRATEGY,
+	DELETE_STRATEGY,
+	BROWSE_REPORTS,
+	VIEW_REPORT,
+	DELETE_REPORT,
 	BROWSE_USERS,
 	ADD_USER,
 	DELETE_USER,
 	BROWSE_DATA_SOURCES,
 	EDIT_DATA_SOURCE,
 	EDIT_MARKET,
-	DELETE_DATA; // req={(deleteDataFilter)sourceId, marketId, date}
+	DELETE_DATA;
 
 	public String toCamelCaseString()
 	{

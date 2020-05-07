@@ -91,7 +91,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			if (this.prefix.equals(prefix))
 				return;
 			this.prefix = prefix;
-			for (AbstractUpdateNode child: children)
+			for (AbstractUpdateNode child : children)
 				child.addToPrefix(getPrefix());
 		}
 
@@ -170,7 +170,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		{
 			List<Bson> updateList = new ArrayList<Bson>();
 			List<Bson> filterList = new ArrayList<Bson>();
-			for (Entry<String, Object> entry: changes.entrySet()) {
+			for (Entry<String, Object> entry : changes.entrySet()) {
 				String name = getPrefix() + entry.getKey();
 				Object value = entry.getValue();
 				if (value == null)
@@ -275,7 +275,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		}
 	}
 
-/******************************************************************************/
+	/******************************************************************************/
 
 	public StorablePojoManager(Class<T> pojoClass)
 	{
@@ -306,7 +306,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		List<T> toDelete = new ArrayList<T>();
 		List<T> toUpdate = new ArrayList<T>();
 		List<T> toInsert = new ArrayList<T>();
-		for (T pojo: pojos) {
+		for (T pojo : pojos) {
 			if (pojo.isDeleted())
 				throw new IllegalStateException("Trying to save a deleted Pojo.");
 			if (pojo.isInitializing())
@@ -381,7 +381,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			updatedFields = new HashMap<String, Object>();
 		List<Bson> fullFilter = new ArrayList<Bson>();
 		List<Bson> filters = new ArrayList<Bson>();
-		for (Field field: pojo.getClass().getDeclaredFields()) {
+		for (Field field : pojo.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
@@ -423,7 +423,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			updatedFields = pojo.getUpdatedFields();
 		else
 			updatedFields = new HashMap<String, Object>();
-		for (Field field: pojo.getClass().getDeclaredFields()) {
+		for (Field field : pojo.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
@@ -485,7 +485,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		else
 			updatedFields = new HashMap<String, Object>();
 		int fieldNum = 0;
-		for (Field field: pojo.getClass().getDeclaredFields()) {
+		for (Field field : pojo.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
@@ -502,7 +502,8 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			Class<?> type = field.getType();
 			if (StorablePojo.class.isAssignableFrom(type)) {
 				StorablePojo innerPojo = (StorablePojo)value;
-				if ((innerPojo == null && updatedFields.containsKey(fieldName) && updatedFields.get(fieldName) != null)
+				if ((innerPojo == null && updatedFields.containsKey(fieldName)
+					&& updatedFields.get(fieldName) != null)
 					|| (innerPojo != null && innerPojo.isDeleting())) {
 					node.addChange(name, null);
 				} else if (innerPojo.isDeleted() || innerPojo.isInitializing()) {
@@ -511,8 +512,8 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 					continue;
 				} else if (innerPojo.isUntracked()) {
 					node.addChange(name, innerPojo);
-				}else {
-					UpdateNode innerNode = getUpdateNode(innerPojo, level+1);
+				} else {
+					UpdateNode innerNode = getUpdateNode(innerPojo, level + 1);
 					innerNode.setPrefix(name);
 					node.addChild(innerNode);
 				}
@@ -525,7 +526,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 				List<? extends StorablePojo> innerList = (List<? extends StorablePojo>)value;
 				if (innerList.isEmpty())
 					continue;
-				ListUpdateNode innerNode = getListUpdateNode(innerList, fieldNum, level+1);
+				ListUpdateNode innerNode = getListUpdateNode(innerList, fieldNum, level + 1);
 				innerNode.setPrefix(name);
 				node.addChild(innerNode);
 				fieldNum++;
@@ -540,7 +541,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	{
 		ListUpdateNode node = new ListUpdateNode();
 		int elemNum = 0;
-		for (StorablePojo pojo: pojos) {
+		for (StorablePojo pojo : pojos) {
 			if (pojo.isDeleting()) {
 				node.addPull(pojo);
 			} else if (pojo.isInitializing()) {
@@ -550,7 +551,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			} else if (pojo.isUntracked()) {
 				node.addPush(pojo);
 			} else {
-				UpdateNode innerNode = getUpdateNode(pojo, level+1);
+				UpdateNode innerNode = getUpdateNode(pojo, level + 1);
 				String filterName = "l" + level + "f" + fieldNum + "e" + elemNum;
 				Bson filter = getIdFilter(pojo, filterName);
 				innerNode.setFilter(filter);

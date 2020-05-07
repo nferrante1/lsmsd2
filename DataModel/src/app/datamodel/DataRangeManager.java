@@ -20,15 +20,12 @@ public class DataRangeManager extends PojoManager<DataRange>
 
 	public DataRange get(String marketId)
 	{
-		PojoCursor<DataRange> range = aggregate(
-				Arrays.asList(
-					Aggregates.match(Filters.eq("market", marketId)),
-					Aggregates.sort(Sorts.ascending("start")),
-					Aggregates.group(new BsonNull(),
-						Accumulators.first("start", "$start"),
-						Accumulators.last("end", Filters.eq("$arrayElemAt", Arrays.asList("$candles.t", -1L)))
-					)));
-		if(range.hasNext())
+		PojoCursor<DataRange> range = aggregate(Arrays.asList(Aggregates.match(Filters.eq("market", marketId)),
+			Aggregates.sort(Sorts.ascending("start")),
+			Aggregates.group(new BsonNull(),
+				Accumulators.first("start", "$start"),
+				Accumulators.last("end", Filters.eq("$arrayElemAt", Arrays.asList("$candles.t", -1L))))));
+		if (range.hasNext())
 			return range.next();
 		return new DataRange();
 	}

@@ -44,7 +44,7 @@ public class MarketInfo extends Entity
 	{
 		this.sourceName = sourceName;
 	}
-	
+
 	public String getFullId()
 	{
 		return getSourceName() + ":" + getMarketId();

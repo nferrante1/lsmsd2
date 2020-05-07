@@ -12,33 +12,51 @@ public abstract class PagedMenu extends Menu
 		super();
 	}
 
+	public PagedMenu(int perPage)
+	{
+		this();
+		this.perPage = perPage;
+	}
+
 	public PagedMenu(String prompt)
 	{
 		super(prompt);
 	}
 
+	public PagedMenu(String prompt, int perPage)
+	{
+		this(prompt);
+		this.perPage = perPage;
+	}
+
+	protected abstract List<MenuEntry> getEntries();
+
+	protected int getPerPage()
+	{
+		return perPage;
+	}
+
+	protected int getPage()
+	{
+		return page;
+	}
+
 	@Override
-	public void show()
+	protected List<MenuEntry> getMenu()
 	{
-		List<MenuEntry> menu = getMenu();
-		int nextIndex = menu.size();
-		if (nextIndex < perPage) {
-			menu.add(new MenuEntry(nextIndex, "Next Page", this::nextPage));
-			nextIndex++;
-		}
+		List<MenuEntry> entries = getEntries();
+		if (entries == null)
+			return null;
+		int count = entries.size();
+		int nextIndex = ((count / 10) * 10) + 10;
+		MenuEntry previous = new MenuEntry(nextIndex, "<< Previous Page <<", (MenuEntry e) -> page--);
+		MenuEntry next = new MenuEntry(nextIndex + (page > 1 ? 1 : 0), ">> Next Page >>", (MenuEntry e) -> page++);
+		MenuEntry back = new MenuEntry(0, "Go Back", true);
 		if (page > 1)
-			menu.add(new MenuEntry(nextIndex, "Previous Page", this::nextPage));
-		while (!printMenu(menu).isExit());
+			entries.add(previous);
+		if (count >= perPage)
+			entries.add(next);
+		entries.add(back);
+		return entries;
 	}
-
-	protected void nextPage(MenuEntry entry)
-	{
-		page++;
-	}
-	
-	protected void previousPage(MenuEntry entry)
-	{
-		page--;
-	}
-
 }

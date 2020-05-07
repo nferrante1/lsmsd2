@@ -133,27 +133,27 @@ public class Server
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
-		Option connectionString = new Option("c", "connection-string", true, "Set MongoDB connection string");
+		Option connectionString = new Option("c", "connection-string", true, "Set MongoDB connection string.");
 		connectionString.setType(String.class);
 		connectionString.setArgName("CONNSTR");
 		options.addOption(connectionString);
-		Option dbName = new Option("d", "dbname", true, "Set MongoDB database name");
+		Option dbName = new Option("d", "dbname", true, "Set MongoDB database name.");
 		dbName.setArgName("DBNAME");
 		dbName.setType(String.class);
 		options.addOption(dbName);
-		Option directory = new Option("D", "strategies-dir", true, "Set directory where strategies will be saved");
+		Option directory = new Option("D", "strategies-dir", true, "Set directory where strategies will be saved.");
 		directory.setArgName("DIR");
 		directory.setType(String.class);
 		options.addOption(directory);
-		Option scraperPort = new Option("P", "scraper-port",true,"Set scraper connection port");
+		Option scraperPort = new Option("P", "scraper-port",true,"Set scraper connection port.");
 		scraperPort.setType(Integer.class);
 		scraperPort.setArgName("PORT");
 		options.addOption(scraperPort);
-		Option scraperAddress = new Option("H", "scraper-host", true, "Set scraper hostname or ip address");
+		Option scraperAddress = new Option("H", "scraper-host", true, "Set scraper hostname or ip address.");
 		scraperAddress.setType(String.class);
 		scraperAddress.setArgName("HOST");
 		options.addOption(scraperAddress);
-		Option standalone = new Option("s", "standalone", false, "Disable MongoDB sharding");
+		Option standalone = new Option("s", "standalone", false, "Disable MongoDB sharding.");
 		options.addOption(standalone);
 		return options;
 	}
@@ -226,7 +226,7 @@ public class Server
 			if(port <= 0 || port > 65535) {}
 			else {
 				ScraperController.setPort(port);
-			}				
+			}
 		}
 		if(cmd.hasOption("scraper-host")) {
 			String name = cmd.getOptionValue("scraper-host");

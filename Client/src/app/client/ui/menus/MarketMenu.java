@@ -1,13 +1,16 @@
 package app.client.ui.menus;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.DateForm;
+import app.client.ui.menus.forms.DateTimeForm;
 import app.client.ui.menus.forms.MarketGranularityForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
@@ -57,22 +60,15 @@ public class MarketMenu extends Menu
 		}
 		if ((granularity < market.getGranularity() || granularity % market.getGranularity() != 0)
 			&& !Console.askConfirm("Setting a granularity that is not a multiple of the previous granularity (" + market.getGranularity() + ") will delete all downloaded market data. Are you sure?")) {
-				Console.println("Aborting...");
-				return;
-			}
+			Console.println("Aborting...");
+			return;
+		}
 		ResponseMessage resMsg = Protocol.getInstance().editMarket(market.getSourceName(), market.getMarketId(), granularity, market.isSelectable(), market.isSync());
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
 		market.setGranularity(granularity);
-		/*if (delete) {
-			resMsg = Protocol.getInstance().deleteData(market.getFullId());
-			if(!resMsg.isSuccess()) {
-				Console.println("Error while deleting data: " + resMsg.getErrorMsg());
-				return;
-			}
-		}*/
 		Console.println("Done!");
 	}
 
@@ -80,7 +76,7 @@ public class MarketMenu extends Menu
 	{
 		boolean enable = (boolean)entry.getHandlerData();
 		ResponseMessage resMsg = Protocol.getInstance().editMarket(market.getSourceName(), market.getMarketId(), market.getGranularity(), enable, market.isSync());
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
@@ -92,7 +88,7 @@ public class MarketMenu extends Menu
 	{
 		boolean enable = (boolean)entry.getHandlerData();
 		ResponseMessage resMsg = Protocol.getInstance().editMarket(market.getSourceName(), market.getMarketId(), market.getGranularity(), market.isSelectable(), enable);
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
@@ -102,16 +98,17 @@ public class MarketMenu extends Menu
 
 	private void handleDeleteData(MenuEntry entry)
 	{
-		HashMap<String, String> response = new DateForm().show();
+		HashMap<String, String> response = new DateTimeForm().show();
 		ResponseMessage resMsg;
-		if(response.get("Date") == null) {
+		String dateString = response.get("Date");
+		if (dateString == null) {
 			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketId());
+		} else {
+			Instant date = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-M-d H:m")).atZone(ZoneId.of("UTC")).toInstant();
+			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketId(), date);
 		}
-		else {
-			resMsg = Protocol.getInstance().deleteData(market.getSourceName(), market.getMarketId(), Instant.parse(response.get("Date")));
-		}
-		
-		if(!resMsg.isSuccess()) {
+
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}

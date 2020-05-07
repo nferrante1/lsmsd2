@@ -1,8 +1,6 @@
 package app.common.net.entities;
 
-import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -12,21 +10,17 @@ public class FileContent extends Entity
 
 	protected byte[] content;
 
-	public FileContent(String fileName) throws FileNotFoundException, IOException
+	public FileContent(String fileName) throws IOException
 	{
-		try(DataInputStream reader = new DataInputStream(new FileInputStream(fileName))){
-			
-		    int nBytesToRead = reader.available();
-		    if(nBytesToRead > 0) {
-		    	this.content = new byte[nBytesToRead];
-		        reader.read(this.content);
-		    }
-		    reader.close();
-	    }
-		/*try (FileInputStream fis = new FileInputStream(fileName)) {
+		/*
+		 * try (DataInputStream reader = new DataInputStream(new
+		 * FileInputStream(fileName))) { int nBytesToRead = reader.available();
+		 * if(nBytesToRead > 0) { this.content = new byte[nBytesToRead];
+		 * reader.read(this.content); } }
+		 */ // TODO: remove
+		try (FileInputStream fis = new FileInputStream(fileName)) {
 			this.content = fis.readAllBytes();
 		}
-		*/
 	}
 
 	public byte[] getContent()
@@ -34,7 +28,7 @@ public class FileContent extends Entity
 		return content;
 	}
 
-	public void writeFile(String fileName) throws FileNotFoundException, IOException
+	public void writeFile(String fileName) throws IOException
 	{
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(content);

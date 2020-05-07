@@ -55,7 +55,7 @@ public class AuthToken extends StorablePojo
 			hexChars[0] = '0';
 		} else {
 			int i = 0;
-			while(hexChars[i] == '0')
+			while (hexChars[i] == '0')
 				i++;
 			hexChars[0] = hexChars[i] == 0 ? '1' : hexChars[i];
 		}
@@ -96,6 +96,6 @@ public class AuthToken extends StorablePojo
 	@BsonIgnore
 	public boolean isAdmin()
 	{
-		return (id.charAt(0) == '0');
+		return id.charAt(0) == '0';
 	}
 }

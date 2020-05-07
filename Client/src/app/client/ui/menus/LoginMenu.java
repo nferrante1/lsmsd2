@@ -34,7 +34,7 @@ public class LoginMenu extends Menu
 	private void doLogin(String username, String password)
 	{
 		ResponseMessage resMsg = Protocol.getInstance().performLogin(username, password);
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}

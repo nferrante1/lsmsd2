@@ -18,10 +18,14 @@ public class Report extends StorablePojo
 	protected double avgDuration;
 	protected double maxDrawdown;
 
-	public Report(double netProfit, double grossProfit, double grossLoss,
-		double hodlProfit, int totalTrades, int openTrades,
-		int winningTrades, int maxConsecutiveLosing, double avgAmount,
-		double avgDuration, double maxDrawdown)
+	public Report()
+	{
+		super();
+	}
+
+	public Report(double netProfit, double grossProfit, double grossLoss, double hodlProfit, int totalTrades,
+		int openTrades, int winningTrades, int maxConsecutiveLosing, double avgAmount, double avgDuration,
+		double maxDrawdown)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.netProfit = netProfit;
@@ -39,57 +43,57 @@ public class Report extends StorablePojo
 
 	public void setNetProfit(double netProfit)
 	{
-		this.netProfit = netProfit;
+		updateField("netProfit", netProfit);
 	}
 
 	public void setGrossProfit(double grossProfit)
 	{
-		this.grossProfit = grossProfit;
+		updateField("grossProfit", grossProfit);
 	}
 
 	public void setGrossLoss(double grossLoss)
 	{
-		this.grossLoss = grossLoss;
+		updateField("grossLoss", grossLoss);
 	}
 
 	public void setHodlProfit(double hodlProfit)
 	{
-		this.hodlProfit = hodlProfit;
+		updateField("hodlProfit", hodlProfit);
 	}
 
 	public void setTotalTrades(int totalTrades)
 	{
-		this.totalTrades = totalTrades;
+		updateField("totalTrades", totalTrades);
 	}
 
 	public void setOpenTrades(int openTrades)
 	{
-		this.openTrades = openTrades;
+		updateField("openTrades", openTrades);
 	}
 
 	public void setWinningTrades(int winningTrades)
 	{
-		this.winningTrades = winningTrades;
+		updateField("winningTrades", winningTrades);
 	}
 
 	public void setMaxConsecutiveLosing(int maxConsecutiveLosing)
 	{
-		this.maxConsecutiveLosing = maxConsecutiveLosing;
+		updateField("maxConsecutiveLosing", maxConsecutiveLosing);
 	}
 
 	public void setAvgAmount(double avgAmount)
 	{
-		this.avgAmount = avgAmount;
+		updateField("avgAmount", avgAmount);
 	}
 
 	public void setAvgDuration(double avgDuration)
 	{
-		this.avgDuration = avgDuration;
+		updateField("avgDuration", avgDuration);
 	}
 
 	public void setMaxDrawdown(double maxDrawdown)
 	{
-		this.maxDrawdown = maxDrawdown;
+		updateField("maxDrawdown", maxDrawdown);
 	}
 
 	public double getNetProfit()

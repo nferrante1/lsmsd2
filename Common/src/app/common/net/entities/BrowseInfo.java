@@ -17,17 +17,17 @@ public class BrowseInfo extends Entity
 	{
 		this(page, 20);
 	}
-	
+
 	public BrowseInfo()
 	{
-		this(0);
+		this(1);
 	}
 
 	public int getPage()
 	{
 		return page;
 	}
-	
+
 	public int getPerPage()
 	{
 		return perPage;

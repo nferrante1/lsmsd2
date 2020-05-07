@@ -12,7 +12,7 @@ public class DataSourceManager extends StorablePojoManager<DataSource>
 	{
 		super(DataSource.class);
 	}
-	
+
 	@Override
 	protected void delete(DataSource source)
 	{
@@ -20,12 +20,12 @@ public class DataSourceManager extends StorablePojoManager<DataSource>
 		marketDataManager.delete(source.getName());
 		super.delete(source);
 	}
-	
+
 	@Override
 	protected void update(DataSource source)
 	{
 		MarketDataManager marketDataManager = new MarketDataManager();
-		for (Market market: source.getMarkets()) {
+		for (Market market : source.getMarkets()) {
 			if (market.isDeleting()) {
 				marketDataManager.delete(source.getName(), market.getId());
 				continue;
@@ -51,13 +51,12 @@ public class DataSourceManager extends StorablePojoManager<DataSource>
 				e.printStackTrace();
 				continue;
 			}
-			//if (newGranularity == oldGranularity)
-			//	continue;
-			if (newGranularity < oldGranularity || newGranularity % oldGranularity != 0) {
+			// if (newGranularity == oldGranularity)
+			// continue;
+			if (newGranularity < oldGranularity || newGranularity % oldGranularity != 0)
 				marketDataManager.delete(source.getName(), market.getId());
-			//	continue;
-			}
-			//marketDataManager.aggregateCandles(source.getName(), market.getId(), newGranularity);
+				// continue;
+			// marketDataManager.aggregateCandles(source.getName(), market.getId(), newGranularity);
 		}
 		super.update(source);
 	}

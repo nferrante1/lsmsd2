@@ -61,32 +61,32 @@ public class MarketData extends StorablePojo
 		setNcandles(candles.size());
 	}
 
-	public int getNcandles() 
+	public int getNcandles()
 	{
 		return this.ncandles;
 	}
 
-	public String getMarket() 
+	public String getMarket()
 	{
 		return market;
 	}
 
-	public void setMarket(String market) 
+	public void setMarket(String market)
 	{
 		updateField("market", market);
 	}
 
-	public void setNcandles(int ncandles) 
+	public void setNcandles(int ncandles)
 	{
 		updateField("ncandles", ncandles);
 	}
 
-	public Instant getStart() 
+	public Instant getStart()
 	{
 		return start;
 	}
 
-	public void setStart(Instant start) 
+	public void setStart(Instant start)
 	{
 		updateField("start", start);
 	}

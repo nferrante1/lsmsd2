@@ -6,7 +6,6 @@ import app.datamodel.pojos.StorablePojo;
 
 public class DetachedPojoCursor<T extends StorablePojo> extends StorablePojoCursor<T>
 {
-
 	public DetachedPojoCursor(MongoCursor<T> cursor)
 	{
 		super(cursor);

@@ -1,8 +1,5 @@
 package app.client.ui.menus;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,12 +7,11 @@ import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.PathForm;
 import app.client.ui.menus.forms.SearchForm;
+import app.client.ui.menus.forms.StrategyFileForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.StrategyInfo;
-
 
 public class StrategyMenu extends Menu
 {
@@ -35,9 +31,8 @@ public class StrategyMenu extends Menu
 		menu.add(new MenuEntry(2, "Browse reports", this::handleBrowseReports));
 		menu.add(new MenuEntry(3, "Run strategy", this::handleRunStrategy));
 		menu.add(new MenuEntry(4, "Download strategy", this::handleDownloadStrategy));
-		if(strategy.isDeletable()) {
+		if (strategy.isDeletable())
 			menu.add(new MenuEntry(5, "Delete strategy", true, this::handleDeleteStrategy));
-		}
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
@@ -52,15 +47,15 @@ public class StrategyMenu extends Menu
 	private void handleBrowseReports(MenuEntry entry)
 	{
 		HashMap<String, String> response = new SearchForm("Market Name").show();
-		MarketListMenu list = new MarketListMenu(response.get("Market Name"));
-		list.show();
-		String market = list.getSelectedMarketId();
+		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
+		marketMenu.show();
+		String market = marketMenu.getSelection();
 		new ReportListMenu((StrategyInfo)entry.getHandlerData(), market).show();
 	}
 
 	private void handleRunStrategy(MenuEntry entry)
 	{
-		//TODO
+		// TODO
 	}
 
 	private void handleDeleteStrategy(MenuEntry entry)
@@ -70,23 +65,18 @@ public class StrategyMenu extends Menu
 
 	private void handleDownloadStrategy(MenuEntry entry)
 	{
-		HashMap<String, String> response = new PathForm("Select a path where store the strategy:").show();
+		HashMap<String, String> response = new StrategyFileForm().show();
 		ResponseMessage resMsg = Protocol.getInstance().downloadStrategy(strategy.getName());
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		try (FileOutputStream fos = new FileOutputStream(response.get("Path"))) {
-			FileContent file = resMsg.getEntity(FileContent.class);
-			fos.write(file.getContent());
-			fos.close();
-			Console.println("Strategy correctly downloaded");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		FileContent file = resMsg.getEntity(FileContent.class);
+		try {
+			file.writeFile(response.get("File"));
+			Console.println("Strategy successfully downloaded.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Console.println("Can not write file '" + response.get("Path") + "': " + e.getMessage());
 		}
 	}
 }

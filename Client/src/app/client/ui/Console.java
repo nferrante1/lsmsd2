@@ -3,14 +3,12 @@ package app.client.ui;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 import app.client.ui.menus.MenuEntry;
 
 public final class Console
 {
-	private static Scanner scanner = exists() ?
-		new Scanner(System.console().reader()) : new Scanner(System.in);
+	private static Scanner scanner = exists() ? new Scanner(System.console().reader()) : new Scanner(System.in);
 
 	public static String askString(String prompt)
 	{
@@ -25,7 +23,7 @@ public final class Console
 			printPrompt(prompt);
 			return new String(System.console().readPassword());
 		}
-		Logger.getLogger(Console.class.getName()).warning("Can not hide console input buffer for password submission: System.console() returned null.");
+		System.err.println("WARNING: Can not hide console input buffer for password submission: System.console() returned null.");
 		return askString(prompt);
 	}
 
@@ -111,13 +109,13 @@ public final class Console
 	{
 		printPrompt(prompt);
 		newLine();
-		for (MenuEntry entry: entries)
+		for (MenuEntry entry : entries)
 			printMenuEntry(entry);
 		newLine();
 		int selection;
 		while (true) {
 			selection = askInteger("Enter number");
-			for (MenuEntry entry: entries)
+			for (MenuEntry entry : entries)
 				if (entry.getKey() == selection) {
 					newLine();
 					return entry;

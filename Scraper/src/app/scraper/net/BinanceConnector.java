@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,8 +22,6 @@ import app.scraper.net.data.APIMarket;
 import app.scraper.net.data.ExchangeInfo;
 import app.scraper.net.exceptions.PermanentAPIException;
 import app.scraper.net.exceptions.TemporaryAPIException;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -30,15 +29,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BinanceConnector implements SourceConnector
 {
-	private final int[] ACCEPTED_GRANULARITY = {1, 3, 5, 15, 30, 60, 120, 240, 360, 480, 720, 1440, 4320, 10080};
+	private final int[] ACCEPTED_GRANULARITY = { 1, 3, 5, 15, 30, 60, 120, 240, 360, 480, 720, 1440, 4320, 10080 };
 	private Retrofit retrofit;
 	private BinanceInterface apiInterface;
 	private int additionalRateLimit = 0;
-	
-	protected int getAcceptedGranularity(int granularity) 
+
+	protected int getAcceptedGranularity(int granularity)
 	{
-		for(int i = ACCEPTED_GRANULARITY.length - 1; i >= 0 ; --i ) {
-			if(granularity % ACCEPTED_GRANULARITY[i] == 0)
+		for (int i = ACCEPTED_GRANULARITY.length - 1; i >= 0; i--) {
+			if (granularity % ACCEPTED_GRANULARITY[i] == 0)
 				return granularity;
 		}
 		return ACCEPTED_GRANULARITY[0];
@@ -51,26 +50,26 @@ public class BinanceConnector implements SourceConnector
 			throws JsonParseException
 		{
 			JsonArray candle = json.getAsJsonArray();
-			return new APICandle(
-				Instant.ofEpochMilli(candle.get(0).getAsLong()),
+			return new APICandle(Instant.ofEpochMilli(candle.get(0).getAsLong()),
 				Double.parseDouble(candle.get(1).getAsString()),
 				Double.parseDouble(candle.get(2).getAsString()),
 				Double.parseDouble(candle.get(3).getAsString()),
 				Double.parseDouble(candle.get(4).getAsString()),
-				Double.parseDouble(candle.get(5).getAsString())
-				);
+				Double.parseDouble(candle.get(5).getAsString()));
 		}
 	}
 
 	public BinanceConnector()
 	{
-		//TODO: remove the following 3 lines and client from below
-		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-		interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+		// TODO: remove the following 3 lines and client from below
+		// HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+		// interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+		// OkHttpClient client = new
+		// OkHttpClient.Builder().addInterceptor(interceptor).build();
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
-		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/").client(client).addConverterFactory(GsonConverterFactory.create(gson)).build();
+		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/")// .client(client)
+			.addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
 	}
 
@@ -84,6 +83,7 @@ public class BinanceConnector implements SourceConnector
 	{
 		rateLimit();
 		Call<ExchangeInfo> call = apiInterface.getExchangeInfo();
+		Logger.getLogger(BinanceConnector.class.getName()).info("Sending request: " + call.request().url() + ".");
 
 		Response<ExchangeInfo> response;
 		try {
@@ -95,7 +95,8 @@ public class BinanceConnector implements SourceConnector
 
 		checkResponse(response);
 
-		return response.body().getMarkets();
+		ExchangeInfo body = response.body();
+		return body == null ? null : body.getMarkets();
 	}
 
 	private String getIntervalString(int minutes)
@@ -115,13 +116,14 @@ public class BinanceConnector implements SourceConnector
 		return minutes + "m";
 	}
 
-	protected List<APICandle> _getCandles(String marketId, int granularity, Instant start) throws InterruptedException
+	protected List<APICandle> _getCandles(String marketId, int granularity, Instant start)
+		throws InterruptedException
 	{
 		rateLimit();
 		Map<String, String> options = new HashMap<String, String>();
 
 		options.put("symbol", marketId);
-		if(start == null)
+		if (start == null)
 			options.put("startTime", "0");
 		else
 			options.put("startTime", Long.toString(start.getEpochSecond() * 1000));
@@ -129,12 +131,13 @@ public class BinanceConnector implements SourceConnector
 		options.put("limit", "1000");
 
 		Call<List<APICandle>> call = apiInterface.getCandles(options);
+		Logger.getLogger(BinanceConnector.class.getName()).info("Sending request: " + call.request().url() + ".");
 
 		Response<List<APICandle>> response;
 		try {
 			response = call.execute();
 		} catch (IOException | RuntimeException e) {
-			throw new TemporaryAPIException("Unexpected error.", e, 5*60*1000);
+			throw new TemporaryAPIException("Unexpected error.", e, 5 * 60 * 1000);
 		}
 
 		checkResponse(response);
@@ -147,21 +150,22 @@ public class BinanceConnector implements SourceConnector
 		if (response.isSuccessful())
 			return;
 		int code = response.code();
+		Logger.getLogger(BinanceConnector.class.getName()).warning("Received error code from source: " + code + ".");
 		switch (code) {
 		case 403:
-			throw new TemporaryAPIException("WAF Limit vuiolated.", 20*60*1000);
+			throw new TemporaryAPIException("WAF Limit vuiolated.", 20 * 60 * 1000);
 		case 429:
 			additionalRateLimit += 1000;
-			throw new TemporaryAPIException("Rate limit violated.", 2*60*1000);
+			throw new TemporaryAPIException("Rate limit violated.", 2 * 60 * 1000);
 		case 418:
 			additionalRateLimit += 10000;
-			throw new TemporaryAPIException("Rate limit violated. Banned by the source.", 24*60*60*1000);
+			throw new TemporaryAPIException("Rate limit violated. Banned by the source.", 24 * 60 * 60 * 1000);
 		case 504:
 			throw new TemporaryAPIException("Unknown error.");
 		}
 		if (code > 399 && code < 500)
 			throw new PermanentAPIException("Malformed request.");
-		throw new TemporaryAPIException("Server error.", 5*60*1000);
+		throw new TemporaryAPIException("Server error.", 5 * 60 * 1000);
 	}
 
 	@Override
@@ -171,8 +175,10 @@ public class BinanceConnector implements SourceConnector
 		if (start != null && !start.isBefore(Instant.now()))
 			return new ArrayList<APICandle>();
 		List<APICandle> retCandles = _getCandles(marketId, granularity, start);
-		if (retCandles == null || retCandles.isEmpty())
+		if (retCandles == null || retCandles.isEmpty()) {
+			Logger.getLogger(BinanceConnector.class.getName()).info("No candles found after " + start + ".");
 			return retCandles;
+		}
 
 		List<APICandle> candles = new ArrayList<APICandle>();
 		if (start == null)
@@ -183,7 +189,7 @@ public class BinanceConnector implements SourceConnector
 			APICandle curCandle = retCandles.get(index);
 			Instant curCandleTime = curCandle.getTime();
 			if (curCandleTime.isBefore(curTime)) {
-				//throw new RuntimeException("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
+				Logger.getLogger(BinanceConnector.class.getName()).warning("Source returned an out-of-bucket candle (candle time: " + curCandleTime + " | bucket time: " + curTime + ").");
 				curTime = curCandleTime;
 			}
 			if (curCandleTime.isAfter(curTime)) {

@@ -13,6 +13,7 @@ public interface BinanceInterface
 {
 	@GET("exchangeInfo")
 	Call<ExchangeInfo> getExchangeInfo();
+
 	@GET("klines")
 	Call<List<APICandle>> getCandles(@QueryMap Map<String, String> options);
 }

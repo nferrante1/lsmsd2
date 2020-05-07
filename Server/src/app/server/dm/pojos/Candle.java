@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-public class Candle
+public class Candle //TODO
 {
 	@BsonProperty("t")
 	protected Instant time;

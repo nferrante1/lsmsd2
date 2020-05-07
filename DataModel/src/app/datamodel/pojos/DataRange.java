@@ -14,7 +14,7 @@ public class DataRange
 	{
 	}
 
-	public DataRange( Instant start, Instant end)
+	public DataRange(Instant start, Instant end)
 	{
 		this.start = start;
 		this.end = end;

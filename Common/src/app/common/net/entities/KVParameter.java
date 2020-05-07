@@ -13,7 +13,7 @@ public class KVParameter extends ParameterInfo
 		super(name, type);
 		this.value = value;
 	}
-	
+
 	public KVParameter(String name, String value)
 	{
 		super(name);

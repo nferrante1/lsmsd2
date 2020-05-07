@@ -1,24 +1,16 @@
 package app.datamodel;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.MergeOptions;
-import com.mongodb.client.model.MergeOptions.WhenMatched;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.UnwindOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
@@ -55,12 +47,12 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 		for (Candle candle: candles)
 			candle.commit();
 	}
-	
+
 	protected void delete(String sourceName)
 	{
 		getCollection().deleteMany(Filters.regex("name", Pattern.compile("^" + sourceName + ":", Pattern.CASE_INSENSITIVE)));
 	}
-	
+
 	public void delete(String sourceName, String marketName)
 	{
 		if (marketName == null) {
@@ -69,7 +61,7 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 		}
 		getCollection().deleteMany(Filters.eq("market", sourceName + ":" + marketName));
 	}
-	
+
 	public void delete(String sourceName, String marketName, Instant date)
 	{
 		if (date == null) {
@@ -79,18 +71,19 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 
 		getCollection().deleteMany(Filters.and(
 			Filters.eq("market", sourceName + ":" + marketName),
-			Filters.lt("$expr",
-				Arrays.asList(
+			Filters.lt("$expr", Arrays.asList(
 					new Document("$arrayElemAt", Arrays.asList("$candles.t", -1)),
 					date)
 				)));
 		getCollection().updateOne(Filters.and(
 			Filters.eq("market", sourceName + ":" + marketName),
-			Filters.lt("start", date)), Updates.combine(
+			Filters.lt("start", date)),
+			Updates.combine(
 				Updates.set("start", date),
 				Updates.pull("candles", new Document("t", new Document("$lt", date)))));
 	}
-	
+
+	//TODO: maybe remove
 	protected void aggregateCandles(String sourceName, String marketName, int granularity)
 	{
 		/*aggregate(

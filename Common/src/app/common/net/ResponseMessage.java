@@ -51,8 +51,8 @@ public class ResponseMessage extends Message
 	{
 		if (!isSuccess())
 			return getEntityCount() == 0;
-		switch(actionRequest)
-		{
+		switch (actionRequest) {
+		// TODO: check validity
 		default:
 			return true;
 		}

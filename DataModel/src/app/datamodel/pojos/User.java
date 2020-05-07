@@ -2,6 +2,7 @@ package app.datamodel.pojos;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 
@@ -51,48 +52,29 @@ public class User extends StorablePojo
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			byte[] bytes = md.digest(password.getBytes());
 			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < bytes.length; i++)
+			for (int i = 0; i < bytes.length; i++)
 				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 			passwordHash = sb.toString();
 		} catch (NoSuchAlgorithmException ex) {
-			passwordHash = "";
+			passwordHash = password;
+			Logger.getLogger(User.class.getName()).severe("Can not hash password: hash function SHA-256 not available.");
 		}
 		return passwordHash;
 	}
 
 	public static boolean validatePassword(String password)
 	{
-		return (password != null && password.length() > 7);
+		return password != null && password.length() > 7;
 	}
 
 	public static boolean validateUsername(String username)
 	{
-		return (username != null && username.matches("^[A-Za-z0-9]{3,32}$"));
-	}
-
-	public boolean hasValidUsername()
-	{
-		return validateUsername(username);
+		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
 
 	public boolean checkPassword(String password)
 	{
 		return (this.passwordHash != null && this.passwordHash.equals(hashPassword(password)));
-	}
-
-	public boolean checkPasswordHash(String passwordHash)
-	{
-		return (this.passwordHash != null && this.passwordHash.equals(passwordHash));
-	}
-
-	public boolean hasValidPassword()
-	{
-		return validatePasswordHash(this.passwordHash);
-	}
-
-	public static boolean validatePasswordHash(String passwordHash)
-	{
-		return (passwordHash != null && passwordHash.matches("^[a-fA-F0-9]{64}$"));
 	}
 
 	public boolean isAdmin()
@@ -124,7 +106,7 @@ public class User extends StorablePojo
 	{
 		setAdmin(false);
 	}
-	
+
 	public AuthToken generateToken()
 	{
 		return new AuthToken(username, admin);

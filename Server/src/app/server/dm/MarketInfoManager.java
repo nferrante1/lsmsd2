@@ -23,8 +23,7 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 		super(MarketInfo.class, "Sources");
 	}
 
-	
-	
+//TODO: remove
 //	public PojoCursor<MarketInfo> getMarketInfo(int pageNumber, int perPage)
 //	{
 //		return aggregate(Arrays.asList(
@@ -45,7 +44,7 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 //				));
 //	}
 //	
-	public PojoCursor<MarketInfo> getMarketInfo(String sourceName, String marketName, int pageNumber, int perPage)
+	public PojoCursor<MarketInfo> getMarketInfo(String sourceName, String marketName, int pageNumber, int perPage) //TODO: support FULLID matching
 	{
 		List<Bson> stages = new ArrayList<Bson>();
 		stages.add(Aggregates.unwind("$markets"));
@@ -74,5 +73,4 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 		stages.add(Aggregates.limit(perPage));
 		return aggregate(stages);
 	}
-	
 }

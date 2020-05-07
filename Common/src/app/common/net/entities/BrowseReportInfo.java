@@ -37,7 +37,7 @@ public class BrowseReportInfo extends BrowseInfo
 		this.strategyName = strategyName;
 		this.marketId = marketId;
 	}
-	
+
 	public BrowseReportInfo(String strategyName)
 	{
 		this(strategyName, null);

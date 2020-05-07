@@ -28,7 +28,7 @@ public abstract class StorablePojo
 	}
 
 	@BsonIgnore
-	public HashMap<String,Object> getUpdatedFields()
+	public HashMap<String, Object> getUpdatedFields()
 	{
 		if (isDeleted())
 			throw new IllegalStateException("Trying to get updates for a deleted Pojo.");
@@ -54,8 +54,7 @@ public abstract class StorablePojo
 		try {
 			field.setAccessible(true);
 			oldValue = field.get(this);
-			if((oldValue != null && oldValue.equals(value))
-				|| (oldValue == null && value == null))
+			if ((oldValue != null && oldValue.equals(value)) || (oldValue == null && value == null))
 				return;
 			field.set(this, value);
 		} catch (IllegalAccessException e) {
@@ -78,8 +77,8 @@ public abstract class StorablePojo
 			updatedFields.put(name, oldValue);
 		} else {
 			Object origValue = updatedFields.get(name);
-			if((origValue != null && origValue.equals(newValue))
-				|| (origValue == null && newValue == null)) {
+			if ((origValue != null && origValue.equals(newValue)) ||
+				(origValue == null && newValue == null)) {
 				updatedFields.remove(name);
 				if (updatedFields.isEmpty())
 					setState(StorablePojoState.COMMITTED);
@@ -103,7 +102,7 @@ public abstract class StorablePojo
 
 	private void commitSubPojos()
 	{
-		for (Field field: this.getClass().getDeclaredFields()) {
+		for (Field field : this.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
@@ -123,7 +122,7 @@ public abstract class StorablePojo
 			}
 			if (!List.class.isAssignableFrom(field.getType()))
 				continue;
-			ParameterizedType type = (ParameterizedType) field.getGenericType();
+			ParameterizedType type = (ParameterizedType)field.getGenericType();
 			Class<?> genericType = (Class<?>)type.getActualTypeArguments()[0];
 			if (!StorablePojo.class.isAssignableFrom(genericType))
 				continue;
@@ -136,7 +135,7 @@ public abstract class StorablePojo
 						pojo.commit();
 					if (pojo.isDeleted())
 						iterator.remove();
-			}
+				}
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
@@ -184,7 +183,7 @@ public abstract class StorablePojo
 	{
 		if (!isInitializing())
 			return;
-		for (Field field: this.getClass().getDeclaredFields()) {
+		for (Field field : this.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
@@ -199,14 +198,14 @@ public abstract class StorablePojo
 			}
 			if (!List.class.isAssignableFrom(field.getType()))
 				continue;
-			ParameterizedType type = (ParameterizedType) field.getGenericType();
+			ParameterizedType type = (ParameterizedType)field.getGenericType();
 			Class<?> genericType = (Class<?>)type.getActualTypeArguments()[0];
 			if (!StorablePojo.class.isAssignableFrom(genericType))
 				continue;
 			try {
 				@SuppressWarnings("unchecked")
 				List<? extends StorablePojo> list = (List<? extends StorablePojo>)field.get(this);
-				for (StorablePojo pojo: list)
+				for (StorablePojo pojo : list)
 					pojo.initialized();
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);

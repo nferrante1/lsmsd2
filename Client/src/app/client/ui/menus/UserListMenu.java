@@ -6,26 +6,23 @@ import java.util.List;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.common.net.ResponseMessage;
-import app.common.net.entities.Entity;
 import app.common.net.entities.UserInfo;
 
-public class UserListMenu extends Menu
+public class UserListMenu extends PagedMenu
 {
 	protected String filter;
-	protected int currentPage;
 
 	public UserListMenu(String filter)
 	{
-		super("Select a user to DELETE it:");
+		super("Select a user to DELETE it");
 		this.filter = filter;
-		this.currentPage = 1;
 	}
 
 	@Override
-	protected List<MenuEntry> getMenu()
+	protected List<MenuEntry> getEntries()
 	{
-		ResponseMessage resMsg = Protocol.getInstance().browseUsers(currentPage, filter);
-		if(!resMsg.isSuccess()) {
+		ResponseMessage resMsg = Protocol.getInstance().browseUsers(getPage(), getPerPage(), filter);
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return null;
 		}
@@ -34,27 +31,20 @@ public class UserListMenu extends Menu
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
-		for(UserInfo user : users) {
+		for (UserInfo user : users) {
 			menu.add(new MenuEntry(i, user.getUsername() + " (admin: " + user.isAdmin() + ")", true, this::handleDeleteUser, user));
 			++i;
 		}
-			menu.add(new MenuEntry(i, "Load a new page", this::handleLoadNewPage));
-		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
 
 	private void handleDeleteUser(MenuEntry entry)
 	{
 		ResponseMessage resMsg = Protocol.getInstance().deleteUser(((UserInfo)entry.getHandlerData()).getUsername());
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
 		Console.println("User correctly deleted.");
-	}
-
-	private void handleLoadNewPage(MenuEntry entry) 
-	{
-		currentPage++;
 	}
 }

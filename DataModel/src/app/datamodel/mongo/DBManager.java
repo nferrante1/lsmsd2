@@ -3,10 +3,9 @@ package app.datamodel.mongo;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.bson.Document;
 import org.bson.codecs.Codec;
@@ -30,37 +29,46 @@ import com.mongodb.client.model.IndexOptions;
 public final class DBManager implements Closeable
 {
 	private static DBManager instance;
-	
+
 	private static String connectionString;
 	private static String databaseName = "mydb";
+	private static boolean standalone = false;
 	private static List<Codec<?>> codecs;
 
-	private MongoClient mongoClient;
-	private MongoDatabase mongoDatabase;
-	
 	private static ReadConcern readConcern = ReadConcern.LOCAL;
 	private static WriteConcern writeConcern = WriteConcern.MAJORITY;
 	private static ReadPreference readPreference = ReadPreference.primary();
-	
-	private static boolean standalone = false;
-	
+
+	private MongoClient mongoClient;
+	private MongoDatabase mongoDatabase;
+
 	private DBManager()
 	{
-		if(connectionString == null)
+		if (connectionString == null)
 			connectionString = "mongodb://localhost:27017" + (standalone ? "" : ",localhost:27018");
-		CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-						CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.SET_PRIVATE_FIELDS_CONVENTION)).automatic(true).build()));
-		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(new ConnectionString(connectionString)).codecRegistry(CodecRegistries.fromRegistries(pojoCodecRegistry)).build();
+		CodecRegistry pojoCodecRegistry = CodecRegistries
+			.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder()
+					.conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION,
+						Conventions.SET_PRIVATE_FIELDS_CONVENTION))
+					.automatic(true).build()));
+		MongoClientSettings settings = MongoClientSettings.builder()
+			.applyConnectionString(new ConnectionString(connectionString))
+			.codecRegistry(CodecRegistries.fromRegistries(pojoCodecRegistry)).build();
 		mongoClient = MongoClients.create(settings);
+		Logger.getLogger(DBManager.class.getName()).info("Connected to " + connectionString + ".");
 	}
-	
-	public static synchronized void setDatabaseName(String name) {
+
+	public static synchronized void setDatabaseName(String name)
+	{
 		databaseName = name;
 	}
-	
-	public static synchronized void setConnectionString(String conn) {
+
+	public static synchronized void setConnectionString(String conn)
+	{
 		connectionString = conn;
 	}
+
 	public static synchronized void addCodec(Codec<?> codec)
 	{
 		if (codecs == null)
@@ -80,69 +88,53 @@ public final class DBManager implements Closeable
 		if (instance == null)
 			throw new IllegalStateException("Called getDatabase() on a uninitialized instance.");
 		if (mongoDatabase == null) {
-			mongoDatabase = mongoClient.getDatabase(databaseName).
-					withReadPreference(getReadPreference()).
-					withReadConcern(getReadConcern()).
-					withWriteConcern(getWriteConcern());
-			
+			mongoDatabase = mongoClient.getDatabase(databaseName).withReadPreference(getReadPreference())
+				.withReadConcern(getReadConcern()).withWriteConcern(getWriteConcern());
 			init();
 		}
 		return mongoDatabase;
 	}
-	
+
 	private void init()
 	{
-		IndexOptions indexOptions = new IndexOptions()
-			.name("authTokenTTLIndex")
-			.expireAfter(0L, TimeUnit.SECONDS);
+		IndexOptions indexOptions = new IndexOptions().name("authTokenTTLIndex").expireAfter(0L, TimeUnit.SECONDS);
 		Bson keys = new Document("expireTime", 1);
 		mongoDatabase.getCollection("AuthTokens").createIndex(keys, indexOptions);
-		
-		indexOptions = new IndexOptions().name("startIndex");
-		keys = new Document("start", 1);
-		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
 
-		indexOptions = new IndexOptions()
-			.name("runIdIndex")
-			.unique(true);
+		indexOptions = new IndexOptions().name("marketIdIndex").unique(true);
+		keys = new Document("_id", 1).append("markets.id", 1);
+		mongoDatabase.getCollection("Sources").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("nameIndex").unique(true);
+		keys = new Document("name", 1);
+		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
+
+		indexOptions = new IndexOptions().name("runIdIndex").unique(true);
 		keys = new Document("runs.id", 1);
 		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 
 		indexOptions = new IndexOptions().name("reportNetProfitIndex");
 		keys = new Document("runs.report.netProfit", 1);
 		mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
-		
-		indexOptions = new IndexOptions()
-				.name("nameIndex")
-				.unique(true);
-			keys = new Document("name", 1);
-			mongoDatabase.getCollection("Strategies").createIndex(keys, indexOptions);
 
-		indexOptions = new IndexOptions()
-			.name("marketIdIndex")
-			.unique(true);
-		keys = new Document("_id", 1).append("markets.id", 1);
-		mongoDatabase.getCollection("Sources").createIndex(keys, indexOptions);
+		indexOptions = new IndexOptions().name("startIndex");
+		keys = new Document("start", 1);
+		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
 
 		indexOptions = new IndexOptions().name("marketHashed");
 		keys = new Document("market", "hashed");
 		mongoDatabase.getCollection("MarketData").createIndex(keys, indexOptions);
 
-		if (!standalone) {
-			// Enable sharding on a collection.
-			
-			mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
+		if (standalone)
+			return;
 
-			final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
-			// shardKey.put("hash", 1);
+		Logger.getLogger(DBManager.class.getName()).info("Enabling sharding on " + databaseName + ".MarketData collection.");
 
-			final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
-
-			cmd.put("key", shardKey);
-
-			mongoClient.getDatabase("admin").runCommand(cmd);
-		}
-	       
+		mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
+		final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
+		final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
+		cmd.put("key", shardKey);
+		mongoClient.getDatabase("admin").runCommand(cmd);
 	}
 
 	@Override
@@ -164,6 +156,7 @@ public final class DBManager implements Closeable
 
 	public static void setReadConcern(ReadConcern readConcern)
 	{
+		Logger.getLogger(DBManager.class.getName()).config("Setting default Read Concern to " + readConcern + ".");
 		DBManager.readConcern = readConcern;
 	}
 
@@ -174,6 +167,7 @@ public final class DBManager implements Closeable
 
 	public static void setWriteConcern(WriteConcern writeConcern)
 	{
+		Logger.getLogger(DBManager.class.getName()).config("Setting default Write Concern to " + writeConcern + ".");
 		DBManager.writeConcern = writeConcern;
 	}
 
@@ -184,11 +178,13 @@ public final class DBManager implements Closeable
 
 	public static void setReadPreference(ReadPreference readPreference)
 	{
+		Logger.getLogger(DBManager.class.getName()).config("Setting default Read Preference to " + readPreference.getName() + ".");
 		DBManager.readPreference = readPreference;
 	}
 
 	public static void setStandalone(boolean standalone)
 	{
+		Logger.getLogger(DBManager.class.getName()).config((standalone ? "Dis" : "En") + "abling sharding.");
 		DBManager.standalone = standalone;
 	}
 }

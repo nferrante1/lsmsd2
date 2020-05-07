@@ -15,18 +15,19 @@ public class Strategy extends StorablePojo
 	@BsonId
 	protected String id;
 	protected String name;
-	protected String username;
+	protected String author;
 	protected List<StrategyRun> runs = new ArrayList<StrategyRun>();
 
 	public Strategy()
 	{
+		super();
 	}
 
-	public Strategy(String id, String name, String username)
+	public Strategy(String id, String name, String author)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.name = name;
-		this.username = username;
+		this.author = author;
 		this.id = id;
 	}
 
@@ -50,19 +51,20 @@ public class Strategy extends StorablePojo
 	{
 		return this.name;
 	}
-	
-	public String getId() {
+
+	public String getId()
+	{
 		return this.id;
 	}
 
 	public String getUsername()
 	{
-		return username;
+		return author;
 	}
 
-	public void setUsername(String username)
+	public void setAuthor(String author)
 	{
-		this.username = username;
+		updateField("author", author);
 	}
 
 	public List<StrategyRun> getRuns()
@@ -77,6 +79,6 @@ public class Strategy extends StorablePojo
 
 	public void setId(String id)
 	{
-		this.id = id;
+		updateField("id", id);
 	}
 }

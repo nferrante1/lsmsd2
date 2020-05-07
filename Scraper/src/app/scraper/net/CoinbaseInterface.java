@@ -10,11 +10,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 
-
 public interface CoinbaseInterface
 {
 	@GET("products")
 	Call<List<APIMarket>> listMarkets();
+
 	@GET("products/{market}/candles")
 	Call<List<APICandle>> getCandles(@Path("market") String marketId, @QueryMap Map<String, String> options);
 }

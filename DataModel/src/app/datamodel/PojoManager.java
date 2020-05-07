@@ -3,7 +3,6 @@ package app.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoNamespace;
@@ -57,71 +56,67 @@ public class PojoManager<T extends Object>
 
 	public void replaceCollection(String newCollectionName)
 	{
-		getCollection(newCollectionName).drop();
+		getDB().getCollection(newCollectionName).drop();
 		renameCollection(newCollectionName);
-	}
-
-	protected static MongoCollection<Document> getCollection(String name)
-	{
-		return getDB().getCollection(name);
 	}
 
 	protected static <X> MongoCollection<X> getCollection(String name, Class<X> clazz)
 	{
-		return getDB().getCollection(name, clazz);
+		return getCollection(name, clazz, null, null, null);
 	}
-	
-	protected MongoCollection<T> getCollection(ReadConcern readConcern, WriteConcern writeConcern, ReadPreference readPreference)
+
+	protected static <X> MongoCollection<X> getCollection(String name, Class<X> clazz,
+		ReadPreference readPreference, ReadConcern readConcern, WriteConcern writeConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withReadConcern(readConcern)
-				.withWriteConcern(writeConcern)
-				.withReadPreference(readPreference);
+		if (readPreference == null)
+			readPreference = DBManager.getReadPreference();
+		if (readConcern == null)
+			readConcern = DBManager.getReadConcern();
+		if (writeConcern == null)
+			writeConcern = DBManager.getWriteConcern();
+		return getDB().getCollection(name, clazz).withReadPreference(readPreference)
+			.withReadConcern(readConcern).withWriteConcern(writeConcern);
 	}
-	
+
+	protected MongoCollection<T> getCollection(ReadPreference readPreference, ReadConcern readConcern,
+		WriteConcern writeConcern)
+	{
+		return getCollection(getCollectionName(), pojoClass, readPreference, readConcern, writeConcern);
+	}
+
 	protected MongoCollection<T> getCollection(ReadConcern readConcern, WriteConcern writeConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withReadConcern(readConcern)
-				.withWriteConcern(writeConcern);
+		return getCollection(null, readConcern, writeConcern);
 	}
-	
-	protected MongoCollection<T> getCollection(ReadConcern readConcern, ReadPreference readPreference)
+
+	protected MongoCollection<T> getCollection(ReadPreference readPreference, ReadConcern readConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withReadConcern(readConcern)
-				.withReadPreference(readPreference);
+		return getCollection(readPreference, readConcern, null);
 	}
-	
-	protected MongoCollection<T> getCollection(WriteConcern writeConcern, ReadPreference readPreference)
+
+	protected MongoCollection<T> getCollection(ReadPreference readPreference, WriteConcern writeConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withWriteConcern(writeConcern)
-				.withReadPreference(readPreference);
+		return getCollection(readPreference, null, writeConcern);
 	}
-	
+
 	protected MongoCollection<T> getCollection(ReadConcern readConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withReadConcern(readConcern);
+		return getCollection(null, readConcern, null);
 	}
-	
+
 	protected MongoCollection<T> getCollection(WriteConcern writeConcern)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withWriteConcern(writeConcern);
-				
+		return getCollection(null, null, writeConcern);
 	}
-	
+
 	protected MongoCollection<T> getCollection(ReadPreference readPreference)
 	{
-		return getCollection(getCollectionName(), pojoClass)
-				.withReadPreference(readPreference);
-	}	
+		return getCollection(readPreference, null, null);
+	}
 
 	protected MongoCollection<T> getCollection()
 	{
-		return getCollection(getCollectionName(), pojoClass);
+		return getCollection(null, null, null);
 	}
 
 	protected FindIterable<T> getFindIterable(Bson filter, Bson projection, Bson sort, int skip, int limit)
@@ -182,65 +177,15 @@ public class PojoManager<T extends Object>
 		return find(Filters.eq("_id", id), skip, limit);
 	}
 
-	/*public PojoCursor<T> find(Bson filter, Bson projection, Bson sort, int limit)
-	{
-		return find(filter, projection, sort, 0, limit);
-	}
-
-	public PojoCursor<T> find(Bson filter, Bson projection, int limit)
-	{
-		return find(filter, projection, null, limit);
-	}
-
-	public PojoCursor<T> find(Object id, Bson projection, Bson sort, int limit)
-	{
-		return find(Filters.eq("_id", id), projection, sort, limit);
-	}*/
-
-	/*public PojoCursor<T> find(Object id, Bson projection, int limit)
-	{
-		return find(Filters.eq("_id", id), projection, limit);
-	}
-
-	public PojoCursor<T> find(int skip, int limit, Bson sort)
-	{
-		return find(null, null, sort, skip, limit);
-	}
-
-	public PojoCursor<T> find(int limit, Bson sort)
-	{
-		return find(0, limit, sort);
-	}*/
-
 	public PojoCursor<T> find(Bson filter, Bson sort)
 	{
 		return find(filter, sort, 0, 0);
 	}
 
-	/*public PojoCursor<T> find(Bson filter, Bson projection)
-	{
-		return find(filter, projection, null);
-	}*/
-
-	/*public PojoCursor<T> find(Object id, Bson projection)
-	{
-		return find(Filters.eq("_id", id), projection);
-	}*/
-
 	public PojoCursor<T> find(int skip, int limit)
 	{
 		return find(null, skip, limit);
 	}
-
-	/*public PojoCursor<T> find(Bson filter, int limit)
-	{
-		return find(filter, 0, limit);
-	}
-
-	public PojoCursor<T> find(Object id, int limit)
-	{
-		return find(Filters.eq("_id", id), limit);
-	}*/
 
 	public PojoCursor<T> find(int limit)
 	{
@@ -251,16 +196,6 @@ public class PojoManager<T extends Object>
 	{
 		return find(filter, null);
 	}
-
-	/*public PojoCursor<T> findSorted(Bson sort)
-	{
-		return findSorted(null, sort);
-	}
-
-	public PojoCursor<T> findSorted(Bson projection, Bson sort)
-	{
-		return find(null, projection, sort);
-	}*/
 
 	public PojoCursor<T> find(Object id)
 	{
@@ -274,7 +209,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> findPaged(Bson filter, Bson projection, Bson sort, int page, int perPage)
 	{
-		return find(filter, projection, sort, (page - 1)*perPage, perPage);
+		return find(filter, projection, sort, (page - 1) * perPage, perPage);
 	}
 
 	public PojoCursor<T> findPaged(Object id, Bson projection, Bson sort, int page, int perPage)
@@ -328,7 +263,7 @@ public class PojoManager<T extends Object>
 	{
 		List<Bson> pipeline = new ArrayList<Bson>();
 		if (stages != null && stages.length > 0)
-			for (Bson stage: stages)
+			for (Bson stage : stages)
 				pipeline.add(stage);
 		return aggregate(pipeline);
 	}

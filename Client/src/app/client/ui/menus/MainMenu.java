@@ -1,6 +1,5 @@
 package app.client.ui.menus;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +7,8 @@ import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
-import app.client.ui.menus.forms.PathForm;
 import app.client.ui.menus.forms.SearchForm;
+import app.client.ui.menus.forms.StrategyFileForm;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 
@@ -43,19 +42,18 @@ public class MainMenu extends Menu
 
 	private void handleAddStrategy(MenuEntry entry)
 	{
-		HashMap<String, String> response = new PathForm("Select a strategy to upload (the file must be .java):").show();
+		HashMap<String, String> response = new StrategyFileForm("Insert a strategy file to upload (the file must be .java)", true).show();
 		try {
-			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("Path"));
-			if(!resMsg.isSuccess()) {
+			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("File"));
+			if (!resMsg.isSuccess()) {
 				Console.println(resMsg.getErrorMsg());
 				return;
 			}
-			Console.println("Strategy correctly added");
+			Console.println("Strategy successfully added.");
 		} catch (IOException e) {
-			Console.println("Error: " + e.getMessage());
+			Console.println("Can not read file '" + response.get("File") + "': " + e.getMessage());
 		}
-	
-		
+
 	}
 
 	private void handleBrowseUsers(MenuEntry entry)
@@ -66,13 +64,13 @@ public class MainMenu extends Menu
 
 	private void handleAddUser(MenuEntry entry)
 	{
-		HashMap<String, String> response = new UserForm("Create user").show();
+		HashMap<String, String> response = new UserForm("Create user", true).show();
 		ResponseMessage resMsg = Protocol.getInstance().addUser(response.get("USERNAME"), response.get("PASSWORD"));
-		if(!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		Console.println("User correctly created");
+		Console.println("User successfully created.");
 	}
 
 	private void handleBrowseDataSource(MenuEntry entry)

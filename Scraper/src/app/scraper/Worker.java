@@ -3,11 +3,11 @@ package app.scraper;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import app.datamodel.DataRangeManager;
 import app.datamodel.DataSourceManager;
 import app.datamodel.MarketDataManager;
-import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
@@ -35,29 +35,29 @@ final class Worker extends Thread
 	@Override
 	public void run()
 	{
+		Logger.getLogger(Worker.class.getName() + " - " + getName()).info("source: " + source.getName());
 		try {
 			execute();
 		} catch (InterruptedException e) {
-			System.out.println(getName() + ": Interrupted!");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("Interrupted!");
+		} catch (Throwable e) {
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).severe("Unhandled exception: " + e.getMessage());
 		} finally {
-			System.out.println(getName() + ": Exiting...");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).info("Exiting...");
 		}
 	}
 
 	private void execute() throws InterruptedException
 	{
-		System.out.println(getName() + ": source=" + source.getName());
-
 		List<APIMarket> markets = connector.getMarkets();
 		if (markets == null || markets.isEmpty()) {
-			System.out.println(getName() + ": No markets! Exiting...");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("No markets! Exiting...");
 			return;
 		}
 
-		for(APIMarket curMarket: markets)
-		{
+		for (APIMarket curMarket: markets) {
 			Market market = source.getMarket(curMarket.getId());
-			if(market == null) {
+			if (market == null) {
 				source.addMarket(new Market(curMarket.getId(), curMarket.getBaseCurrency(), curMarket.getQuoteCurrency()));
 				continue;
 			}
@@ -67,8 +67,8 @@ final class Worker extends Thread
 
 		List<Market> sourceMarkets = source.getMarkets();
 
-		NextMarket: for(Market sm: sourceMarkets) {
-			for(APIMarket m: markets)
+		NextMarket: for (Market sm: sourceMarkets) {
+			for (APIMarket m: markets)
 				if (sm.getId().equals(m.getId()))
 					continue NextMarket;
 			sm.delete();
@@ -77,7 +77,7 @@ final class Worker extends Thread
 		sourceManager.save(source);
 
 		if (!source.isEnabled()) {
-			System.out.println(getName() + ": Source not enabled. Exiting...");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("Source not enabled. Exiting...");
 			return;
 		}
 
@@ -92,16 +92,20 @@ final class Worker extends Thread
 			if (!m.isSyncEnabled())
 				enabledCount--;
 		if (enabledCount == 0) {
-			System.out.println(getName() + ": All markets disabled! Exiting...");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("All markets disabled! Exiting...");
 			return;
 		}
 
-		while(!interrupted())
+		while (!interrupted())
 			for (Market market: sourceMarkets)
 				if (market.isSyncEnabled()) {
 					DataRange range = market.getRange();
-					if (range != null && range.end != null && range.end.isAfter(Instant.now().minusSeconds(market.getGranularity() * 60)))
+					if (range != null && range.end != null && range.end
+						.isAfter(Instant.now().minusSeconds(market.getGranularity() * 60))) {
+						Logger.getLogger(Worker.class.getName() + " - " + getName()).info("Market " + source.getName() + ":" + market.getId() + " is now up-to-date.");
+						Thread.sleep(1000);
 						continue;
+					}
 					updateMarket(market);
 				}
 	}
@@ -115,6 +119,8 @@ final class Worker extends Thread
 		String fullMarketId = source.getName() + ":" + marketId;
 		int marketGranularity = market.getGranularity();
 
+		Logger.getLogger(Worker.class.getName() + " - " + getName()).info("Processing " + fullMarketId + "...");
+
 		DataRange range = market.getRange();
 		if (range == null) {
 			range = dataRangeManager.get(fullMarketId);
@@ -127,23 +133,26 @@ final class Worker extends Thread
 		List<APICandle> sourceCandles;
 		try {
 			sourceCandles = connector.getCandles(marketId, marketGranularity, start);
-		} catch(TemporaryAPIException ex) {
+		} catch (TemporaryAPIException ex) {
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("Temporary error while contacting the source: " + ex.getMessage());
 			System.err.println(getName() + ": " + ex.getMessage());
 			long millisToWait = ex.getMillisToWait();
-			System.out.println(getName() + ": Waiting for " + millisToWait + " as requested by source connector.");
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).info("Waiting for " + millisToWait + " as requested by source connector.");
 			Thread.sleep(millisToWait);
 			sourceCandles = null;
-		} catch(PermanentAPIException ex) {
-			System.err.println(getName() + ": " + ex.getMessage());
-			System.err.println(getName() + ": Disabling sync for market " + fullMarketId + " (may resolve the problem).");
+		} catch (PermanentAPIException ex) {
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).severe("Permanent error while contacting the source: " + ex.getMessage());
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("Disabling sync for market " + fullMarketId + " (may resolve the problem).");
 			market.setSync(false);
 			sourceManager.save(source);
 			sourceCandles = null;
 		} catch (InterruptedException ex) {
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).throwing(Worker.class.getName(), "updateMarket", ex);
 			throw ex;
 		} catch (Throwable ex) {
-			System.err.println(getName() + ": " + ex.getMessage());
-			Thread.sleep(10000);
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).severe("Unknown exception while contacting the source: " + ex.getMessage());
+			Logger.getLogger(Worker.class.getName() + " - " + getName()).warning("Waiting for 60 seconds. Hopefully, may resolve the problem.");
+			Thread.sleep(60000);
 			sourceCandles = null;
 		}
 
@@ -168,7 +177,7 @@ final class Worker extends Thread
 			marketDataManager.save(fullMarketId, candles);
 
 			market.setLastCandlesCount(lastCandlesCount + toUpsert);
-			if(range.start == null)
+			if (range.start == null)
 				range.start = candles.get(0).getTime();
 			range.end = candles.get(candles.size() - 1).getTime();
 		}
@@ -187,11 +196,10 @@ final class Worker extends Thread
 		}
 		marketDataManager.save(marketDatas);
 
-		if(!marketDatas.isEmpty())
-		{
+		if (!marketDatas.isEmpty()) {
 			MarketData lastMarketData = marketDatas.get(marketDatas.size() - 1);
 			market.setLastCandlesCount(lastMarketData.getNcandles());
-			if(range.start == null)
+			if (range.start == null)
 				range.start = lastMarketData.getStart();
 			range.end = lastMarketData.getEnd();
 		}

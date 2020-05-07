@@ -1,33 +1,26 @@
 package app.test;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Projections;
-
-import app.common.net.entities.SourceInfo;
-import app.datamodel.PojoCursor;
-import app.datamodel.PojoManager;
-import app.datamodel.StorablePojoCursor;
-import app.datamodel.StorablePojoManager;
 import app.datamodel.mongo.DBManager;
-import app.datamodel.pojos.User;
 
 public class Test
 {
 	public static void main(String[] args)
 	{
-		setupDBManager();
+		//Instant converted = LocalDateTime.parse("2017-3-8 11:22", DateTimeFormatter.ofPattern("uuuu-M-d hh:mm"));
+		Instant converted = LocalDateTime.parse("2017-3-08 5:3", DateTimeFormatter.ofPattern("yyyy-M-d H:m")).atZone(ZoneId.of("UTC")).toInstant();
+		System.out.println(converted);
+		/*setupDBManager();
 		
 		StrategyExecutor executor  = new StrategyExecutor("/home/speedjack/clazzes", "PippoStrategy");
 		ExecutableStrategy strategy = executor.getStrategy();
 		strategy.init();
 		strategy.process();
-		strategy.process();
+		strategy.process();*/
 
 		/*PojoManager<SourceInfo> manager = new PojoManager<SourceInfo>(SourceInfo.class, "Sources");
 		PojoCursor<SourceInfo> cursor = manager.aggregate(Arrays.asList(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("enabled"), Projections.computed("name", "$_id")))));
@@ -182,7 +175,7 @@ public class Test
 	{
 		DBManager.setHostname("127.0.0.1");
 		DBManager.setPort(27017);
-		DBManager.setUsername("root");
+		DBManager.setAuthor("root");
 		DBManager.setPassword("rootpass");
 		DBManager.setDatabase("mydb");
 	}
