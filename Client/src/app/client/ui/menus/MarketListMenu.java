@@ -17,7 +17,7 @@ public class MarketListMenu extends PagedMenu
 	{
 		super("Select a market");
 		this.dataSource = dataSource;
-		if (nameFilter.contains("/"))
+		if (nameFilter != null && nameFilter.contains("/"))
 			this.nameFilter = nameFilter.replaceFirst("/", "[/-]?");
 		else
 			this.nameFilter = nameFilter;
