@@ -305,9 +305,9 @@ public class Protocol implements AutoCloseable
 		return resMsg != null && resMsg.isValid(ActionRequest.RUN_STRATEGY) ? resMsg : getProtocolErrorMessage();
 	}
 
-	public ResponseMessage addStrategy(String fileName) throws IOException
+	public ResponseMessage addStrategy(String className, String fileName) throws IOException
 	{
-		return sendRequest(ActionRequest.ADD_STRATEGY, new FileContent(fileName));
+		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("CLASSNAME", className), new FileContent(fileName));
 	}
 
 	public ResponseMessage downloadStrategy(String strategyName)

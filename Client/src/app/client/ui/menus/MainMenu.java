@@ -1,5 +1,6 @@
 package app.client.ui.menus;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,12 +45,19 @@ public class MainMenu extends Menu
 	{
 		HashMap<String, String> response = new StrategyFileForm("Insert a strategy file to upload (the file must be .java)", true).show();
 		try {
-			ResponseMessage resMsg = Protocol.getInstance().addStrategy(response.get("File"));
-			if (!resMsg.isSuccess()) {
-				Console.println(resMsg.getErrorMsg());
-				return;
+			File file = new File(response.get("File"));
+			if(file.isFile()) {
+				String className = file.getName().replace(".java", "");
+				ResponseMessage resMsg = Protocol.getInstance().addStrategy(className, response.get("File"));
+				if (!resMsg.isSuccess()) {
+					Console.println(resMsg.getErrorMsg());
+					return;
+				}
+				Console.println("Strategy successfully added.");
 			}
-			Console.println("Strategy successfully added.");
+			else {
+				Console.println("You must select a file");
+			}
 		} catch (IOException e) {
 			Console.println("Can not read file '" + response.get("File") + "': " + e.getMessage());
 		}

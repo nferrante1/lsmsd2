@@ -16,44 +16,12 @@ public class ReadFile {
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		
-		byte[] r = null;
-	
-
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Insert path:");
-		try {
-			r = readFile(sc.nextLine());
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		
-		File dir =  new File("C:\\Users\\simon\\Desktop\\castagne");
-		dir.mkdir();
-		
-		
-		File obj = new File(dir.getAbsolutePath() + "/" + "b.java");
-		
-	    FileOutputStream outputStream = new FileOutputStream(obj);
-	    outputStream.write(r);
-	 
-	    outputStream.close();
+		String x = "Strategy.java";
+		String y = x.replace(".java", "");
+		System.out.println(y + " " + y.length());
 	}
 	
 	
-	public static byte[] readFile(String file) throws IOException {
-	    byte[] bytes = null;
-	    if(!Files.getFileExtension(file).equals("java")) {
-	    	System.out.println("NO .JAVA");
-	    }
-	    DataInputStream reader = new DataInputStream(new FileInputStream(file));
-	    int nBytesToRead = reader.available();
-	    if(nBytesToRead > 0) {
-	    	bytes = new byte[nBytesToRead];
-	        reader.read(bytes);
-	    }
-	    reader.close();
-	    return bytes;
 
-	}
 
 }
