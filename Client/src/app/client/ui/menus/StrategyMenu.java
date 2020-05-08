@@ -60,7 +60,12 @@ public class StrategyMenu extends Menu
 
 	private void handleDeleteStrategy(MenuEntry entry)
 	{
-		Protocol.getInstance().deleteStrategy(strategy.getName());
+		ResponseMessage resMsg = Protocol.getInstance().deleteStrategy(strategy.getName());
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		Console.println("Strategy correctly deleted.");
 	}
 
 	private void handleDownloadStrategy(MenuEntry entry)

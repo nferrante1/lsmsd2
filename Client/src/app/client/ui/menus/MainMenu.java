@@ -46,7 +46,7 @@ public class MainMenu extends Menu
 		HashMap<String, String> response = new StrategyFileForm("Insert a strategy file to upload (the file must be .java)", true).show();
 		try {
 			File file = new File(response.get("File"));
-			if(file.isFile()) {
+			if(file.isFile() || file.getName().endsWith(".java")) {
 				String className = file.getName().replace(".java", "");
 				ResponseMessage resMsg = Protocol.getInstance().addStrategy(className, response.get("File"));
 				if (!resMsg.isSuccess()) {
@@ -56,7 +56,7 @@ public class MainMenu extends Menu
 				Console.println("Strategy successfully added.");
 			}
 			else {
-				Console.println("You must select a file");
+				Console.println("You must select a file .java");
 			}
 		} catch (IOException e) {
 			Console.println("Can not read file '" + response.get("File") + "': " + e.getMessage());
