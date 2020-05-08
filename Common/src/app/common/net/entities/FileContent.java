@@ -12,12 +12,6 @@ public class FileContent extends Entity
 
 	public FileContent(String fileName) throws IOException
 	{
-		/*
-		 * try (DataInputStream reader = new DataInputStream(new
-		 * FileInputStream(fileName))) { int nBytesToRead = reader.available();
-		 * if(nBytesToRead > 0) { this.content = new byte[nBytesToRead];
-		 * reader.read(this.content); } }
-		 */ // TODO: remove
 		try (FileInputStream fis = new FileInputStream(fileName)) {
 			this.content = fis.readAllBytes();
 		}
