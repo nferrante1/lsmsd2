@@ -3,6 +3,7 @@ package app.library;
 import java.time.Instant;
 import java.util.HashMap;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 public class Candle //TODO
@@ -81,19 +82,9 @@ public class Candle //TODO
 	{
 		this.ta = ta;
 	};
-
-	public Double ema()
-	{
-		return ta.get("ema");
-	}
-
-	public Double rs()
-	{
-		return ta.get("rs");
-	}
-
-	public Double sma()
-	{
-		return ta.get("sma");
+	
+	@BsonIgnore
+	public double getTa(String name) {
+		return ta.get(name);
 	}
 }
