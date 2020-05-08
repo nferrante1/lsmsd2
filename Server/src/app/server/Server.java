@@ -39,7 +39,7 @@ public class Server
 		} catch (ParseException ex) {
 			Logger.getLogger(Server.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
 		}
-
+	
 		setupDBManager();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
@@ -235,8 +235,11 @@ public class Server
 		}
 		if(cmd.hasOption("strategies-dir")) {
 			String dir = cmd.getOptionValue("strategies-dir");
-			if(!dir.isBlank());
-			//TODO add handling
+			if(dir.isBlank())
+				StrategyFile.setMainDirectory("strategies");
+			else
+				StrategyFile.setMainDirectory(dir);
+				
 		}
 		if(cmd.hasOption("standalone"))
 		{

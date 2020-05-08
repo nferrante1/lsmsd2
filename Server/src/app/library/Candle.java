@@ -1,4 +1,4 @@
-package app.server.dm.pojos;
+package app.library;
 
 import java.time.Instant;
 import java.util.HashMap;

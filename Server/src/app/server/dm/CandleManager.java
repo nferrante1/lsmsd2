@@ -13,7 +13,7 @@ import com.mongodb.client.model.Sorts;
 
 import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
-import app.server.dm.pojos.Candle;
+import app.library.Candle;
 
 public class CandleManager extends PojoManager<Candle>
 {

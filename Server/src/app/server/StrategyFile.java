@@ -5,16 +5,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class StrategyFile
 {
 	protected byte[] file;
 	protected String hashFile;
-
-	public StrategyFile(byte[] file)
+	private static String mainDirectory = "strategies";
+	private String className;
+	
+	public StrategyFile(byte[] file, String className)
 	{
 		this.file = file;
 		this.hashFile = doHash(file);
+		this.className = className;
+	}
+	
+	public static void setMainDirectory(String mainDirectory){
+		StrategyFile.mainDirectory = mainDirectory;
 	}
 
 	protected String doHash(byte [] file)
@@ -36,12 +44,11 @@ public class StrategyFile
 	public void save() throws IOException
 	{
 
-		String mainDirectory = "strategies";
 		String directoryName = this.hashFile.substring(0, 2);
-		String fileName = this.hashFile.substring(3);
-		File dir =  new File(mainDirectory + "/" + directoryName);
+		String subDirectoryName = this.hashFile.substring(3);
+		File dir =  new File(mainDirectory + "/" + directoryName +"/"+subDirectoryName);
 		dir.mkdirs();
-		try (FileOutputStream fos = new FileOutputStream(new File(dir.getAbsolutePath() + "/" + fileName + ".java"))) {
+		try (FileOutputStream fos = new FileOutputStream(new File(dir.getAbsolutePath() + "/" + className + ".java"))) {
 			fos.write(this.file);
 		}
 	}
@@ -53,11 +60,46 @@ public class StrategyFile
 
 	public String getDirectoryName()
 	{
-		return this.hashFile.substring(0, 2);
+		return this.hashFile.substring(0, 2) + "/" + this.hashFile.substring(3);
 	}
 
 	public String getFileName()
 	{
-		return this.hashFile.substring(3);
+		return className + ".java";
+	}
+	
+	public String getFullName() {
+		return mainDirectory + "/" + getDirectoryName() + "/" + getClassName();  
+	}
+	
+	public String getJavaFile() {
+		return getFullName() + ".java";
+	}
+	
+	public String getClassFile() {
+		return getFullName() + ".class";
+	}
+	
+	public String getClassFolder() {
+		return mainDirectory + "/" + getDirectoryName();
+	}
+
+	public String getClassName()
+	{
+		return className;
+	}
+	
+	public void delete() {
+		delete(new File(getClassFolder()));
+	}
+	
+	public static void delete(File file) {
+		File[] list = file.listFiles();
+		if(list != null) {
+			for(File f : list) {
+				delete(f);
+			}
+		}
+		file.delete();
 	}
 }

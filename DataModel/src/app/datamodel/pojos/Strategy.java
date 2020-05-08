@@ -57,11 +57,6 @@ public class Strategy extends StorablePojo
 		return this.id;
 	}
 
-	public String getUsername()
-	{
-		return author;
-	}
-
 	public void setAuthor(String author)
 	{
 		updateField("author", author);
@@ -80,5 +75,10 @@ public class Strategy extends StorablePojo
 	public void setId(String id)
 	{
 		updateField("id", id);
+	}
+
+	public String getAuthor()
+	{
+		return author;
 	}
 }

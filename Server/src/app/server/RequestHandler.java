@@ -2,6 +2,7 @@ package app.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,6 +42,7 @@ import app.datamodel.pojos.Market;
 import app.datamodel.pojos.Strategy;
 import app.datamodel.pojos.User;
 import app.server.dm.MarketInfoManager;
+import app.server.runner.StrategyCompiler;
 
 public class RequestHandler extends Thread
 {
@@ -317,21 +319,26 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleAddStrategy(RequestMessage reqMsg)
 	{
+		KVParameter name = reqMsg.getEntity(KVParameter.class);
 		FileContent strategyContent = reqMsg.getEntity(FileContent.class);
-		StrategyFile file = new StrategyFile(strategyContent.getContent());
+		StrategyFile file = new StrategyFile(strategyContent.getContent(), name.getValue());
 		try {
 			file.save();
-			//TODO compile file and check if it is ok. Then extract the name of the class
-			String strategyName = "ciccio";
+			StrategyCompiler strategyCompiler = new StrategyCompiler(file);
+			String strategyName = strategyCompiler.compile();
+			if(strategyName == null)
+				return new ResponseMessage("Cannot compile Strategy");
 
 			Strategy strategy = new Strategy(file.getHash(), strategyName, authToken.getUsername());
 			StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 			strategyManager.save(strategy);
 			return new ResponseMessage();
 		} catch (IOException e) {
+			file.delete();
 			return new ResponseMessage("Strategy impossible to save.");
 		}
 		catch(DuplicateKeyException e) {
+			file.delete();
 			return new ResponseMessage("Strategy already exists.");
 		}
 	}
@@ -349,7 +356,17 @@ public class RequestHandler extends Thread
 
 		Strategy strategy = strategies.next();
 		try {
-			FileContent file = new FileContent("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3) + ".java");
+			String fileName = null;
+			File dir = new File("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3));
+			for(File f : dir.listFiles()) {
+				if(f.getName().endsWith(".java")) {
+					fileName = f.getAbsolutePath();
+					break;
+				}	
+			}
+			if(fileName == null)
+				return new ResponseMessage("Cannot Find Java File");
+			FileContent file = new FileContent(fileName);
 			return new ResponseMessage(file);
 		} catch (IOException e) {
 			return new ResponseMessage("File not found.");
@@ -364,8 +381,9 @@ public class RequestHandler extends Thread
 		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
 		if(!cursor.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
-
 		Strategy strategy = cursor.next();
+		StrategyFile.delete(new File("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3)));
+		
 		strategy.delete();
 		manager.save(strategy);
 
@@ -379,6 +397,11 @@ public class RequestHandler extends Thread
 		MarketDataManager manager = new MarketDataManager();
 		manager.delete(filter.getSource(), filter.getMarketId(), filter.getDate());
 		return new ResponseMessage();
+	}
+	
+	private ResponseMessage handleRunStrategy(RequestMessage reqMsg)
+	{
+		return null;
 	}
 	
 }

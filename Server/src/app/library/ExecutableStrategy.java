@@ -1,7 +1,7 @@
-package app.test;
+package app.library;
 
 public interface ExecutableStrategy
 {
-	public void init();
+	public String getName();
 	public void process();
 }
