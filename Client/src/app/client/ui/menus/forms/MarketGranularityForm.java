@@ -14,7 +14,7 @@ public class MarketGranularityForm extends TextForm
 		super("Set granularity (minutes)");
 		this.previousGranularity = previousGranularity;
 	}
-	
+
 	@Override
 	protected List<FormField> createFields()
 	{

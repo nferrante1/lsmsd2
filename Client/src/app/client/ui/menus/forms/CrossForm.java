@@ -19,5 +19,4 @@ public class CrossForm extends TextForm
 		fields.add(new ChoiceFormField<BooleanChoice>("Cross", BooleanChoice.FALSE, BooleanChoice.class));
 		return fields;
 	}
-
 }
