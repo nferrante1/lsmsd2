@@ -43,6 +43,7 @@ import app.datamodel.pojos.Market;
 import app.datamodel.pojos.Strategy;
 import app.datamodel.pojos.User;
 import app.server.dm.MarketInfoManager;
+import app.server.runner.StrategyRunner;
 
 public class RequestHandler extends Thread
 {
@@ -409,6 +410,30 @@ public class RequestHandler extends Thread
 	@SuppressWarnings("unused")
 	private ResponseMessage handleRunStrategy(RequestMessage reqMsg)
 	{
-		return null;
+		List<KVParameter> parameters = reqMsg.getEntities(KVParameter.class);
+		String strategyName = null;
+		for(KVParameter parameter : parameters) {
+			if(parameter.getName().equals("STRATEGYNAME"))
+				strategyName = parameter.getValue();				
+		}
+		
+		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
+
+		if(!strategies.hasNext())
+			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
+
+		Strategy strategy = strategies.next();	
+		try {
+			StrategyFile strategyFile = new StrategyFile(strategy.getId());
+			StrategyRunner runner = new StrategyRunner(strategyFile);
+			runner.start();
+			runner.join();
+			
+		} catch (FileNotFoundException | InterruptedException e) {
+			//TODO: log
+		}
+		return new ResponseMessage();
+		
 	}
 }
