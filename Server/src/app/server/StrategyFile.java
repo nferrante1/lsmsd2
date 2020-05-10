@@ -112,7 +112,7 @@ public class StrategyFile
 		file.delete();
 	}
 
-	public String getStrategyName()
+	public ExecutableStrategy getStrategy()
 	{
 		File classDir = new File(getDirectoryPath());
 		URLClassLoader classLoader;
@@ -127,7 +127,7 @@ public class StrategyFile
 			if(!ExecutableStrategy.class.isAssignableFrom(strategyClass)) return null;
 			try {
 				ExecutableStrategy strategy = (ExecutableStrategy)strategyClass.getDeclaredConstructors()[0].newInstance();
-				return strategy.getName();
+				return strategy;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | SecurityException e) {
 				e.printStackTrace();
@@ -137,6 +137,14 @@ public class StrategyFile
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public String getStrategyName() {
+		ExecutableStrategy strategy = getStrategy();
+		if(strategy != null) {
+			return strategy.getName();
+		}
+		return null;
 	}
 
 	public boolean compile()
