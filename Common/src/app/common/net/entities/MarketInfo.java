@@ -16,7 +16,7 @@ public class MarketInfo extends Entity
 	{
 	}
 
-	public MarketInfo(String sourceName, String marketId, int granularity, boolean sync, boolean enabled)
+	public MarketInfo(String sourceName, String marketId, int granularity, boolean enabled, boolean sync)
 	{
 		this.sourceName = sourceName;
 		this.marketId = marketId;

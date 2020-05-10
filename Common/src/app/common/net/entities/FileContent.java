@@ -1,5 +1,6 @@
 package app.common.net.entities;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +25,9 @@ public class FileContent extends Entity
 
 	public void writeFile(String fileName) throws IOException
 	{
-		try (FileOutputStream fos = new FileOutputStream(fileName)) {
+		File file = new File(fileName);
+		file.mkdirs();
+		try (FileOutputStream fos = new FileOutputStream(file)) {
 			fos.write(content);
 		}
 	}
