@@ -55,8 +55,8 @@ public class RSMA extends Indicator implements ComputableIndicator
 				    new Document("input", "$candles")
 				                .append("as", "candle")
 				                .append("in", 
-				    new Document("v", 
-				    new Document("$max", Arrays.asList(new Document("$subtract", 
+				                		new Document("v", 
+				                				new Document("$max", Arrays.asList(new Document("$subtract", 
 						    (increment ? Arrays.asList("$$candle.c", "$$candle.o") : Arrays.asList("$$candle.o", "$$candle.c"))), 0L))))))), 
 				Aggregates.addFields(new Field<Document>("candles", 
 				    new Document("$map", 

@@ -25,8 +25,14 @@ public class FileContent extends Entity
 
 	public void writeFile(String fileName) throws IOException
 	{
+<<<<<<< HEAD
+		String dirName = fileName.substring(0, fileName.lastIndexOf(File.separator));
+		File dir = new File(dirName);
+		dir.mkdirs();
+=======
 		File file = new File(fileName);
 		file.mkdirs();
+>>>>>>> branch 'master' of https://github.com/nferrante1/lsmsd2.git
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(content);
 		}
