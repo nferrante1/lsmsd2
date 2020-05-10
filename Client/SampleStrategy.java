@@ -4,6 +4,7 @@ import java.util.List;
 import app.library.ExecutableStrategy;
 import app.library.indicators.Indicator;
 import app.library.indicators.RSI;
+import app.library.Candle;
 
 public class SampleStrategy implements ExecutableStrategy
 {

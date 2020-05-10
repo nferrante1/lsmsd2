@@ -1,6 +1,5 @@
 package app.server.dm;
-
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,8 +49,9 @@ public class CandleManager extends PojoManager<Candle>
 				Aggregates.unwind("$candles"),
 				Aggregates.replaceRoot("$candles"),
 				Aggregates.addFields(new Field<Document>("n",
-					new Document("$floor", new Document("$divide", Arrays.asList(new Document("$subtract", Arrays.asList("$t",
-						new SimpleDateFormat("EEE MMMMM dd yyyy HH:mm:ss").format(new java.util.Date(0L)))), granularity*60*1000))))),
+					new Document("$floor", new Document("$divide", Arrays.asList(new Document("$subtract", Arrays.asList("$t", 
+							Instant.EPOCH)), granularity*60*1000))))),
+						//new SimpleDateFormat("EEE MMMMM dd yyyy HH:mm:ss").format(new java.util.Date(0L)))), granularity*60*1000))))),
 				Aggregates.group("$n",
 					Accumulators.first("t", "$t"),
 					Accumulators.first("o", "$o"),
@@ -66,13 +66,13 @@ public class CandleManager extends PojoManager<Candle>
 						new Document("candles",
 								new Document("$map",
 										new Document("input",
-												new Document("$range", Arrays.asList(0,new Document("$subtract",Arrays.asList(new Document("$size", "$candles"), 1)))
+												new Document("$range", Arrays.asList(0,new Document("$subtract",Arrays.asList(new Document("$size", "$candles"), 1))))
 														).append("as", "z").append("in", document)
-												)
 										)
 								)
 						)
-						),
+				),
+				
 				Aggregates.unwind("$candles"),
 				Aggregates.replaceRoot("$candles"));
 	}

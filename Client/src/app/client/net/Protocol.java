@@ -271,7 +271,7 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage runStrategy(String strategyName, String market, boolean inverseCross, int granularity)
 	{
-		return runStrategy(strategyName, market, inverseCross, granularity);
+		return runStrategy(strategyName, market, inverseCross, granularity, null);
 	}
 
 	public ResponseMessage runStrategy(String strategyName, String market, boolean inverseCross, int granularity,
