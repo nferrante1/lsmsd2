@@ -1,6 +1,5 @@
 package app.server.runner;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,11 +16,12 @@ import app.server.dm.CandleManager;
 public class StrategyRunner extends Thread
 {
 	private StrategyFile strategyFile;
-	
-	public StrategyRunner(StrategyFile file) {
+
+	public StrategyRunner(StrategyFile file)
+	{
 		setStrategyFile(file);
 	}
-	
+
 	@Override
 	public void run() {
 		ExecutableStrategy strategy = strategyFile.getStrategy();
@@ -31,17 +31,16 @@ public class StrategyRunner extends Thread
 		PojoCursor<Candle> candleCursor = candleManager.getCandles("BINANCE:ADABNB", 10, map);
 		while(candleCursor.hasNext()) {
 			Candle candle = candleCursor.next();
-			for(Indicator indicator : indicators) {
+			for(Indicator indicator: indicators)
 				indicator.compute(candle);
-			}
 			strategy.process(candle);
 		}
 	}
-	
-	private HashMap<String, List<Bson>> getPipelines(List<Indicator> indicators){
+
+	private HashMap<String, List<Bson>> getPipelines(List<Indicator> indicators)
+	{
 		HashMap<String, List<Bson>> map = new HashMap<String, List<Bson>>();
-		
-		for(Indicator indicator : indicators) {
+		for(Indicator indicator: indicators) {
 			List<Indicator> dependencies = indicator.depends();
 			HashMap<String, List<Bson>> deps = getPipelines(dependencies);
 			map.putAll(deps);
@@ -52,10 +51,8 @@ public class StrategyRunner extends Thread
 			}
 		}
 		return map;
-		
-			
 	}
-	
+
 	public StrategyFile getStrategyFile()
 	{
 		return strategyFile;

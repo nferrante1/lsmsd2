@@ -412,11 +412,10 @@ public class RequestHandler extends Thread
 	{
 		List<KVParameter> parameters = reqMsg.getEntities(KVParameter.class);
 		String strategyName = null;
-		for(KVParameter parameter : parameters) {
+		for(KVParameter parameter : parameters)
 			if(parameter.getName().equals("STRATEGYNAME"))
-				strategyName = parameter.getValue();				
-		}
-		
+				strategyName = parameter.getValue();
+
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
 
@@ -429,11 +428,9 @@ public class RequestHandler extends Thread
 			StrategyRunner runner = new StrategyRunner(strategyFile);
 			runner.start();
 			runner.join();
-			
 		} catch (FileNotFoundException | InterruptedException e) {
 			//TODO: log
 		}
 		return new ResponseMessage();
-		
 	}
 }

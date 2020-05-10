@@ -138,8 +138,9 @@ public class StrategyFile
 			return null;
 		}
 	}
-	
-	public String getStrategyName() {
+
+	public String getStrategyName()
+	{
 		ExecutableStrategy strategy = getStrategy();
 		if(strategy != null) {
 			return strategy.getName();

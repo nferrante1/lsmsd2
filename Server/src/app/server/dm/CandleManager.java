@@ -29,30 +29,29 @@ public class CandleManager extends PojoManager<Candle>
 		super(Candle.class, "MarketData");
 	}
 
-	public PojoCursor<Candle> getCandles(String marketId, int granularity, HashMap<String, List<Bson>> indicators) //TODO
+	public PojoCursor<Candle> getCandles(String marketId, int granularity, HashMap<String, List<Bson>> indicators)
 	{
 		List<Facet> facets = new ArrayList<Facet>();
 		facets.add(new Facet("candles", Aggregates.project(Projections.excludeId())));
-		
+
 		Document document = new Document("t", new Document("$arrayElemAt", Arrays.asList("$candles.t", "$$z")))
 		.append("o", new Document("$arrayElemAt", Arrays.asList("$candles.o", "$$z")))
 		.append("h", new Document("$arrayElemAt", Arrays.asList("$candles.h", "$$z")))
 		.append("l", new Document("$arrayElemAt", Arrays.asList("$candles.l", "$$z")))
 		.append("c", new Document("$arrayElemAt", Arrays.asList("$candles.c", "$$z")))
 		.append("v", new Document("$arrayElemAt", Arrays.asList("$candles.v", "$$z")));
-		
+
 		for(Entry<String, List<Bson>> entry : indicators.entrySet()) {
 			facets.add(new Facet(entry.getKey(), entry.getValue()));
 			document.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList("$candles.value", "$$z")));
 		}
-		
-		
-		return aggregate(Aggregates.match(Filters.eq("market", marketId)), //Sostituire ETH-EUR con marketid
+
+		return aggregate(Aggregates.match(Filters.eq("market", marketId)),
 				Aggregates.unwind("$candles"),
 				Aggregates.replaceRoot("$candles"),
 				Aggregates.addFields(new Field<Document>("n",
 					new Document("$floor", new Document("$divide", Arrays.asList(new Document("$subtract", Arrays.asList("$t",
-						new SimpleDateFormat("EEE MMMMM dd yyyy HH:mm:ss").format(new java.util.Date(0L)))), granularity*60*1000))))), //granularity
+						new SimpleDateFormat("EEE MMMMM dd yyyy HH:mm:ss").format(new java.util.Date(0L)))), granularity*60*1000))))),
 				Aggregates.group("$n",
 					Accumulators.first("t", "$t"),
 					Accumulators.first("o", "$o"),
@@ -64,13 +63,11 @@ public class CandleManager extends PojoManager<Candle>
 				Aggregates.sort(Sorts.ascending("t")),
 				Aggregates.facet(facets),
 				Aggregates.project(Projections.fields(
-						new Document("candles", 
+						new Document("candles",
 								new Document("$map",
 										new Document("input",
 												new Document("$range", Arrays.asList(0,new Document("$subtract",Arrays.asList(new Document("$size", "$candles"), 1)))
-														).append("as", "z").append("in", 
-																document
-																)
+														).append("as", "z").append("in", document)
 												)
 										)
 								)

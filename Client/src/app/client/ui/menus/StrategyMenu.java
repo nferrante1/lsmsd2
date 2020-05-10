@@ -64,20 +64,21 @@ public class StrategyMenu extends Menu
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
 		MarketInfo market = marketMenu.getSelection();
-		
+
 		response = new CrossForm().show();
 		String isInverse = response.get("Cross");
 		response = new MarketGranularityForm(market.getGranularity()).show();
 		int granularity = Integer.parseUnsignedInt(response.get("Granularity"));
-		
-		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), BooleanChoice.valueOf(isInverse).toBooelan(), granularity);
+
+		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), BooleanChoice.valueOf(isInverse).toBoolean(), granularity);
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
 		Console.println("Strategy correctly run.");
-		
-		ReportInfo report = resMsg.getEntity(ReportInfo.class);
+
+		//TODO: temporarily commented out: the server actually responds with an empty msg
+		//ReportInfo report = resMsg.getEntity(ReportInfo.class);
 	}
 
 	private void handleDeleteStrategy(MenuEntry entry)
