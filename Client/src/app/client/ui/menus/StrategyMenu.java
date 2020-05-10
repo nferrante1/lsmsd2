@@ -66,7 +66,7 @@ public class StrategyMenu extends Menu
 		MarketInfo market = marketMenu.getSelection();
 
 		response = new CrossForm().show();
-		String isInverse = response.get("Cross");
+		String isInverse = response.get("Inverse Cross");
 		response = new MarketGranularityForm(market.getGranularity()).show();
 		int granularity = Integer.parseUnsignedInt(response.get("Granularity"));
 

@@ -27,7 +27,7 @@ public class FileContent extends Entity
 	{
 		File file = new File(fileName);
 		file.mkdirs();
-		try (FileOutputStream fos = new FileOutputStream(file)) {
+		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(content);
 		}
 	}

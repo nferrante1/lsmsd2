@@ -9,14 +9,14 @@ public class CrossForm extends TextForm
 {
 	public CrossForm()
 	{
-		super("Select direct or inverse cross");
+		super("Do you want an inverse cross?");
 	}
 
 	@Override
 	protected List<FormField> createFields()
 	{
 		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new ChoiceFormField<BooleanChoice>("Cross", BooleanChoice.FALSE, BooleanChoice.class));
+		fields.add(new ChoiceFormField<BooleanChoice>("Inverse Cross", BooleanChoice.FALSE, BooleanChoice.class));
 		return fields;
 	}
 }
