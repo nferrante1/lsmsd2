@@ -40,12 +40,14 @@ public class CandleManager extends PojoManager<Candle>
 		.append("c", new Document("$arrayElemAt", Arrays.asList("$candles.c", "$$z")))
 		.append("v", new Document("$arrayElemAt", Arrays.asList("$candles.v", "$$z")));
 
+		Document taDoc = new Document();
 		for(Entry<String, List<Bson>> entry : indicators.entrySet()) {
 			facets.add(new Facet(entry.getKey(), entry.getValue()));
-			document.append("ta." + entry.getKey(), new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + entry.getKey() + ".candles.value", 0)), "$$z")));
+			taDoc.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + entry.getKey() + ".candles.value", 0)), "$$z")));
 		}
+			document.append("ta", taDoc);
 
-		return aggregate(Aggregates.match(Filters.eq("market", marketId)),
+		PojoCursor<Candle> cursor = aggregate(Aggregates.match(Filters.eq("market", marketId)),
 				Aggregates.unwind("$candles"),
 				Aggregates.replaceRoot("$candles"),
 				Aggregates.addFields(new Field<Document>("n",
@@ -75,5 +77,6 @@ public class CandleManager extends PojoManager<Candle>
 				
 				Aggregates.unwind("$candles"),
 				Aggregates.replaceRoot("$candles"));
+		return cursor;
 	}
 }

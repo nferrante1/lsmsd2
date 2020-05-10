@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>Lsmsd2</groupId>
-			<artifactId>DataModel</artifactId>
+			<artifactId>Server</artifactId>
 			<version>1.0.0</version>
 			<scope>compile</scope>
 		</dependency>

@@ -2,7 +2,10 @@ package app.library;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.bson.Document;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
@@ -20,7 +23,9 @@ public class Candle //TODO
 	protected double close;
 	@BsonProperty("v")
 	protected double volume;
-	protected HashMap<String, Double> ta;
+	@BsonProperty("ta")
+	//public Document ta;
+	public HashMap<String, Double> ta;
 
 	public Candle()
 	{
@@ -74,12 +79,15 @@ public class Candle //TODO
 	{
 		this.volume = volume;
 	}
+	//public Document getTa()
 	public HashMap<String, Double> getTa()
 	{
 		return ta;
 	}
+	//public void setTa(Document ta)
 	public void setTa(HashMap<String, Double> ta)
 	{
+		//this.ta = (HashMap<String, Double>)ta.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> (Double)e.getValue()));
 		this.ta = ta;
 	}
 

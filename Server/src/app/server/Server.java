@@ -260,6 +260,7 @@ public class Server
 	public static void setupDBManager()
 	{
 		DBManager.setReadPreference(ReadPreference.nearest());
+		//DBManager.addCodec();
 	}
 	
 

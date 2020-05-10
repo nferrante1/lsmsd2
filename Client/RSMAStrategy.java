@@ -3,16 +3,16 @@ import java.util.List;
 
 import app.library.ExecutableStrategy;
 import app.library.indicators.Indicator;
-import app.library.indicators.RSI;
+import app.library.indicators.RSMA;
 import app.library.Candle;
 
-public class SampleStrategy implements ExecutableStrategy
+public class RSMAStrategy implements ExecutableStrategy
 {
-	RSI rsi;
+	RSMA rsma;
 	@Override
 	public String getName()
 	{
-		return "SampleStrategy";
+		return "RSMAStrategy";
 	}
 
 	@Override
@@ -24,20 +24,20 @@ public class SampleStrategy implements ExecutableStrategy
 			+ " | L: " + candle.getLow()
 			+ " | C: " + candle.getClose()
 			+ " | V: " + candle.getVolume()
-			+ " | RSI: " + rsi.getValue()
+			+ " | RSMAu14: " + rsma.getValue()
 		);
 	}
 
-	public SampleStrategy()
+	public RSMAStrategy()
 	{
-		rsi = new RSI(14);
+		rsma = new RSMA(14, true);
 	}
 
 	@Override
 	public List<Indicator> getIndicators()
 	{
 		List<Indicator> ind = new ArrayList<Indicator>();
-		ind.add(rsi);
+		ind.add(rsma);
 		return ind;
 	}
 

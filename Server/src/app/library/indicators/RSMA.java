@@ -46,10 +46,7 @@ public class RSMA extends Indicator implements ComputableIndicator
 				Projections.include("c", "o"))), 
 				Aggregates.group(
 						new BsonNull(), 
-						Accumulators.push("candles", 
-						Filters.and(
-						Filters.eq("c", "$c"), 
-						Filters.eq("o", "$o")))), 
+						Accumulators.push("candles", new Document("c", "$c").append("o", "$o"))), 
 				Aggregates.addFields(new Field<Document>("candles", 
 				    new Document("$map", 
 				    new Document("input", "$candles")

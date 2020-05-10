@@ -4,16 +4,27 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 import app.datamodel.mongo.DBManager;
+import app.library.Candle;
 
 public class Test
 {
 	public static void main(String[] args)
 	{
+		
+		HashMap<String, Object> hm = new HashMap<String, Object>();
+		hm.put("SMAu14", 4.593);
+		Candle candle = new Candle();
+		candle.setTa(hm);
+		System.out.println(candle.getTa("SMAu14"));
+		
+		
+		
 		//Instant converted = LocalDateTime.parse("2017-3-8 11:22", DateTimeFormatter.ofPattern("uuuu-M-d hh:mm"));
-		Instant converted = LocalDateTime.parse("2017-3-08 5:3", DateTimeFormatter.ofPattern("yyyy-M-d H:m")).atZone(ZoneId.of("UTC")).toInstant();
-		System.out.println(converted);
+		//Instant converted = LocalDateTime.parse("2017-3-08 5:3", DateTimeFormatter.ofPattern("yyyy-M-d H:m")).atZone(ZoneId.of("UTC")).toInstant();
+		//System.out.println(converted);
 		/*setupDBManager();
 		
 		StrategyExecutor executor  = new StrategyExecutor("/home/speedjack/clazzes", "PippoStrategy");
@@ -171,13 +182,13 @@ public class Test
 			System.out.println(prefix + "-----");
 		}
 	}
-	public static void setupDBManager()
+	/*public static void setupDBManager()
 	{
 		DBManager.setHostname("127.0.0.1");
 		DBManager.setPort(27017);
 		DBManager.setAuthor("root");
 		DBManager.setPassword("rootpass");
 		DBManager.setDatabase("mydb");
-	}
+	}*/
 
 }

@@ -9,6 +9,8 @@ import java.net.URLClassLoader;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
+import app.library.ExecutableStrategy;
+
 public class StrategyExecutor
 {
 	protected Class<ExecutableStrategy> strategyClass;

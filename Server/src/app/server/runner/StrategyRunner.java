@@ -50,7 +50,7 @@ public class StrategyRunner extends Thread
 			List<Indicator> dependencies = indicator.depends();
 			HashMap<String, List<Bson>> deps = getPipelines(dependencies);
 			map.putAll(deps);
-			if(indicator.getClass().isAssignableFrom(ComputableIndicator.class)) {
+			if(ComputableIndicator.class.isAssignableFrom(indicator.getClass())) {
 				List<Bson> pipeline = ((ComputableIndicator)indicator).getPipeline();
 				String name = ((ComputableIndicator)indicator).getName();
 				map.putIfAbsent(name, pipeline);
