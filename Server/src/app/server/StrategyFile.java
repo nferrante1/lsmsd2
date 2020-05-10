@@ -1,31 +1,58 @@
 package app.server;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
+import app.library.ExecutableStrategy;
+
 public class StrategyFile
 {
-	protected byte[] file;
-	protected String hashFile;
+	protected String hash;
 	private static String mainDirectory = "strategies";
 	private String className;
-	
-	public StrategyFile(byte[] file, String className)
+
+	public StrategyFile(String className, byte[] file)
 	{
-		this.file = file;
-		this.hashFile = doHash(file);
 		this.className = className;
+		hash = computeHash(file);
 	}
-	
-	public static void setMainDirectory(String mainDirectory){
+
+	public StrategyFile(String hash) throws FileNotFoundException
+	{
+		this.hash = hash;
+		File dir = new File(getDirectoryPath());
+		for (File file: dir.listFiles()) {
+			String fileName = file.getName();
+			if (fileName.endsWith(".java")) {
+				className = fileName.substring(0, fileName.length() - 5);
+				break;
+			}
+		}
+		if (className == null)
+			throw new FileNotFoundException("Can not find a strategy for hash '" + hash + "'.");
+	}
+
+	public static void setMainDirectory(String mainDirectory)
+	{
+		if (mainDirectory.endsWith(File.separator))
+			mainDirectory = mainDirectory.substring(0, mainDirectory.length() - 1);
 		StrategyFile.mainDirectory = mainDirectory;
 	}
 
-	protected String doHash(byte [] file)
+	protected String computeHash(byte[] file)
 	{
 		String fileHash;
 		try {
@@ -36,70 +63,85 @@ public class StrategyFile
 				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 			fileHash = sb.toString();
 		} catch (NoSuchAlgorithmException ex) {
-			fileHash = "";
+			fileHash = className;
 		}
 		return fileHash;
 	}
 
-	public void save() throws IOException
-	{
-
-		String directoryName = this.hashFile.substring(0, 2);
-		String subDirectoryName = this.hashFile.substring(3);
-		File dir =  new File(mainDirectory + "/" + directoryName +"/"+subDirectoryName);
-		dir.mkdirs();
-		try (FileOutputStream fos = new FileOutputStream(new File(dir.getAbsolutePath() + "/" + className + ".java"))) {
-			fos.write(this.file);
-		}
-	}
-
 	public String getHash()
 	{
-		return this.hashFile;
+		return this.hash;
 	}
 
-	public String getDirectoryName()
+	public String getDirectoryPath()
 	{
-		return this.hashFile.substring(0, 2) + "/" + this.hashFile.substring(3);
+		return mainDirectory + File.separator + getHash().substring(0, 2) + File.separator + getHash().substring(3);
 	}
 
-	public String getFileName()
+	public String getFullName()
 	{
-		return className + ".java";
+		return getDirectoryPath() + File.separator + getClassName();
 	}
-	
-	public String getFullName() {
-		return mainDirectory + "/" + getDirectoryName() + "/" + getClassName();  
-	}
-	
-	public String getJavaFile() {
+
+	public String getJavaFilePath()
+	{
 		return getFullName() + ".java";
 	}
-	
-	public String getClassFile() {
+
+	public String getClassFilePath()
+	{
 		return getFullName() + ".class";
-	}
-	
-	public String getClassFolder() {
-		return mainDirectory + "/" + getDirectoryName();
 	}
 
 	public String getClassName()
 	{
 		return className;
 	}
-	
-	public void delete() {
-		delete(new File(getClassFolder()));
+
+	public void delete()
+	{
+		delete(new File(getDirectoryPath()));
 	}
-	
-	public static void delete(File file) {
+
+	public static void delete(File file)
+	{
 		File[] list = file.listFiles();
-		if(list != null) {
-			for(File f : list) {
+		if(list != null)
+			for(File f: list)
 				delete(f);
-			}
-		}
 		file.delete();
+	}
+
+	public String getStrategyName()
+	{
+		File classDir = new File(getDirectoryPath());
+		URLClassLoader classLoader;
+		try {
+			classLoader = URLClassLoader.newInstance(new URL[] { classDir.toURI().toURL() });
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		try {
+			Class<?> strategyClass = Class.forName(getClassName(), true, classLoader);
+			if(!ExecutableStrategy.class.isAssignableFrom(strategyClass)) return null;
+			try {
+				ExecutableStrategy strategy = (ExecutableStrategy)strategyClass.getDeclaredConstructors()[0].newInstance();
+				return strategy.getName();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | SecurityException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public boolean compile()
+	{
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		return compiler.run(null, null, null, getJavaFilePath()) == 0;
 	}
 }

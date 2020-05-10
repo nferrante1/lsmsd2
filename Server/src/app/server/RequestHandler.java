@@ -3,6 +3,7 @@ package app.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -321,26 +322,32 @@ public class RequestHandler extends Thread
 	{
 		KVParameter name = reqMsg.getEntity(KVParameter.class);
 		FileContent strategyContent = reqMsg.getEntity(FileContent.class);
-		StrategyFile file = new StrategyFile(strategyContent.getContent(), name.getValue());
+		StrategyFile strategyFile = new StrategyFile(name.getValue(), strategyContent.getContent());
 		try {
-			file.save();
-			StrategyCompiler strategyCompiler = new StrategyCompiler(file);
-			String strategyName = strategyCompiler.compile();
-			if(strategyName == null)
-				return new ResponseMessage("Cannot compile Strategy");
-
-			Strategy strategy = new Strategy(file.getHash(), strategyName, authToken.getUsername());
-			StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-			strategyManager.save(strategy);
-			return new ResponseMessage();
+			strategyContent.writeFile(strategyFile.getJavaFilePath());
 		} catch (IOException e) {
-			file.delete();
-			return new ResponseMessage("Strategy impossible to save.");
+			strategyFile.delete();
+			return new ResponseMessage("Can not save strategy's file.");
 		}
-		catch(DuplicateKeyException e) {
-			file.delete();
-			return new ResponseMessage("Strategy already exists.");
+		if (!strategyFile.compile()) {
+			strategyFile.delete();
+			return new ResponseMessage("Can not compile Strategy.");
 		}
+		String strategyName = strategyFile.getStrategyName();
+		if (strategyName == null) {
+			strategyFile.delete();
+			return new ResponseMessage("The strategy must implement the ExecutableStrategy interface and the method getName().");
+		}
+
+		Strategy strategy = new Strategy(strategyFile.getHash(), strategyName, authToken.getUsername());
+		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
+		try {
+			strategyManager.save(strategy);
+		} catch(DuplicateKeyException e) {
+			strategyFile.delete();
+			return new ResponseMessage("A strategy with this name already exists.");
+		}
+		return new ResponseMessage();
 	}
 
 	@SuppressWarnings("unused")
@@ -348,28 +355,24 @@ public class RequestHandler extends Thread
 	{
 		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>) manager.find(
-				Filters.eq("name", strategyName));
+		StorablePojoCursor<Strategy> strategies = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
 
 		if(!strategies.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
 
 		Strategy strategy = strategies.next();
+		StrategyFile strategyFile;
 		try {
-			String fileName = null;
-			File dir = new File("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3));
-			for(File f : dir.listFiles()) {
-				if(f.getName().endsWith(".java")) {
-					fileName = f.getAbsolutePath();
-					break;
-				}	
-			}
-			if(fileName == null)
-				return new ResponseMessage("Cannot Find Java File");
-			FileContent file = new FileContent(fileName);
-			return new ResponseMessage(file);
-		} catch (IOException e) {
-			return new ResponseMessage("File not found.");
+			strategyFile = new StrategyFile(strategy.getId());
+		} catch (FileNotFoundException ex) {
+			strategy.delete();
+			manager.save(strategy);
+			return new ResponseMessage(ex.getMessage());
+		}
+		try {
+			return new ResponseMessage(new FileContent(strategyFile.getJavaFilePath()));
+		} catch (IOException ex) {
+			return new ResponseMessage("Error while reading strategy's file: " + ex.getMessage());
 		}
 	}
 
@@ -382,11 +385,16 @@ public class RequestHandler extends Thread
 		if(!cursor.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
 		Strategy strategy = cursor.next();
-		StrategyFile.delete(new File("strategies/" + strategy.getId().substring(0, 2) + "/" + strategy.getId().substring(3)));
-		
+		StrategyFile strategyFile;
+		try {
+			strategyFile = new StrategyFile(strategy.getId());
+			strategyFile.delete();
+		} catch (FileNotFoundException e) {
+			//TODO: log
+		}
+
 		strategy.delete();
 		manager.save(strategy);
-
 		return new ResponseMessage();
 	}
 
@@ -398,10 +406,10 @@ public class RequestHandler extends Thread
 		manager.delete(filter.getSource(), filter.getMarketId(), filter.getDate());
 		return new ResponseMessage();
 	}
-	
+
+	@SuppressWarnings("unused")
 	private ResponseMessage handleRunStrategy(RequestMessage reqMsg)
 	{
 		return null;
 	}
-	
 }

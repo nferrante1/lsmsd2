@@ -1,5 +1,6 @@
 package app.library;
 
-public class Journal {
-	
+public class Journal
+{
+
 }

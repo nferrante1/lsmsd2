@@ -1,5 +1,6 @@
 package app.library;
 
-public class Trade {
-	
+public class Trade
+{
+
 }

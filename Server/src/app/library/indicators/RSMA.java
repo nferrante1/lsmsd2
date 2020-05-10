@@ -6,31 +6,32 @@ import org.bson.conversions.Bson;
 
 import app.library.Candle;
 
-public class RSMA extends Indicator implements ComputableIndicator {
-
+public class RSMA extends Indicator implements ComputableIndicator
+{
 	private int period;
 	private boolean increment;
 	private double value;
-	
-	public double getValue() {
+
+	public double getValue()
+	{
 		return this.value;
 	}
+
 	public RSMA(int period, boolean increment)
 	{
 		this.period = period;
 		this.increment = increment;
 	}
-	
+
 	@Override
 	public String getName()
 	{
-		return "SMA"+(increment ? "u" : "d")+period;
+		return "SMA" + (increment ? "u" : "d") + period;
 	}
 
 	@Override
 	public List<Bson> getPipeline()
 	{
-		
 		return null;
 	}
 
@@ -39,5 +40,4 @@ public class RSMA extends Indicator implements ComputableIndicator {
 	{
 		value = candle.getTa(getName());
 	}
-
 }

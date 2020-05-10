@@ -81,10 +81,11 @@ public class Candle //TODO
 	public void setTa(HashMap<String, Double> ta)
 	{
 		this.ta = ta;
-	};
-	
+	}
+
 	@BsonIgnore
-	public double getTa(String name) {
+	public double getTa(String name)
+	{
 		return ta.get(name);
 	}
 }

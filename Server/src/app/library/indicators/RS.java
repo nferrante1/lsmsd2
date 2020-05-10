@@ -7,36 +7,49 @@ import org.bson.conversions.Bson;
 
 import app.library.Candle;
 
-public class RS extends Indicator {
+public class RS extends Indicator
+{
 	private int period;
-	private RSMA rsmau; 
+	private RSMA rsmau;
 	private RSMA rsmad;
 	private double value;
-	
-	public RS(int period) {
+
+	public RS(int period)
+	{
 		this.rsmau = new RSMA(period, true);
 		this.rsmad = new RSMA(period, false);
 		this.period = period;
 	}
 
 	@Override
-	public List<Indicator> depends(){
+	public List<Indicator> depends()
+	{
 		List<Indicator> indicators = new ArrayList<Indicator>();
 		indicators.add(rsmau);
 		indicators.add(rsmad);
 		return indicators;
 	}
+
 	@Override
 	public void compute(Candle candle)
 	{
 		rsmau.compute(candle);
 		rsmad.compute(candle);
 		value = rsmau.getValue() / rsmad.getValue();
-		
 	}
-	
-	public double getValue() {
+
+	public double getValue()
+	{
 		return this.value;
 	}
 
+	public RSMA getRSMAu()
+	{
+		return rsmau;
+	}
+
+	public RSMA getRSMAd()
+	{
+		return rsmad;
+	}
 }
