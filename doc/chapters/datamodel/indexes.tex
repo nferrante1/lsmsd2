@@ -80,11 +80,14 @@ Since we also need to retrieve a specific run of a strategy, we also define the
 following:
 
 \begin{lstlisting}[language=json]
-{"runs.id": 1}, {unique: true}
+{"runs.id": 1}, {unique: true, sparse: true}
 \end{lstlisting}
 
 The uniqueness ensures that we can get a run using just its \code{id} and
 without specifying which strategy it belongs to.
+
+The index is \emph{sparse} since we do not want to index strategies that does
+not have any run in the \code{runs} array.
 
 To allow the application to rapidly sort strategy's reports by the net profit
 (commonly used to represent the overall performance of a strategy), we define
