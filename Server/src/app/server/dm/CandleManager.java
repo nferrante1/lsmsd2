@@ -43,7 +43,7 @@ public class CandleManager extends PojoManager<Candle>
 
 		for(Entry<String, List<Bson>> entry : indicators.entrySet()) {
 			facets.add(new Facet(entry.getKey(), entry.getValue()));
-			document.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList("$candles.value", "$$z")));
+			document.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + entry.getKey() + ".candles.value", 0)), "$$z")));
 		}
 
 		return aggregate(Aggregates.match(Filters.eq("market", marketId)),
