@@ -1,34 +1,37 @@
-package app.library;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import app.library.ExecutableStrategy;
 import app.library.indicators.Indicator;
 import app.library.indicators.RSI;
 
-public class SampleStrategy implements ExecutableStrategy {
-
+public class SampleStrategy implements ExecutableStrategy
+{
 	RSI rsi;
 	@Override
 	public String getName()
 	{
-		return "SampleStrategy"
+		return "SampleStrategy";
 	}
 
 	@Override
 	public void process(Candle candle)
 	{
-		System.out.println("" + candle.getOpen(),
-				"" + candle.getHigh()(),
-				"" + candle.getLow(),
-				"" + candle.getClose(),
-				"" + candle.getVolume()
+		System.out.println("T: " + candle.getTime()
+			+ " | O: " + candle.getOpen()
+			+ " | H: " + candle.getHigh()
+			+ " | L: " + candle.getLow()
+			+ " | C: " + candle.getClose()
+			+ " | V: " + candle.getVolume()
+			+ " | RSI: " + rsi.getValue()
 		);
 	}
 
-	public SampleStrategy() {
+	public SampleStrategy()
+	{
 		rsi = new RSI(14);
-	};
+	}
+
 	@Override
 	public List<Indicator> getIndicators()
 	{
