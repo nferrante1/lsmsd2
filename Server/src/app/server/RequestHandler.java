@@ -43,7 +43,6 @@ import app.datamodel.pojos.Market;
 import app.datamodel.pojos.Strategy;
 import app.datamodel.pojos.User;
 import app.server.dm.MarketInfoManager;
-import app.server.runner.StrategyCompiler;
 
 public class RequestHandler extends Thread
 {

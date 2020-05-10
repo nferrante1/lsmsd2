@@ -278,6 +278,7 @@ public class Protocol implements AutoCloseable
 		List<KVParameter> parameters)
 	{
 		List<Entity> entities = new ArrayList<Entity>();
+		entities.add(new KVParameter("STRATEGYNAME", strategyName));
 		entities.add(new KVParameter("market", market));
 		entities.add(new KVParameter("inverseCross", inverseCross ? "true" : "false"));
 		entities.add(new KVParameter("granularity", Integer.toString(granularity)));

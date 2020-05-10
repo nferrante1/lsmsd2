@@ -7,11 +7,16 @@ import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.menus.forms.CrossForm;
+import app.client.ui.menus.forms.MarketGranularityForm;
 import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.StrategyFileForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.FileContent;
+import app.common.net.entities.MarketInfo;
+import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
+import app.common.net.entities.enums.BooleanChoice;
 
 public class StrategyMenu extends Menu
 {
@@ -49,13 +54,30 @@ public class StrategyMenu extends Menu
 		HashMap<String, String> response = new SearchForm("Market Name").show();
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
-		String market = marketMenu.getSelection();
+		String market = marketMenu.getSelection().getFullId();
 		new ReportListMenu((StrategyInfo)entry.getHandlerData(), market).show();
 	}
 
 	private void handleRunStrategy(MenuEntry entry)
 	{
-		// TODO
+		HashMap<String, String> response = new SearchForm("Market Name").show();
+		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
+		marketMenu.show();
+		MarketInfo market = marketMenu.getSelection();
+		
+		response = new CrossForm().show();
+		String isInverse = response.get("Cross");
+		response = new MarketGranularityForm(market.getGranularity()).show();
+		int granularity = Integer.parseUnsignedInt(response.get("Granularity"));
+		
+		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), BooleanChoice.valueOf(isInverse).toBooelan(), granularity);
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		Console.println("Strategy correctly run.");
+		
+		ReportInfo report = resMsg.getEntity(ReportInfo.class);
 	}
 
 	private void handleDeleteStrategy(MenuEntry entry)

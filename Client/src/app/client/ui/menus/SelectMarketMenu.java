@@ -8,7 +8,7 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
-public class SelectMarketMenu extends SelectMenu<String>
+public class SelectMarketMenu extends SelectMenu<MarketInfo>
 {
 	protected String dataSource;
 	protected String nameFilter;
@@ -56,6 +56,6 @@ public class SelectMarketMenu extends SelectMenu<String>
 
 	private void handleSelectMarket(MenuEntry entry)
 	{
-		setSelection(((MarketInfo)entry.getHandlerData()).getFullId());
+		setSelection(((MarketInfo)entry.getHandlerData()));
 	}
 }
