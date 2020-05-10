@@ -2,6 +2,7 @@ package app.server.runner;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.bson.conversions.Bson;
 
@@ -23,18 +24,23 @@ public class StrategyRunner extends Thread
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
+		Logger.getLogger(StrategyRunner.class.getName()).warning("START STRATEGY EXECUTION");
 		ExecutableStrategy strategy = strategyFile.getStrategy();
-		List<Indicator> indicators = strategy.getIndicators(); 
+		List<Indicator> indicators = strategy.getIndicators();
 		HashMap<String, List<Bson>> map = getPipelines(indicators);
 		CandleManager candleManager = new CandleManager();
+		Logger.getLogger(StrategyRunner.class.getName()).warning("START AGGREGATION PIPELINE");
 		PojoCursor<Candle> candleCursor = candleManager.getCandles("BINANCE:ADABNB", 10, map);
+		Logger.getLogger(StrategyRunner.class.getName()).warning("END AGGREGATION PIPELINE");
 		while(candleCursor.hasNext()) {
 			Candle candle = candleCursor.next();
 			for(Indicator indicator: indicators)
 				indicator.compute(candle);
 			strategy.process(candle);
 		}
+		Logger.getLogger(StrategyRunner.class.getName()).warning("END STRATEGY EXECUTION");
 	}
 
 	private HashMap<String, List<Bson>> getPipelines(List<Indicator> indicators)
