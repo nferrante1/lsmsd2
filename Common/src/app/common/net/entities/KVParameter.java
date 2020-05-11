@@ -1,5 +1,8 @@
 package app.common.net.entities;
 
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+
 import app.common.net.entities.enums.ParameterType;
 
 public class KVParameter extends ParameterInfo
@@ -14,10 +17,29 @@ public class KVParameter extends ParameterInfo
 		this.value = value;
 	}
 
+	public KVParameter(String name, Instant value)
+	{
+		this(name, value.toString(), ParameterType.INSTANT);
+	}
+
 	public KVParameter(String name, String value)
 	{
-		super(name);
-		this.value = value;
+		this(name, value, ParameterType.STRING);
+	}
+
+	public KVParameter(String name, int value)
+	{
+		this(name, Integer.toString(value), ParameterType.INTEGER);
+	}
+
+	public KVParameter(String name, double value)
+	{
+		this(name, Double.toString(value), ParameterType.DOUBLE);
+	}
+
+	public KVParameter(String name, boolean value)
+	{
+		this(name, Boolean.toString(value), ParameterType.BOOLEAN);
 	}
 
 	public String getValue()
@@ -28,5 +50,64 @@ public class KVParameter extends ParameterInfo
 	public void setValue(String value)
 	{
 		this.value = value;
+	}
+
+	public ParameterType getType()
+	{
+		return type;
+	}
+
+	public Object getConvertedValue()
+	{
+		if (value == null)
+			return null;
+		switch(type) {
+		case BOOLEAN:
+			return Boolean.parseBoolean(value);
+		case STRING:
+			return value;
+		case DOUBLE:
+			return Double.parseDouble(value);
+		case INSTANT:
+			return Instant.parse(value);
+		case INTEGER:
+			return Integer.parseInt(value);
+		default:
+			return null;
+		}
+	}
+
+	public boolean isValid()
+	{
+		if (value == null)
+			return false;
+		switch(type) {
+		case BOOLEAN:
+		case STRING:
+			return true;
+		case DOUBLE:
+			try {
+				Double.parseDouble(value);
+				return true;
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		case INSTANT:
+			try {
+				Instant.parse(value);
+				return true;
+			} catch (DateTimeParseException e) {
+				return false;
+			}
+		case INTEGER:
+			try {
+				Integer.parseInt(value);
+				return true;
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		default:
+			return false;
+		}
 	}
 }

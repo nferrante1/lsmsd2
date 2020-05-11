@@ -149,12 +149,12 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> find(Object id, Bson sort, int skip, int limit)
 	{
-		return find(Filters.eq("_id", id), sort, skip, limit);
+		return find(id == null ? null : Filters.eq("_id", id), sort, skip, limit);
 	}
 
 	public PojoCursor<T> find(Object id, Bson projection, Bson sort)
 	{
-		return find(Filters.eq("_id", id), projection, sort);
+		return find(id == null ? null : Filters.eq("_id", id), projection, sort);
 	}
 
 	public PojoCursor<T> find(Bson filter, Bson projection, Bson sort)
@@ -164,7 +164,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> find(Object id, Bson projection, Bson sort, int skip, int limit)
 	{
-		return find(Filters.eq("_id", id), projection, sort, skip, limit);
+		return find(id == null ? null : Filters.eq("_id", id), projection, sort, skip, limit);
 	}
 
 	public PojoCursor<T> find(Bson filter, int skip, int limit)
@@ -174,7 +174,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> find(Object id, int skip, int limit)
 	{
-		return find(Filters.eq("_id", id), skip, limit);
+		return find(id == null ? null : Filters.eq("_id", id), skip, limit);
 	}
 
 	public PojoCursor<T> find(Bson filter, Bson sort)
@@ -199,7 +199,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> find(Object id)
 	{
-		return find(Filters.eq("_id", id));
+		return find(id == null ? null : Filters.eq("_id", id));
 	}
 
 	public PojoCursor<T> find()
@@ -214,7 +214,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> findPaged(Object id, Bson projection, Bson sort, int page, int perPage)
 	{
-		return findPaged(Filters.eq("_id", id), projection, sort, page, perPage);
+		return findPaged(id == null ? null : Filters.eq("_id", id), projection, sort, page, perPage);
 	}
 
 	public PojoCursor<T> findPaged(Bson filter, Bson sort, int page, int perPage)
@@ -224,7 +224,7 @@ public class PojoManager<T extends Object>
 
 	public PojoCursor<T> findPaged(Object id, Bson sort, int page, int perPage)
 	{
-		return findPaged(Filters.eq("_id", id), sort, page, perPage);
+		return findPaged(id == null ? null : Filters.eq("_id", id), sort, page, perPage);
 	}
 
 	public PojoCursor<T> findPaged(Bson sort, int page, int perPage)

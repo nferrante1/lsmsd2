@@ -25,12 +25,13 @@ public class FileContent extends Entity
 
 	public void writeFile(String fileName) throws IOException
 	{
-		String dirName = fileName.substring(0, fileName.lastIndexOf(File.separator));
-		File dir = new File(dirName);
-		dir.mkdirs();
+		if (fileName.contains(File.separator)) {
+			String dirName = fileName.substring(0, fileName.lastIndexOf(File.separator));
+			File dir = new File(dirName);
+			dir.mkdirs();
+		}
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(content);
 		}
 	}
-
 }

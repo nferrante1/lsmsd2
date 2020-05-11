@@ -14,7 +14,6 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.BrowseReportInfo;
-import app.common.net.entities.DeleteDataFilter;
 import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
@@ -354,12 +353,28 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage deleteData(String source, String market, Instant date)
 	{
-		return sendRequest(ActionRequest.DELETE_DATA, new DeleteDataFilter(source, market, date));
+		List<Entity> parameters = new ArrayList<Entity>();
+		parameters.add(new KVParameter("SOURCE", source));
+		if (market != null)
+			parameters.add(new KVParameter("MARKET", market));
+		if (date != null)
+			parameters.add(new KVParameter("DATE", date));
+		return sendRequest(ActionRequest.DELETE_DATA, parameters);
 	}
 
 	public ResponseMessage deleteData(String source, String market)
 	{
 		return deleteData(source, market, null);
+	}
+
+	public ResponseMessage deleteData(String source)
+	{
+		return deleteData(source, null, null);
+	}
+
+	public ResponseMessage deleteData(String source, Instant date)
+	{
+		return deleteData(source, null, date);
 	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)

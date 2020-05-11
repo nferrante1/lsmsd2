@@ -2,10 +2,7 @@ package app.library;
 
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.bson.Document;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 

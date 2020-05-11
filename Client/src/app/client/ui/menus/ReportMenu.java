@@ -1,5 +1,7 @@
 package app.client.ui.menus;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,23 +39,27 @@ public class ReportMenu extends Menu
 	{
 		int amount = Integer.parseInt(new AmountForm().show().get("Amount"));
 
+		DecimalFormat df = new DecimalFormat("#.##");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
+
 		Console.println("Id: " + report.getId());
 		Console.println("Strategy: " + report.getStrategyName());
+		Console.println("Market: " + report.getMarket());
 		Console.println("Parameters:");
 		for (KVParameter parameter: parameters)
-			Console.println("\t" + parameter.getCapitalizedName() + ": " + parameter.getValue());
+			Console.println("\t" + parameter.getDisplayName() + ": " + parameter.getValue());
 		Console.println("Author: " + report.getUser());
-		Console.println("Net Profit: " + report.getNetProfit() * amount);
-		Console.println("Gross Profit: " + report.getGrossProfit() * amount);
-		Console.println("Gross Loss: " + report.getGrossLoss() * amount);
-		Console.println("Hodl Profit: " + report.getHodlProfit() * amount);
+		Console.println("Net Profit: " + df.format(report.getNetProfit() * amount));
+		Console.println("Gross Profit: " + df.format(report.getGrossProfit() * amount));
+		Console.println("Gross Loss: " + df.format(report.getGrossLoss() * amount));
+		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount));
 		Console.println("Total Trades: " + report.getTotalTrades());
 		Console.println("Open Trades: " + report.getOpenTrades());
 		Console.println("Winning Trades: " + report.getWinningTrades());
-		Console.println("Max Consecutive Loosing: " + report.getMaxConsecutiveLosing());
-		Console.println(" Average Amount: " + report.getAvgAmount() * amount);
+		Console.println("Max Consecutive Losing Trades: " + report.getMaxConsecutiveLosing());
+		Console.println("Average Amount: " + df.format(report.getAvgAmount() * amount));
 		Console.println("Average Duration: " + report.getAvgDuration());
-		Console.println("Max Drawdown: " + report.getMaxDrawdown() * amount);
+		Console.println("Max Drawdown: " + df.format(report.getMaxDrawdown() * amount));
 		Console.pause();
 	}
 

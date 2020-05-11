@@ -12,17 +12,20 @@ public class MarketInfo extends Entity
 	protected boolean sync;
 	protected boolean selectable;
 
-	public MarketInfo()
+	public MarketInfo(String sourceName, String marketId, int granularity, boolean enabled, boolean sync)
 	{
+		this(sourceName, marketId, null, null, granularity, enabled, sync);
 	}
 
-	public MarketInfo(String sourceName, String marketId, int granularity, boolean enabled, boolean sync)
+	public MarketInfo(String sourceName, String marketId, String baseCurrency, String quoteCurrency, int granularity, boolean enabled, boolean sync)
 	{
 		this.sourceName = sourceName;
 		this.marketId = marketId;
+		this.baseCurrency = baseCurrency;
+		this.quoteCurrency = quoteCurrency;
 		this.granularity = granularity;
-		this.sync = sync;
 		this.selectable = enabled;
+		this.sync = sync;
 	}
 
 	public String getMarketDisplayName()
@@ -30,9 +33,19 @@ public class MarketInfo extends Entity
 		return getBaseCurrency() + "/" + getQuoteCurrency();
 	}
 
+	public String getInvertedMarketDisplayName()
+	{
+		return getQuoteCurrency() + "/" + getBaseCurrency();
+	}
+
 	public String getDisplayName()
 	{
 		return getSourceName() + ":" + getMarketDisplayName();
+	}
+
+	public String getInvertedDisplayName()
+	{
+		return getSourceName() + ":" + getInvertedMarketDisplayName();
 	}
 
 	public String getSourceName()

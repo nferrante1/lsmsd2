@@ -5,9 +5,8 @@ import java.io.Serializable;
 public enum ParameterType implements Serializable
 {
 	INTEGER,
-	POSITIVE_INTEGER,
 	DOUBLE,
-	POSITIVE_DOUBLE,
 	BOOLEAN,
+	INSTANT,
 	STRING
 }

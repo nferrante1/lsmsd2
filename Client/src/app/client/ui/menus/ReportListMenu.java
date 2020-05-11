@@ -1,5 +1,7 @@
 package app.client.ui.menus;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +36,12 @@ public class ReportListMenu extends PagedMenu
 
 		List<BaseReportInfo> reports = resMsg.getEntities(BaseReportInfo.class);
 
+		DecimalFormat df = new DecimalFormat("#.##");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
 		int i = 1;
 		for (BaseReportInfo report : reports) {
-			menu.add(new MenuEntry(i, "on " + report.getMarket() + " (profit: " + report.getNetProfit() + ")", this::handleSelectReport, report));
+			menu.add(new MenuEntry(i, "on " + report.getMarket() + " (profit: " + df.format(report.getNetProfit() * 100) + "%)", this::handleSelectReport, report));
 			i++;
 		}
 		return menu;

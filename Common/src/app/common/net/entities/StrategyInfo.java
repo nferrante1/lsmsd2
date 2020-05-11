@@ -12,6 +12,13 @@ public class StrategyInfo extends Entity
 	{
 	}
 
+	public StrategyInfo(String name, String author, boolean deletable)
+	{
+		this.name = name;
+		this.author = author;
+		this.deletable = deletable;
+	}
+
 	public String getName()
 	{
 		return name;

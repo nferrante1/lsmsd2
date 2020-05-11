@@ -2,6 +2,7 @@ package app.library.indicators;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import app.library.Candle;
 
 public abstract class Indicator

@@ -34,9 +34,22 @@ public class ParameterInfo extends Entity
 		this.name = name;
 	}
 
-	public String getCapitalizedName()
+	public String getDisplayName()
 	{
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
+		char[] chars = name.toCharArray();
+		StringBuilder sb = new StringBuilder();
+		sb.append(Character.toUpperCase(chars[0]));
+		for (int i = 1; i < chars.length; i++) {
+			char c = chars[i];
+			if (c == '_') {
+				sb.append(' ');
+				continue;
+			}
+			if (Character.isUpperCase(c))
+				sb.append(' ');
+			sb.append(c);
+		}
+		return sb.toString();
 	}
 
 	public ParameterType getType()

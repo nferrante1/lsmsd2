@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.bson.Document;
 import org.bson.codecs.Codec;
-import org.bson.codecs.MapCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;

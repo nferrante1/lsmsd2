@@ -10,7 +10,6 @@ import org.bson.conversions.Bson;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 
 import app.library.Candle;

@@ -3,8 +3,6 @@ package app.library.indicators;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.conversions.Bson;
-
 import app.library.Candle;
 
 public class RS extends Indicator

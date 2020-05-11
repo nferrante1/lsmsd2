@@ -11,12 +11,11 @@ import app.client.ui.menus.forms.CrossForm;
 import app.client.ui.menus.forms.MarketGranularityForm;
 import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.StrategyFileForm;
+import app.client.ui.menus.forms.choices.CrossChoice;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.MarketInfo;
-import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
-import app.common.net.entities.enums.BooleanChoice;
 
 public class StrategyMenu extends Menu
 {
@@ -65,12 +64,14 @@ public class StrategyMenu extends Menu
 		marketMenu.show();
 		MarketInfo market = marketMenu.getSelection();
 
-		response = new CrossForm().show();
-		String isInverse = response.get("Inverse Cross");
+		response = new CrossForm(market.getBaseCurrency(), market.getQuoteCurrency()).show();
+		String inverse = response.get("Inverse Cross");
 		response = new MarketGranularityForm(market.getGranularity()).show();
 		int granularity = Integer.parseUnsignedInt(response.get("Granularity"));
 
-		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), BooleanChoice.valueOf(isInverse).toBoolean(), granularity);
+		// TODO: ask for additional parameters
+
+		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), CrossChoice.valueOf(inverse).isInverseCross(), granularity);
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;

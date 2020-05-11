@@ -2,6 +2,7 @@ package app.client.ui.menus.forms;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ChoiceFormField<T extends Enum<T>> extends FormField
@@ -10,6 +11,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 	protected int defaultSelection;
 	protected Class<T> enumClass;
 	protected Predicate<T> validator;
+	protected Function<T, String> converter;
 
 	public ChoiceFormField(String name, Class<T> e)
 	{
@@ -23,10 +25,22 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 		}
 	}
 
+	public ChoiceFormField(String name, Class<T> e, Function<T, String> converter)
+	{
+		this(name, e);
+		this.converter = converter;
+	}
+
 	public ChoiceFormField(String name, Class<T> e, Predicate<T> validator)
 	{
 		this(name, e);
 		this.validator = validator;
+	}
+
+	public ChoiceFormField(String name, Class<T> e, Predicate<T> validator, Function<T, String> converter)
+	{
+		this(name, e, validator);
+		this.converter = converter;
 	}
 
 	public ChoiceFormField(String name, T defaultValue, Class<T> e)
@@ -43,10 +57,22 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 		}
 	}
 
+	public ChoiceFormField(String name, T defaultValue, Class<T> e, Function<T, String> converter)
+	{
+		this(name, defaultValue, e);
+		this.converter = converter;
+	}
+
 	public ChoiceFormField(String name, T defaultValue, Class<T> e, Predicate<T> validator)
 	{
 		this(name, defaultValue, e);
 		this.validator = validator;
+	}
+
+	public ChoiceFormField(String name, T defaultValue, Class<T> e, Predicate<T> validator, Function<T, String> converter)
+	{
+		this(name, defaultValue, e, validator);
+		this.converter = converter;
 	}
 
 	@Override
@@ -72,7 +98,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 	{
 		StringBuilder sb = new StringBuilder(name + ":\n");
 		values.forEach((key, value) -> {
-			sb.append("\t" + key + ") " + Enum.valueOf(enumClass, value).toString() + "\n");
+			sb.append("\t" + key + ") " + converter == null ? Enum.valueOf(enumClass, value).toString() : converter.apply(Enum.valueOf(enumClass, value)) + "\n");
 		});
 		sb.append("Enter selection" + (defaultSelection > 0 ? " [" + defaultSelection + "]" : ""));
 		return sb.toString();

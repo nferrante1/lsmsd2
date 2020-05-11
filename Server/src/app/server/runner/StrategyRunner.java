@@ -1,8 +1,9 @@
 package app.server.runner;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 import org.bson.conversions.Bson;
 
@@ -11,36 +12,49 @@ import app.library.Candle;
 import app.library.ExecutableStrategy;
 import app.library.indicators.ComputableIndicator;
 import app.library.indicators.Indicator;
-import app.server.StrategyFile;
-import app.server.dm.CandleManager;
+import app.server.managers.CandleManager;
 
 public class StrategyRunner extends Thread
 {
-	private StrategyFile strategyFile;
+	private ExecutableStrategy strategy;
+	private String marketId;
+	private int granularity;
+	private boolean inverseCross;
+	private Map<String, Object> parameters;
 
-	public StrategyRunner(StrategyFile file)
+	public StrategyRunner(ExecutableStrategy strategy, Map<String, Object> parameters)
 	{
-		setStrategyFile(file);
+		this.strategy = strategy;
+		this.parameters = parameters;
+		this.marketId = (String)parameters.get("market");
+		this.granularity = (int)parameters.get("granularity");
+		this.inverseCross = (boolean)parameters.get("inverseCross");
 	}
 
 	@Override
 	public void run()
 	{
-		Logger.getLogger(StrategyRunner.class.getName()).warning("START STRATEGY EXECUTION");
-		ExecutableStrategy strategy = strategyFile.getStrategy();
+		for (Map.Entry<String, Object> parameter: parameters.entrySet()) {
+			try {
+				Field field = strategy.getClass().getDeclaredField(parameter.getKey());
+				field.setAccessible(true);
+				field.set(strategy, parameter.getValue());
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			}
+		}
+
 		List<Indicator> indicators = strategy.getIndicators();
 		HashMap<String, List<Bson>> map = getPipelines(indicators);
+
 		CandleManager candleManager = new CandleManager();
-		Logger.getLogger(StrategyRunner.class.getName()).warning("START AGGREGATION PIPELINE");
-		PojoCursor<Candle> candleCursor = candleManager.getCandles("BINANCE:ADABNB", 10, map);
-		Logger.getLogger(StrategyRunner.class.getName()).warning("END AGGREGATION PIPELINE");
+		PojoCursor<Candle> candleCursor = candleManager.getCandles(marketId, inverseCross, granularity, map);
+
 		while(candleCursor.hasNext()) {
 			Candle candle = candleCursor.next();
 			for(Indicator indicator: indicators)
 				indicator.compute(candle);
 			strategy.process(candle);
 		}
-		Logger.getLogger(StrategyRunner.class.getName()).warning("END STRATEGY EXECUTION");
 	}
 
 	private HashMap<String, List<Bson>> getPipelines(List<Indicator> indicators)
@@ -57,14 +71,5 @@ public class StrategyRunner extends Thread
 			}
 		}
 		return map;
-	}
-
-	public StrategyFile getStrategyFile()
-	{
-		return strategyFile;
-	}
-	public void setStrategyFile(StrategyFile strategyFile)
-	{
-		this.strategyFile = strategyFile;
 	}
 }
