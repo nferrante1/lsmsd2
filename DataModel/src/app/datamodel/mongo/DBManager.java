@@ -128,13 +128,19 @@ public final class DBManager implements Closeable
 		if (standalone)
 			return;
 
-		Logger.getLogger(DBManager.class.getName()).info("Enabling sharding on " + databaseName + ".MarketData collection.");
+		Logger.getLogger(DBManager.class.getName()).info("Enabling sharding.");
+		MongoDatabase adminDb = mongoClient.getDatabase("admin");
+		adminDb.runCommand(new BasicDBObject("enableSharding", databaseName));
 
-		mongoClient.getDatabase("admin").runCommand(new BasicDBObject("enableSharding", databaseName));
-		final BasicDBObject shardKey = new BasicDBObject("market", "hashed");
-		final BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
+		BasicDBObject shardKey = new BasicDBObject("market", "hashed");
+		BasicDBObject cmd = new BasicDBObject("shardCollection", databaseName + ".MarketData");
 		cmd.put("key", shardKey);
-		mongoClient.getDatabase("admin").runCommand(cmd);
+		adminDb.runCommand(cmd);
+
+		shardKey = new BasicDBObject("_id", 1);
+		cmd = new BasicDBObject("shardCollection", databaseName + ".AuthTokens");
+		cmd.put("key", shardKey);
+		adminDb.runCommand(cmd);
 	}
 
 	@Override

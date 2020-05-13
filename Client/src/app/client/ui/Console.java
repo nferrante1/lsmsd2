@@ -62,12 +62,24 @@ public final class Console
 		while (true) {
 			print(prompt + " [" + ((defaultYes) ? "Y/n" : "y/N") + "]");
 			String selection = scanner.nextLine();
-			if ((defaultYes && selection.isBlank()) || selection.compareToIgnoreCase("Y") == 0)
+			if ((defaultYes && selection.isBlank()) || selection.trim().equalsIgnoreCase("Y"))
 				return true;
-			if ((!defaultYes && selection.isBlank()) || selection.compareToIgnoreCase("N") == 0)
+			if ((!defaultYes && selection.isBlank()) || selection.trim().equalsIgnoreCase("N"))
 				return false;
 			println("Invalid selection.");
-			newLine();
+		}
+	}
+
+	public static boolean askChoice(String prompt, String c1, String c2)
+	{
+		while (true) {
+			print(prompt + " [" + c1 + "/" + c2 + "]");
+			String selection = scanner.nextLine();
+			if (selection.trim().equalsIgnoreCase(c1))
+				return true;
+			if (selection.trim().equalsIgnoreCase(c2))
+				return false;
+			println("Invalid selection.");
 		}
 	}
 
@@ -79,6 +91,12 @@ public final class Console
 	public static void print(String str)
 	{
 		System.out.print(str);
+		System.out.flush();
+	}
+
+	public static void printf(String format, Object... args)
+	{
+		System.out.printf(format, args);
 		System.out.flush();
 	}
 

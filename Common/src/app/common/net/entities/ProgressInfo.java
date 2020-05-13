@@ -4,16 +4,16 @@ public class ProgressInfo extends Entity
 {
 	private static final long serialVersionUID = 5331206537641352490L;
 
-	protected final int percent;
+	protected final double progress;
 
-	public ProgressInfo(int percent)
+	public ProgressInfo(double progress)
 	{
-		this.percent = percent;
+		this.progress = progress;
 	}
 
-	public int getPercent()
+	public double getProgress()
 	{
-		return percent;
+		return progress;
 	}
 
 }

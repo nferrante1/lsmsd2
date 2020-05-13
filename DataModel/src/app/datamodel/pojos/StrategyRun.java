@@ -26,9 +26,15 @@ public class StrategyRun extends StorablePojo
 	public StrategyRun(String user, List<Parameter<?>> parameters, Report report)
 	{
 		super(StorablePojoState.UNTRACKED);
+		this.id = new ObjectId();
 		this.user = user;
 		this.parameters = parameters;
 		this.report = report;
+	}
+
+	public StrategyRun(List<Parameter<?>> parameters, Report report)
+	{
+		this(null, parameters, report);
 	}
 
 	public ObjectId getId()

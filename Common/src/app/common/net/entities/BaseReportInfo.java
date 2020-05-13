@@ -13,6 +13,14 @@ public class BaseReportInfo extends Entity
 	{
 	}
 
+	public BaseReportInfo(String id, String strategyName, String market, double netProfit)
+	{
+		this.id = id;
+		this.strategyName = strategyName;
+		this.market = market;
+		this.netProfit = netProfit;
+	}
+
 	public String getId()
 	{
 		return id;

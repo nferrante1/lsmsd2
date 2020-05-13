@@ -75,6 +75,8 @@ public class Protocol implements AutoCloseable
 		new RequestMessage(ActionRequest.LOGIN, loginInfo).send(outputStream);
 		ResponseMessage resMsg = ResponseMessage.receive(inputStream);
 		close();
+		if (resMsg == null)
+			return getProtocolErrorMessage();
 		if (!resMsg.isSuccess())
 			return resMsg;
 		if (!resMsg.isValid(ActionRequest.LOGIN))
@@ -268,6 +270,11 @@ public class Protocol implements AutoCloseable
 		return resMsg;
 	}
 
+	public ResponseMessage getStrategyParameters(String strategyName)
+	{
+		return sendRequest(ActionRequest.GET_STRATEGY_PARAMETERS, new KVParameter("STRATEGYNAME", strategyName));
+	}
+
 	public ResponseMessage runStrategy(String strategyName, String market, boolean inverseCross, int granularity)
 	{
 		return runStrategy(strategyName, market, inverseCross, granularity, null);
@@ -279,9 +286,9 @@ public class Protocol implements AutoCloseable
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(new KVParameter("STRATEGYNAME", strategyName));
 		entities.add(new KVParameter("market", market));
-		entities.add(new KVParameter("inverseCross", inverseCross ? "true" : "false"));
-		entities.add(new KVParameter("granularity", Integer.toString(granularity)));
-		if (parameters != null)
+		entities.add(new KVParameter("inverseCross", inverseCross));
+		entities.add(new KVParameter("granularity", granularity));
+		if (parameters != null && !parameters.isEmpty())
 			entities.addAll(parameters);
 		connect();
 		new RequestMessage(ActionRequest.RUN_STRATEGY, authToken, entities).send(outputStream);
@@ -298,11 +305,29 @@ public class Protocol implements AutoCloseable
 				return resMsg;
 			}
 			new RequestMessage(ActionRequest.RUN_STRATEGY, authToken, entities).send(outputStream);
-			if (resMsg == null || !resMsg.isSuccess() || !resMsg.isValid(ActionRequest.RUN_STRATEGY)
-				|| resMsg.getEntity() instanceof ReportInfo)
+			if (resMsg == null || !resMsg.isSuccess() || !resMsg.isValid(ActionRequest.RUN_STRATEGY))
 				close();
 		}
-		return resMsg != null && resMsg.isValid(ActionRequest.RUN_STRATEGY) ? resMsg : getProtocolErrorMessage();
+		if (resMsg == null || !resMsg.isValid(ActionRequest.RUN_STRATEGY))
+			return getProtocolErrorMessage();
+		if (!resMsg.isSuccess() || resMsg.getEntity(ReportInfo.class) != null)
+			close();
+
+		return resMsg;
+	}
+
+	public ResponseMessage getProgressInfo()
+	{
+		if (!connected)
+			return new ResponseMessage("Connection closed.");
+		ResponseMessage resMsg = ResponseMessage.receive(inputStream);
+		if (resMsg == null || !resMsg.isValid(ActionRequest.RUN_STRATEGY)) {
+			close();
+			return getProtocolErrorMessage();
+		}
+		if (!resMsg.isSuccess() || resMsg.getEntity(ReportInfo.class) != null)
+			close();
+		return resMsg;
 	}
 
 	public ResponseMessage addStrategy(String className, String fileName) throws IOException

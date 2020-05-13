@@ -34,7 +34,7 @@ public class ParameterInfo extends Entity
 		this.name = name;
 	}
 
-	public String getDisplayName()
+	/*public String getDisplayName()
 	{
 		char[] chars = name.toCharArray();
 		StringBuilder sb = new StringBuilder();
@@ -50,7 +50,7 @@ public class ParameterInfo extends Entity
 			sb.append(c);
 		}
 		return sb.toString();
-	}
+	}*/
 
 	public ParameterType getType()
 	{

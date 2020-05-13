@@ -19,16 +19,28 @@ import com.mongodb.client.model.Sorts;
 
 import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
+import app.datamodel.pojos.DataRange;
 import app.library.Candle;
 
-public class CandleManager extends PojoManager<Candle>
+public class AggregationRunner extends PojoManager<Candle>
 {
-	public CandleManager()
+	private String marketId;
+	private boolean inverseCross;
+	private int granularity;
+	private Instant start;
+	private Instant end;
+
+	public AggregationRunner(String marketId, boolean inverseCross, int granularity, DataRange range)
 	{
 		super(Candle.class, "MarketData");
+		this.marketId = marketId;
+		this.inverseCross = inverseCross;
+		this.granularity = granularity;
+		this.start = range.start;
+		this.end = range.end;
 	}
 
-	public PojoCursor<Candle> getCandles(String marketId, boolean inverseCross, int granularity, HashMap<String, List<Bson>> indicators)
+	public PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
 	{
 		List<Facet> facets = new ArrayList<Facet>();
 		facets.add(new Facet("candles", Aggregates.project(Projections.excludeId())));
@@ -42,7 +54,7 @@ public class CandleManager extends PojoManager<Candle>
 			.append("v", new Document("$arrayElemAt", Arrays.asList("$candles.v", "$$z")));
 
 		Document taDoc = new Document();
-		for(Entry<String, List<Bson>> entry: indicators.entrySet()) {
+		for(Entry<String, List<Bson>> entry: taFacets.entrySet()) {
 			facets.add(new Facet(entry.getKey(), entry.getValue()));
 			taDoc.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + entry.getKey() + ".candles.value", 0)), "$$z")));
 		}
@@ -52,6 +64,7 @@ public class CandleManager extends PojoManager<Candle>
 		stages.add(Aggregates.match(Filters.eq("market", marketId)));
 		stages.add(Aggregates.unwind("$candles"));
 		stages.add(Aggregates.replaceRoot("$candles"));
+		stages.add(Aggregates.match(Filters.and(Filters.gte("t", start), Filters.lte("t", end))));
 
 		List<Field<Document>> fields = new ArrayList<Field<Document>>();
 		fields.add(new Field<Document>("n", new Document("$floor", new Document("$divide", Arrays.asList(new Document("$subtract", Arrays.asList("$t", Instant.EPOCH)), granularity*60*1000)))));

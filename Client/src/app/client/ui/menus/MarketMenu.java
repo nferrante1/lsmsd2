@@ -45,6 +45,7 @@ public class MarketMenu extends Menu
 		Console.println("Id: " + market.getMarketId());
 		Console.println("Base currency: " + market.getBaseCurrency());
 		Console.println("Quote currency: " + market.getQuoteCurrency());
+		Console.println("Granularity: " + market.getGranularity());
 		Console.println("Selectable: " + market.isSelectable());
 		Console.println("Data sync: " + market.isSync());
 		Console.pause();

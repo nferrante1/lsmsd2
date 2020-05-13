@@ -8,10 +8,10 @@ public class ReportInfo extends BaseReportInfo
 	protected double grossProfit;
 	protected double grossLoss;
 	protected double hodlProfit;
-	protected double totalTrades;
-	protected double openTrades;
-	protected double winningTrades;
-	protected double maxConsecutiveLosing;
+	protected long totalTrades;
+	protected long openTrades;
+	protected long winningTrades;
+	protected long maxConsecutiveLosing;
 	protected double avgAmount;
 	protected double avgDuration;
 	protected double maxDrawdown;
@@ -20,6 +20,26 @@ public class ReportInfo extends BaseReportInfo
 	public ReportInfo()
 	{
 		super();
+	}
+
+	public ReportInfo(String id, String strategyName, String market, double netProfit,
+		String user, double grossProfit, double grossLoss, double hodlProfit,
+		long totalTrades, long openTrades, long winningTrades, long maxConsecutiveLosing,
+		double avgAmount, double avgDuration, double maxDrawdown, boolean deletable)
+	{
+		super(id, strategyName, market, netProfit);
+		this.user = user;
+		this.grossProfit = grossProfit;
+		this.grossLoss = grossLoss;
+		this.hodlProfit = hodlProfit;
+		this.totalTrades = totalTrades;
+		this.openTrades = openTrades;
+		this.winningTrades = winningTrades;
+		this.maxConsecutiveLosing = maxConsecutiveLosing;
+		this.avgAmount = avgAmount;
+		this.avgDuration = avgDuration;
+		this.maxDrawdown = maxDrawdown;
+		this.deletable = deletable;
 	}
 
 	public double getGrossProfit()
@@ -52,42 +72,42 @@ public class ReportInfo extends BaseReportInfo
 		this.hodlProfit = hodlProfit;
 	}
 
-	public double getTotalTrades()
+	public long getTotalTrades()
 	{
 		return totalTrades;
 	}
 
-	public void setTotalTrades(double totalTrades)
+	public void setTotalTrades(long totalTrades)
 	{
 		this.totalTrades = totalTrades;
 	}
 
-	public double getOpenTrades()
+	public long getOpenTrades()
 	{
 		return openTrades;
 	}
 
-	public void setOpenTrades(double openTrades)
+	public void setOpenTrades(long openTrades)
 	{
 		this.openTrades = openTrades;
 	}
 
-	public double getWinningTrades()
+	public long getWinningTrades()
 	{
 		return winningTrades;
 	}
 
-	public void setWinningTrades(double winningTrades)
+	public void setWinningTrades(long winningTrades)
 	{
 		this.winningTrades = winningTrades;
 	}
 
-	public double getMaxConsecutiveLosing()
+	public long getMaxConsecutiveLosing()
 	{
 		return maxConsecutiveLosing;
 	}
 
-	public void setMaxConsecutiveLosing(double maxConsecutiveLosing)
+	public void setMaxConsecutiveLosing(long maxConsecutiveLosing)
 	{
 		this.maxConsecutiveLosing = maxConsecutiveLosing;
 	}

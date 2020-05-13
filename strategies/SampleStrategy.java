@@ -1,22 +1,37 @@
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.library.ExecutableStrategy;
-import app.library.indicators.Indicator;
-import app.library.indicators.RSI;
-import app.library.Candle;
+import app.library.annotations.*;
+import app.library.indicators.*;
+import app.library.*;
 
 public class SampleStrategy implements ExecutableStrategy
 {
-	RSI rsi;
+	@StrategyParameter
+	private String market;
+	@StrategyParameter
+	private boolean inverseCross;
+	@StrategyParameter
+	private int granularity;
+	@StrategyParameter
+	private Instant startTime;
+	@StrategyParameter
+	private Instant endTime;
+
+	@StrategyParameter("RSI Period")
+	private int period;
+
+	private RSI rsi;
+
 	@Override
 	public String getName()
 	{
-		return "SampleStrategy";
+		return "Sample strategy based on RSI";
 	}
 
 	@Override
-	public void process(Candle candle)
+	public void process(Journal journal, Candle candle)
 	{
 		System.out.println("T: " + candle.getTime()
 			+ " | O: " + candle.getOpen()
@@ -28,17 +43,26 @@ public class SampleStrategy implements ExecutableStrategy
 		);
 	}
 
+	@Override
+	public void finish(Journal journal)
+	{
+		System.out.println("Market: " + market + " (" + (inverseCross ? "inverted" : "direct") + ")");
+		System.out.println("Granularity: " + granularity);
+		System.out.println("Start Time: " + startTime);
+		System.out.println("End Time: " + endTime);
+		System.out.println("RSI Period: " + period);
+	}
+
 	public SampleStrategy()
 	{
-		rsi = new RSI(14);
 	}
 
 	@Override
-	public List<Indicator> getIndicators()
+	public List<Indicator> indicators()
 	{
 		List<Indicator> ind = new ArrayList<Indicator>();
+		rsi = new RSI(period);
 		ind.add(rsi);
 		return ind;
 	}
-
 }

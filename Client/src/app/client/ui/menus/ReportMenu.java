@@ -37,22 +37,27 @@ public class ReportMenu extends Menu
 
 	private void handleViewReport(MenuEntry entry)
 	{
-		int amount = Integer.parseInt(new AmountForm().show().get("Amount"));
-
+		double amount = Double.parseDouble(new AmountForm().show().get("Amount"));
+		showReport(report, parameters, amount);
+	}
+	public static void showReport(ReportInfo report, List<KVParameter> parameters, double amount)
+	{
 		DecimalFormat df = new DecimalFormat("#.##");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 
 		Console.println("Id: " + report.getId());
 		Console.println("Strategy: " + report.getStrategyName());
 		Console.println("Market: " + report.getMarket());
+		Console.println("Initial Amount: " + df.format(amount));
 		Console.println("Parameters:");
 		for (KVParameter parameter: parameters)
-			Console.println("\t" + parameter.getDisplayName() + ": " + parameter.getValue());
+			Console.println("\t" + parameter.getName() + ": " + parameter.getValue());
 		Console.println("Author: " + report.getUser());
 		Console.println("Net Profit: " + df.format(report.getNetProfit() * amount));
 		Console.println("Gross Profit: " + df.format(report.getGrossProfit() * amount));
 		Console.println("Gross Loss: " + df.format(report.getGrossLoss() * amount));
-		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount));
+		double relativePerf = (report.getNetProfit() / report.getHodlProfit()) * 100;
+		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount) + " (strategy's relative performance: " + (relativePerf < 0.0 ? "+" : "") + df.format(relativePerf) + "%)");
 		Console.println("Total Trades: " + report.getTotalTrades());
 		Console.println("Open Trades: " + report.getOpenTrades());
 		Console.println("Winning Trades: " + report.getWinningTrades());

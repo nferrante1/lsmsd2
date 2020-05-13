@@ -22,11 +22,17 @@ public abstract class TextForm
 		this.prompt = prompt;
 	}
 
+	public void setPrompt(String prompt)
+	{
+		this.prompt = prompt;
+	}
+
 	public HashMap<String, String> show()
 	{
-		if (!prompt.isBlank())
+		if (!prompt.isBlank()) {
 			Console.println(prompt + ":");
-		Console.newLine();
+			Console.newLine();
+		}
 		fields = createFields();
 		HashMap<String, String> hm = new HashMap<String, String>();
 		for (FormField field : fields) {

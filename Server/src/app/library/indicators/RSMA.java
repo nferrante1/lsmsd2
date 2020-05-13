@@ -41,29 +41,21 @@ public class RSMA extends Indicator implements ComputableIndicator
 	public List<Bson> getPipeline()
 	{
 		return Arrays.asList(Aggregates.project(Projections.fields(
-				Projections.excludeId(), 
-				Projections.include("c", "o"))), 
-				Aggregates.group(
-						new BsonNull(), 
-						Accumulators.push("candles", new Document("c", "$c").append("o", "$o"))), 
-				Aggregates.addFields(new Field<Document>("candles", 
-				    new Document("$map", 
-				    new Document("input", "$candles")
-				                .append("as", "candle")
-				                .append("in", 
-				                		new Document("v", 
-				                				new Document("$max", Arrays.asList(new Document("$subtract", 
-						    (increment ? Arrays.asList("$$candle.c", "$$candle.o") : Arrays.asList("$$candle.o", "$$candle.c"))), 0L))))))), 
-				Aggregates.addFields(new Field<Document>("candles", 
-				    new Document("$map", 
-				    new Document("input", 
-				    new Document("$range", Arrays.asList(0L, 
-				                        new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
-				                .append("as", "z")
-				                .append("in", 
-				    new Document("value", 
-				    new Document("$avg", 
-				    new Document("$slice", Arrays.asList("$candles.v", "$$z", period)))))))));
+				Projections.excludeId(),
+				Projections.include("c", "o"))),
+				Aggregates.group(new BsonNull(),
+					Accumulators.push("candles", new Document("c", "$c").append("o", "$o"))),
+				Aggregates.addFields(new Field<Document>("candles", new Document("$map",
+				new Document("input", "$candles")
+				.append("as", "candle")
+				.append("in", new Document("v", new Document("$max", Arrays.asList(new Document("$subtract",
+					(increment ? Arrays.asList("$$candle.c", "$$candle.o") : Arrays.asList("$$candle.o", "$$candle.c"))), 0L))))))),
+				Aggregates.addFields(new Field<Document>("candles",
+				new Document("$map",
+					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
+				.append("as", "z")
+				.append("in",
+					new Document("value", new Document("$avg", new Document("$slice", Arrays.asList("$candles.v", "$$z", period)))))))));
 	}
 
 	@Override

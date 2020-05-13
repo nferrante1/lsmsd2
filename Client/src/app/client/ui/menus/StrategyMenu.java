@@ -7,15 +7,23 @@ import java.util.List;
 
 import app.client.net.Protocol;
 import app.client.ui.Console;
+import app.client.ui.animations.ProgressBar;
+import app.client.ui.animations.Spinner;
 import app.client.ui.menus.forms.CrossForm;
 import app.client.ui.menus.forms.MarketGranularityForm;
+import app.client.ui.menus.forms.ParameterForm;
 import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.StrategyFileForm;
 import app.client.ui.menus.forms.choices.CrossChoice;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.FileContent;
+import app.common.net.entities.KVParameter;
 import app.common.net.entities.MarketInfo;
+import app.common.net.entities.ParameterInfo;
+import app.common.net.entities.ProgressInfo;
+import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
+import app.common.net.entities.enums.ParameterType;
 
 public class StrategyMenu extends Menu
 {
@@ -57,8 +65,23 @@ public class StrategyMenu extends Menu
 		new ReportListMenu((StrategyInfo)entry.getHandlerData(), market).show();
 	}
 
+	private void sleep()
+	{
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
+	}
+
 	private void handleRunStrategy(MenuEntry entry)
 	{
+		ResponseMessage resMsg = Protocol.getInstance().getStrategyParameters(strategy.getName());
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		List<ParameterInfo> parameterInfos = resMsg.getEntities(ParameterInfo.class);
+
 		HashMap<String, String> response = new SearchForm("Market Name").show();
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
@@ -66,20 +89,51 @@ public class StrategyMenu extends Menu
 
 		response = new CrossForm(market.getBaseCurrency(), market.getQuoteCurrency()).show();
 		String inverse = response.get("Inverse Cross");
-		response = new MarketGranularityForm(market.getGranularity()).show();
+		MarketGranularityForm granularityForm = new MarketGranularityForm(market.getGranularity());
+		granularityForm.setPrompt("");
+		response = granularityForm.show();
 		int granularity = Integer.parseUnsignedInt(response.get("Granularity"));
 
-		// TODO: ask for additional parameters
+		List<KVParameter> parameters = new ArrayList<KVParameter>();
+		HashMap<String, String> paramResponse = new ParameterForm(parameterInfos).show();
+		for (ParameterInfo param: parameterInfos)
+			parameters.add(new KVParameter(param.getName(), paramResponse.get(param.getName()), param.getType()));
 
-		ResponseMessage resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), CrossChoice.valueOf(inverse).isInverseCross(), granularity);
+		Console.newLine();
+		Spinner initSpinner = new Spinner("Initializing...");
+		ProgressBar bar = new ProgressBar("Running...");
+		Spinner finishSpinner = new Spinner("Generating Report...");
+		initSpinner.start();
+		sleep();
+		resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), CrossChoice.valueOf(inverse).isInverseCross(), granularity, parameters);
+		initSpinner.stopShowing();
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		Console.println("Strategy correctly run.");
 
-		//TODO: temporarily commented out: the server actually responds with an empty msg
-		//ReportInfo report = resMsg.getEntity(ReportInfo.class);
+		bar.start();
+		while (resMsg.isSuccess() && resMsg.getEntity(ReportInfo.class) == null) {
+			ProgressInfo progressInfo = resMsg.getEntity(ProgressInfo.class);
+			bar.setProgress((int)Math.round(progressInfo.getProgress() * 100));
+			if (progressInfo.getProgress() >= 1.0) {
+				bar.stopShowing();
+				finishSpinner.start();
+				sleep();
+			}
+			resMsg = Protocol.getInstance().getProgressInfo();
+		}
+		bar.stopShowing();
+		finishSpinner.stopShowing();
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		ReportInfo report = resMsg.getEntity(ReportInfo.class);
+		Console.newLine();
+		Console.println("Showing report with initial amount 100.000,00");
+		Console.newLine();
+		ReportMenu.showReport(report, parameters, 100000.0);
 	}
 
 	private void handleDeleteStrategy(MenuEntry entry)

@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
@@ -28,9 +29,13 @@ import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
 import app.common.net.entities.MarketInfo;
+import app.common.net.entities.ParameterInfo;
+import app.common.net.entities.ProgressInfo;
+import app.common.net.entities.ReportInfo;
 import app.common.net.entities.SourceInfo;
 import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
+import app.common.net.entities.enums.ParameterType;
 import app.datamodel.AuthTokenManager;
 import app.datamodel.DataSourceManager;
 import app.datamodel.MarketDataManager;
@@ -39,9 +44,12 @@ import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
+import app.datamodel.pojos.Report;
 import app.datamodel.pojos.Strategy;
+import app.datamodel.pojos.StrategyRun;
 import app.datamodel.pojos.User;
 import app.library.ExecutableStrategy;
+import app.library.annotations.StrategyParameter;
 import app.server.annotations.RequestHandlerMethod;
 import app.server.managers.MarketInfoManager;
 import app.server.runner.StrategyFile;
@@ -92,12 +100,6 @@ public class RequestHandler extends Thread
 		}
 
 		dispatchMessage(reqMsg).send(outputStream);
-
-		try {
-			outputStream.flush();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
 	}
 
 	private ResponseMessage dispatchMessage(RequestMessage reqMsg)
@@ -124,7 +126,7 @@ public class RequestHandler extends Thread
 		} catch (NoSuchMethodException e) {
 			return new ResponseMessage("Invalid action.");
 		} catch (InvocationTargetException e) {
-			return new ResponseMessage(e.getCause().getMessage());
+			return new ResponseMessage("ERROR: " + e.getCause().getMessage());
 		} catch (IllegalAccessException | IllegalArgumentException
 			| SecurityException e) {
 			e.printStackTrace();
@@ -406,6 +408,43 @@ public class RequestHandler extends Thread
 	}
 
 	@RequestHandlerMethod
+	private ResponseMessage handleGetStrategyParameters(RequestMessage reqMsg)
+	{
+		String strategyName = reqMsg.getEntity(KVParameter.class).getValue();
+		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("name", strategyName));
+
+		if(!cursor.hasNext())
+			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
+
+		Strategy strategy = cursor.next();
+		StrategyFile strategyFile;
+		try {
+			strategyFile = new StrategyFile(strategy.getId());
+		} catch (FileNotFoundException ex) {
+			return new ResponseMessage("Can not find strategy's file: " + ex.getMessage());
+		}
+		ExecutableStrategy strategyInstance = strategyFile.getStrategy();
+		if (strategyInstance == null)
+			return new ResponseMessage("Can not load strategy class.");
+		List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
+		for (Field field: strategyInstance.getClass().getDeclaredFields()) {
+			field.setAccessible(true);
+			if (!field.isAnnotationPresent(StrategyParameter.class))
+				continue;
+			String name = field.getAnnotation(StrategyParameter.class).value();
+			name = name.isBlank() ? field.getName() : name;
+			if (name.equals("market") || name.equals("inverseCross") || name.equals("granularity") || name.equals("startTime") || name.equals("endTime"))
+				continue;
+			ParameterType type = ParameterType.getFromType(field.getType());
+			if (type == null)
+				return new ResponseMessage("Strategy defined an invalid type for parameter '" + field.getName() + "'. Allowed types: int, double, boolean, Instant, String.");
+			parameters.add(new ParameterInfo(name, type));
+		}
+		return new ResponseMessage(parameters.toArray(new ParameterInfo[0]));
+	}
+
+	@RequestHandlerMethod
 	private ResponseMessage handleRunStrategy(RequestMessage reqMsg)
 	{
 		List<KVParameter> kvParameters = reqMsg.getEntities(KVParameter.class);
@@ -433,13 +472,46 @@ public class RequestHandler extends Thread
 		ExecutableStrategy strategyInstance = strategyFile.getStrategy();
 		if (strategyInstance == null)
 			return new ResponseMessage("Can not load strategy class.");
-		try {
-			StrategyRunner runner = new StrategyRunner(strategyInstance, parameters);
-			runner.start();
-			runner.join();
-			return new ResponseMessage();
-		} catch (InterruptedException e) {
-			return new ResponseMessage("Strategy execution thread has been interrupted.");
+
+		double lastReturnedProgress = -1.0;
+		double progress = 0.0;
+		StrategyRunner runner = new StrategyRunner(strategyInstance, parameters);
+		runner.setDaemon(true);
+		runner.setPriority(MIN_PRIORITY);
+		runner.start();
+		while (runner.isAlive() && runner.getException() == null) {
+			lastReturnedProgress = runner.progress();
+			if (lastReturnedProgress > progress)
+				progress = lastReturnedProgress;
+			new ResponseMessage(new ProgressInfo(progress)).send(outputStream);
+			if (progress < 0.79)
+				progress += 0.01;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
 		}
+		if (runner.getException() != null)
+			return new ResponseMessage("Error during the execution of the strategy: " + runner.getException().getMessage());
+		if (runner.isInterrupted())
+			return new ResponseMessage("Strategy execution thread has been interrupted.");
+
+		new ResponseMessage(new ProgressInfo(1.0)).send(outputStream);
+
+		StrategyRun strategyRun = runner.generateStrategyRun();
+		strategyRun.setUser(authToken.getUsername());
+		strategy.addRun(strategyRun);
+		manager.save(strategy); //FIXME: need a custom codec for Parameter<?> class
+
+		Report report = strategyRun.getReport();
+		return new ResponseMessage(new ReportInfo(
+			strategyRun.getId().toHexString(), strategy.getName(),
+			runner.getMarketId(), report.getNetProfit(),
+			strategyRun.getUser(), report.getGrossProfit(),
+			report.getGrossLoss(), report.getHodlProfit(),
+			report.getTotalTrades(), report.getOpenTrades(),
+			report.getWinningTrades(), report.getMaxConsecutiveLosing(),
+			report.getAvgAmount(), report.getAvgDuration(),
+			report.getMaxDrawdown(), true));
 	}
 }

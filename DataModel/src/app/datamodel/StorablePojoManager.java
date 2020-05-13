@@ -593,9 +593,9 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 	}
 
 	@Override
-	public StorablePojoCursor<T> find(Bson filter, Bson projection, int skip, int limit)
+	public StorablePojoCursor<T> find(Bson filter, Bson projection, Bson sort, int skip, int limit)
 	{
-		PojoCursor<T> cursor = super.find(filter, projection, skip, limit);
+		PojoCursor<T> cursor = super.find(filter, projection, sort, skip, limit);
 		return new StorablePojoCursor<T>(cursor);
 	}
 

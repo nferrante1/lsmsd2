@@ -12,6 +12,10 @@ public class MarketInfo extends Entity
 	protected boolean sync;
 	protected boolean selectable;
 
+	public MarketInfo()
+	{
+	}
+
 	public MarketInfo(String sourceName, String marketId, int granularity, boolean enabled, boolean sync)
 	{
 		this(sourceName, marketId, null, null, granularity, enabled, sync);

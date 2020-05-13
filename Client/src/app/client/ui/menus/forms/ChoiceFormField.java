@@ -98,7 +98,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 	{
 		StringBuilder sb = new StringBuilder(name + ":\n");
 		values.forEach((key, value) -> {
-			sb.append("\t" + key + ") " + converter == null ? Enum.valueOf(enumClass, value).toString() : converter.apply(Enum.valueOf(enumClass, value)) + "\n");
+			sb.append("\t" + key + ") " + (converter == null ? Enum.valueOf(enumClass, value).toString() : converter.apply(Enum.valueOf(enumClass, value))) + "\n");
 		});
 		sb.append("Enter selection" + (defaultSelection > 0 ? " [" + defaultSelection + "]" : ""));
 		return sb.toString();

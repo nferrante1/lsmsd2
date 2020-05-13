@@ -10,10 +10,10 @@ public class Report extends StorablePojo
 	protected double grossProfit;
 	protected double grossLoss;
 	protected double hodlProfit;
-	protected int totalTrades;
-	protected int openTrades;
-	protected int winningTrades;
-	protected int maxConsecutiveLosing;
+	protected long totalTrades;
+	protected long openTrades;
+	protected long winningTrades;
+	protected long maxConsecutiveLosing;
 	protected double avgAmount;
 	protected double avgDuration;
 	protected double maxDrawdown;
@@ -23,8 +23,8 @@ public class Report extends StorablePojo
 		super();
 	}
 
-	public Report(double netProfit, double grossProfit, double grossLoss, double hodlProfit, int totalTrades,
-		int openTrades, int winningTrades, int maxConsecutiveLosing, double avgAmount, double avgDuration,
+	public Report(double netProfit, double grossProfit, double grossLoss, double hodlProfit, long totalTrades,
+		long openTrades, long winningTrades, long maxConsecutiveLosing, double avgAmount, double avgDuration,
 		double maxDrawdown)
 	{
 		super(StorablePojoState.UNTRACKED);
@@ -61,22 +61,22 @@ public class Report extends StorablePojo
 		updateField("hodlProfit", hodlProfit);
 	}
 
-	public void setTotalTrades(int totalTrades)
+	public void setTotalTrades(long totalTrades)
 	{
 		updateField("totalTrades", totalTrades);
 	}
 
-	public void setOpenTrades(int openTrades)
+	public void setOpenTrades(long openTrades)
 	{
 		updateField("openTrades", openTrades);
 	}
 
-	public void setWinningTrades(int winningTrades)
+	public void setWinningTrades(long winningTrades)
 	{
 		updateField("winningTrades", winningTrades);
 	}
 
-	public void setMaxConsecutiveLosing(int maxConsecutiveLosing)
+	public void setMaxConsecutiveLosing(long maxConsecutiveLosing)
 	{
 		updateField("maxConsecutiveLosing", maxConsecutiveLosing);
 	}
@@ -116,22 +116,22 @@ public class Report extends StorablePojo
 		return hodlProfit;
 	}
 
-	public int getTotalTrades()
+	public long getTotalTrades()
 	{
 		return totalTrades;
 	}
 
-	public int getOpenTrades()
+	public long getOpenTrades()
 	{
 		return openTrades;
 	}
 
-	public int getWinningTrades()
+	public long getWinningTrades()
 	{
 		return winningTrades;
 	}
 
-	public int getMaxConsecutiveLosing()
+	public long getMaxConsecutiveLosing()
 	{
 		return maxConsecutiveLosing;
 	}

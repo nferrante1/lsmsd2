@@ -2,8 +2,8 @@ package app.client.ui.menus.forms.choices;
 
 public enum CrossChoice
 {
-	INVERTED,
-	DIRECT;
+	DIRECT,
+	INVERTED;
 
 	@Override
 	public String toString()

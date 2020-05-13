@@ -16,7 +16,7 @@ public class AmountForm extends TextForm
 	protected List<FormField> createFields()
 	{
 		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new FormField("Amount", "100000", this::validateAmount));
+		fields.add(new FormField("Amount", "100000.00", this::validateAmount));
 		return fields;
 	}
 

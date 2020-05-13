@@ -12,7 +12,7 @@ public class CrossForm extends TextForm
 
 	public CrossForm(String baseCurrency, String quoteCurrency)
 	{
-		super("Do you want an inverse cross?");
+		super("");
 		this.baseCurrency = baseCurrency;
 		this.quoteCurrency = quoteCurrency;
 	}
@@ -21,17 +21,18 @@ public class CrossForm extends TextForm
 	protected List<FormField> createFields()
 	{
 		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new ChoiceFormField<CrossChoice>("Inverse Cross", CrossChoice.INVERTED, CrossChoice.class, this::getFieldText));
+		// FIXME: ChoiceFormField is bad for this (does not gaurantee order of elements)
+		fields.add(new ChoiceFormField<CrossChoice>("Inverse Cross", CrossChoice.DIRECT, CrossChoice.class, this::getFieldText));
 		return fields;
 	}
 
 	private String getFieldText(CrossChoice choice)
 	{
 		switch (choice) {
-		case INVERTED:
-			return baseCurrency + "/" + quoteCurrency + " (direct)";
 		case DIRECT:
 			return quoteCurrency + "/" + baseCurrency + " (inverted)";
+		case INVERTED:
+			return baseCurrency + "/" + quoteCurrency + " (direct)";
 		default:
 			return "?";
 		}

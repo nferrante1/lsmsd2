@@ -3,9 +3,10 @@ package app.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
-public class ScraperController //TODO: logging, handle scraper offline
+public class ScraperController
 {
 	private static String address = "localhost";
 	private static int port = 5656;
@@ -13,7 +14,8 @@ public class ScraperController //TODO: logging, handle scraper offline
 	public static void start()
 	{
 		try {
-			Socket socket = new Socket(address, port);
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(address, port), 3000);
 			DataInputStream input = new DataInputStream(socket.getInputStream());
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 
@@ -26,7 +28,6 @@ public class ScraperController //TODO: logging, handle scraper offline
 			output.close();
 			socket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -34,6 +35,7 @@ public class ScraperController //TODO: logging, handle scraper offline
 	{
 		try {
 			Socket socket = new Socket(address, port);
+			socket.connect(new InetSocketAddress(address, port), 3000);
 			DataInputStream input = new DataInputStream(socket.getInputStream());
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 
@@ -46,7 +48,6 @@ public class ScraperController //TODO: logging, handle scraper offline
 			output.close();
 			socket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
