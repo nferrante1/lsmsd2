@@ -34,7 +34,7 @@ public class RSIStrategy implements ExecutableStrategy
 	@Override
 	public String getName()
 	{
-		return "Real RSI Strategy v2";
+		return "Real RSI Strategy v3";
 	}
 
 	@Override
@@ -49,8 +49,7 @@ public class RSIStrategy implements ExecutableStrategy
 			journal.closeAll();
 		}
 		if (previousRSI <= oversold && value > oversold) { //crossover
-			if (journal.availAmount() > amount)
-				journal.openTrade(amount);
+			journal.openTrade(amount * journal.availAmount());
 		}
 		previousRSI = value;
 	}

@@ -84,6 +84,8 @@ public class StrategyMenu extends Menu
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
 		MarketInfo market = marketMenu.getSelection();
+		if (market == null)
+			return;
 
 		Console.println("1) " + market.getMarketDisplayName() + " (direct)");
 		Console.println("2) " + market.getInvertedMarketDisplayName() + " (inverted)");
@@ -133,6 +135,8 @@ public class StrategyMenu extends Menu
 		Console.newLine();
 		Console.println("Showing report with initial amount 1,000.00");
 		Console.newLine();
+		parameters.add(new KVParameter("granularity", granularity));
+		parameters.add(new KVParameter("inverseCross", inverse));
 		ReportMenu.showReport(report, parameters, 1000.0);
 	}
 

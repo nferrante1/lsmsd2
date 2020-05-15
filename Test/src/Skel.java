@@ -43,7 +43,14 @@ public class StrategyName implements ExecutableStrategy
 	}
 
 	@Override
-	public void init(Journal journal, Map<String, Object> parameters)
+	public boolean validate()
+	{
+		//TODO
+		return true;
+	}
+
+	@Override
+	public void init(Journal journal)
 	{
 		//TODO
 	}

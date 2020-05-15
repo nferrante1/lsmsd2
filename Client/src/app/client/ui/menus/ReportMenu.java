@@ -49,22 +49,23 @@ public class ReportMenu extends Menu
 		DecimalFormat pf = new DecimalFormat("0.##%");
 		pf.setRoundingMode(RoundingMode.HALF_EVEN);
 		pf.setPositivePrefix("+");
-		DecimalFormat of = new DecimalFormat("#0.00");
+		DecimalFormat of = new DecimalFormat("#,##0.00");
 		of.setRoundingMode(RoundingMode.HALF_EVEN);
+		of.setGroupingSize(3);
 
 		Console.println("Id: " + report.getId());
 		Console.println("Strategy: " + report.getStrategyName());
 		Console.println("Market: " + report.getMarket());
 		Console.println("Executed By: " + report.getUser());
-		Console.println("Initial Amount: " + df.format(amount));
+		Console.println("Initial Amount: " + of.format(amount));
 		Console.println("Parameters:");
 		for (KVParameter parameter: parameters)
 			Console.println("\t" + parameter.getName() + ": " + parameter.getValue());
-		Console.println("Final Amount: " + df.format(amount + report.getNetProfit() * amount));
+		Console.println("Final Amount: " + of.format(amount + report.getNetProfit() * amount));
 		Console.println("Net Profit: " + df.format(report.getNetProfit() * amount) + " (" + pf.format(report.getNetProfit()) + ")");
 		Console.println("Gross Profit: " + df.format(report.getGrossProfit() * amount) + " (" + pf.format(report.getGrossProfit()) + ")");
 		Console.println("Gross Loss: " + df.format(report.getGrossLoss() * amount) + " (" + pf.format(report.getGrossLoss()) + ")");
-		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount) + " (" + pf.format(report.getHodlProfit()) + "; strategy relative performance: " + pf.format(report.getNetProfit() / report.getHodlProfit()) + ")");
+		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount) + " (" + pf.format(report.getHodlProfit()) + "; strategy relative performance: " + pf.format(report.getNetProfit() - report.getHodlProfit()) + ")");
 		Console.println("Total Trades: " + report.getTotalTrades());
 		Console.println("Total Completed Trades: " + report.getClosedTrades());
 		Console.println("Open Trades At End: " + report.getOpenTrades());
@@ -73,7 +74,7 @@ public class ReportMenu extends Menu
 		Console.println("Max Consecutive Losing Trades: " + report.getMaxConsecutiveLosing());
 		Console.println("Average Traded Amount: " + of.format(report.getAvgAmount() * amount));
 		Console.println("Average Trade Duration: " + of.format(report.getAvgDuration()) + " trading days");
-		Console.println("Max Drawdown: " + df.format(report.getMaxDrawdown() * amount));
+		Console.println("Max Drawdown: " + df.format(report.getMaxDrawdown() * amount) + " (" + pf.format(report.getMaxDrawdown()) + ")");
 		Console.pause();
 	}
 

@@ -148,8 +148,9 @@ public class StrategyRunner extends Thread
 		long steps = (range.end.getEpochSecond() - range.start.getEpochSecond()) / (granularity * 60);
 		long curStep = 1;
 
+		Candle candle = firstCandle;
 		while(candleCursor.hasNext() && journal.hasAmount()) {
-			Candle candle = candleCursor.next();
+			candle = candleCursor.next();
 			candle.setGranularity(granularity);
 			journal.setCurrentCandle(candle);
 			for(Indicator indicator: indicators)
@@ -161,6 +162,7 @@ public class StrategyRunner extends Thread
 
 		progress(0.99);
 		strategy.finish(journal);
+		parameters.put("endTime", candle.getCloseTime());
 	}
 
 	private HashMap<String, List<Bson>> getPipelines(List<Indicator> indicators)

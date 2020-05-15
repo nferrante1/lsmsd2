@@ -76,6 +76,8 @@ public final class Journal
 
 	public Trade closeTrade(Trade trade)
 	{
+		if (trade == null)
+			return null;
 		if (!trades.contains(trade))
 			throw new IllegalArgumentException("Trade not registered (time: " + currentTime + ").");
 		if (trade.closed())
@@ -93,6 +95,7 @@ public final class Journal
 			currentDrawdown = 0;
 		}		
 		
+		currentDrawdown += trade.profit();
 		if (trade.profitable()) {
 			winningTrades++;
 			maxConsecutiveLosing = 0;
@@ -100,7 +103,6 @@ public final class Journal
 		} else {
 			maxConsecutiveLosing++;
 			grossLoss += trade.profit();
-			currentDrawdown += trade.profit();
 		}
 				
 		avgAmount += (trade.amount() - avgAmount) / closedTradesCount();
