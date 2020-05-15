@@ -42,6 +42,16 @@ public final class Console
 		}
 	}
 
+	public static int askInteger(String prompt, int min, int max)
+	{
+		while (true) {
+			int value = askInteger(prompt);
+			if (value >= min && value <= max)
+				return value;
+			Console.println("Insert a number between " + min + " and " + max + ".");
+		}
+	}
+
 	public static boolean askConfirm()
 	{
 		return askConfirm("Are you sure?", false);

@@ -6,7 +6,7 @@ import app.library.annotations.*;
 import app.library.indicators.*;
 import app.library.*;
 
-public class SampleStrategy implements ExecutableStrategy
+public class RSIStrategy implements ExecutableStrategy
 {
 	@StrategyParameter
 	private String market;
@@ -28,24 +28,31 @@ public class SampleStrategy implements ExecutableStrategy
 	@StrategyParameter("Trade amount (0-1)")
 	private double amount;
 
+	private double previousRSI = Double.NaN;
 	private RSI rsi;
 
 	@Override
 	public String getName()
 	{
-		return "Real RSI Strategy";
+		return "Real RSI Strategy v2";
 	}
 
 	@Override
 	public void process(Journal journal, Candle candle)
 	{
 		double value = rsi.getValue();
-		if (value > overbought) {
-			if (journal.availAmount() > amount)
-				journal.openTrade(amount);
-		} else if (value < oversold) {
+		if (Double.isNaN(previousRSI)) {
+			previousRSI = value;
+			return;
+		}
+		if (previousRSI >= overbought && value < overbought) { //crossunder
 			journal.closeAll();
 		}
+		if (previousRSI <= oversold && value > oversold) { //crossover
+			if (journal.availAmount() > amount)
+				journal.openTrade(amount);
+		}
+		previousRSI = value;
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public class SampleStrategy implements ExecutableStrategy
 	{
 	}
 
-	public SampleStrategy()
+	public RSIStrategy()
 	{
 	}
 

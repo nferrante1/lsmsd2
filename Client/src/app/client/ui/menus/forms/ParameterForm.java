@@ -5,11 +5,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import app.client.ui.Console;
-import app.common.net.entities.KVParameter;
 import app.common.net.entities.ParameterInfo;
 
 public class ParameterForm extends TextForm

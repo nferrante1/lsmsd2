@@ -1,12 +1,7 @@
 package app.test;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
-import app.datamodel.mongo.DBManager;
 import app.library.Candle;
 
 public class Test

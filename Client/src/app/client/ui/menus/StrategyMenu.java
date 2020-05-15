@@ -1,6 +1,7 @@
 package app.client.ui.menus;
 
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,10 @@ import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.animations.ProgressBar;
 import app.client.ui.animations.Spinner;
-import app.client.ui.menus.forms.CrossForm;
 import app.client.ui.menus.forms.MarketGranularityForm;
 import app.client.ui.menus.forms.ParameterForm;
 import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.StrategyFileForm;
-import app.client.ui.menus.forms.choices.CrossChoice;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
@@ -23,7 +22,6 @@ import app.common.net.entities.ParameterInfo;
 import app.common.net.entities.ProgressInfo;
 import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
-import app.common.net.entities.enums.ParameterType;
 
 public class StrategyMenu extends Menu
 {
@@ -87,8 +85,9 @@ public class StrategyMenu extends Menu
 		marketMenu.show();
 		MarketInfo market = marketMenu.getSelection();
 
-		response = new CrossForm(market.getBaseCurrency(), market.getQuoteCurrency()).show();
-		String inverse = response.get("Inverse Cross");
+		Console.println("1) " + market.getMarketDisplayName() + " (direct)");
+		Console.println("2) " + market.getInvertedMarketDisplayName() + " (inverted)");
+		boolean inverse = Console.askInteger("Select cross", 1, 2) == 2;
 		MarketGranularityForm granularityForm = new MarketGranularityForm(market.getGranularity());
 		granularityForm.setPrompt("");
 		response = granularityForm.show();
@@ -105,7 +104,7 @@ public class StrategyMenu extends Menu
 		Spinner finishSpinner = new Spinner("Generating Report...");
 		initSpinner.start();
 		sleep();
-		resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), CrossChoice.valueOf(inverse).isInverseCross(), granularity, parameters);
+		resMsg = Protocol.getInstance().runStrategy(strategy.getName(), market.getFullId(), inverse, granularity, parameters);
 		initSpinner.stopShowing();
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
@@ -118,7 +117,8 @@ public class StrategyMenu extends Menu
 			bar.setProgress((int)Math.round(progressInfo.getProgress() * 100));
 			if (progressInfo.getProgress() >= 1.0) {
 				bar.stopShowing();
-				finishSpinner.start();
+				if (finishSpinner.getState() == State.NEW)
+					finishSpinner.start();
 				sleep();
 			}
 			resMsg = Protocol.getInstance().getProgressInfo();
@@ -131,9 +131,9 @@ public class StrategyMenu extends Menu
 		}
 		ReportInfo report = resMsg.getEntity(ReportInfo.class);
 		Console.newLine();
-		Console.println("Showing report with initial amount 100.000,00");
+		Console.println("Showing report with initial amount 1,000.00");
 		Console.newLine();
-		ReportMenu.showReport(report, parameters, 100000.0);
+		ReportMenu.showReport(report, parameters, 1000.0);
 	}
 
 	private void handleDeleteStrategy(MenuEntry entry)

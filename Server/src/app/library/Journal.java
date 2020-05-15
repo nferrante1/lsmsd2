@@ -10,7 +10,7 @@ public final class Journal
 {
 	private List<Trade> trades = new ArrayList<Trade>();
 	private int granularity;
-	private double totalAmount;
+	private double investedAmount;
 	private Instant currentTime;
 	private Trade hodlTrade;
 	private double currentValue;
@@ -24,7 +24,7 @@ public final class Journal
 	private double avgAmount;
 	private double avgDuration;
 	private double currentDrawdown;
-	private double maxDrawdown = Double.MIN_VALUE;
+	private double maxDrawdown = Double.NaN; //FIXME: not correctly computed (sometimes gives 0 with a negative net profit)
 
 	public Journal(int granularity, Instant startTime, double initialValue)
 	{
@@ -42,18 +42,18 @@ public final class Journal
 
 	public Trade openTrade(double amount)
 	{
-		if (totalAmount + amount > 1.0)
+		if (amount > availAmount())
 			throw new IllegalArgumentException("Trying to trade too much (time: " + currentTime + ").");
 		Trade trade = new Trade(currentTime, amount, currentValue);
 		trades.add(trade);
 		totalTrades++;
-		totalAmount += amount;
+		investedAmount += amount;
 		return trade;
 	}
 
 	public Trade allIn()
 	{
-		return openTrade(1.0 - totalAmount);
+		return openTrade(availAmount());
 	}
 
 	public Trade closeTrade(Trade trade)
@@ -71,25 +71,49 @@ public final class Journal
 			winningTrades++;
 			maxConsecutiveLosing = 0;
 			grossProfit += trade.profit();
-			if (netProfit > maxProfit) {
+			if (netProfit > maxProfit)
 				currentDrawdown = 0;
-			}
 		} else {
 			maxConsecutiveLosing++;
 			grossLoss += trade.profit();
 			currentDrawdown += trade.profit();
 		}
-		if (currentDrawdown > maxDrawdown)
+		if (Double.isNaN(maxDrawdown) || currentDrawdown > maxDrawdown)
 			maxDrawdown = currentDrawdown;
 		avgAmount += (trade.amount() - avgAmount) / closedTradesCount();
 		avgDuration += (trade.duration() - avgDuration) / closedTradesCount();
-		totalAmount -= trade.amount();
+		investedAmount -= trade.amount();
 		return trade;
 	}
 
-	public List<Trade> getOpenTrades()
+	public List<Trade> openTrades()
 	{
 		return new ArrayList<Trade>(trades);
+	}
+
+	public void closeAll()
+	{
+		for (Trade trade: openTrades())
+			closeTrade(trade);
+	}
+
+	public Trade oldestTrade()
+	{
+		if (hasOpenTrades())
+			return null;
+		return trades.get(0);
+	}
+
+	public Trade getTrade(int index)
+	{
+		if (index >= openTradesCount())
+			return null;
+		return trades.get(index);
+	}
+
+	public boolean hasOpenTrades()
+	{
+		return openTradesCount() > 0;
 	}
 
 	public Trade lastOpenTrade()
@@ -112,13 +136,23 @@ public final class Journal
 		return totalTrades;
 	}
 
+	public double investedAmount()
+	{
+		return investedAmount;
+	}
+
+	public double availAmount()
+	{
+		return 1.0 - investedAmount();
+	}
+
 	public Report generateReport()
 	{
 		hodlTrade.close(currentTime, currentValue, granularity);
 		return new Report(netProfit, grossProfit, grossLoss,
 			hodlTrade.profit(), totalTrades, openTradesCount(),
 			winningTrades, maxConsecutiveLosing, avgAmount, avgDuration,
-			maxDrawdown);
+			Double.isNaN(maxDrawdown) ? 0.0 : maxDrawdown);
 	}
 
 	public Instant getCurrentTime()

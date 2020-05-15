@@ -2,11 +2,9 @@ package app.server.runner;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.bson.conversions.Bson;
 
@@ -20,7 +18,6 @@ import app.datamodel.StorablePojoCursor;
 import app.datamodel.pojos.DataRange;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
-import app.datamodel.pojos.Parameter;
 import app.datamodel.pojos.Report;
 import app.datamodel.pojos.StrategyRun;
 import app.library.Candle;
@@ -29,7 +26,6 @@ import app.library.Journal;
 import app.library.annotations.StrategyParameter;
 import app.library.indicators.ComputableIndicator;
 import app.library.indicators.Indicator;
-import app.server.managers.AggregationRunner;
 import app.server.runner.exceptions.StrategyRunException;
 
 public class StrategyRunner extends Thread
@@ -40,13 +36,12 @@ public class StrategyRunner extends Thread
 	private boolean inverseCross;
 	private Map<String, Object> parameters;
 	private Journal journal;
-	private double progress = 0.0;
+	private double progress = -1.0;
 	private Throwable exception;
 
 	public StrategyRunner(ExecutableStrategy strategy, Map<String, Object> parameters)
 	{
 		this.strategy = strategy;
-		parameters.put("inverseCross", false); //TODO: remove
 		this.parameters = parameters;
 		if (!parameters.containsKey("market"))
 			throw new IllegalArgumentException("You must specify a market.");
@@ -60,7 +55,7 @@ public class StrategyRunner extends Thread
 	@Override
 	public void run()
 	{
-		progress(0.01);
+		progress(-1.0);
 		try {
 			executeStrategy();
 		} catch (Throwable ex) {
@@ -91,7 +86,6 @@ public class StrategyRunner extends Thread
 			granularity = marketGranularity;
 		else if (granularity < marketGranularity || granularity % marketGranularity != 0)
 			throw new StrategyRunException("Invalid granularity.");
-		progress(0.05);
 		DataRangeManager drManager = new DataRangeManager();
 		DataRange range = drManager.get(marketId);
 		if (range.start == null)
@@ -108,7 +102,6 @@ public class StrategyRunner extends Thread
 		}
 		if (!range.end.isAfter(range.start))
 			throw new StrategyRunException("Invalid time range specified: endTime must be after startTime.");
-		progress(0.1);
 
 		parameters.put("startTime", range.start);
 		parameters.put("endTime", range.end);
@@ -130,12 +123,13 @@ public class StrategyRunner extends Thread
 			}
 			progress(0.1 + (i / fields.length) * 0.1);
 		}
-		progress(0.2);
+		if (!strategy.validate())
+			throw new StrategyRunException("Supplied an invalid parameter to the strategy.");
 
 		List<Indicator> indicators = strategy.indicators();
 		HashMap<String, List<Bson>> pipelines = getPipelines(indicators);
-		progress(0.3);
 
+		progress(0.0);
 		AggregationRunner aggregationRunner = new AggregationRunner(marketId, inverseCross, granularity, range);
 		PojoCursor<Candle> candleCursor = aggregationRunner.runAggregation(pipelines);
 		progress(0.8);
@@ -146,11 +140,10 @@ public class StrategyRunner extends Thread
 		firstCandle.setGranularity(granularity);
 
 		journal = new Journal(granularity, firstCandle.getOpenTime(), firstCandle.getOpen());
-		strategy.init(journal, parameters);
 		for(Indicator indicator: indicators)
 			indicator.compute(firstCandle);
+		strategy.init(journal);
 		strategy.process(journal, firstCandle);
-		progress(0.81);
 
 		long steps = (range.end.getEpochSecond() - range.start.getEpochSecond()) / (granularity * 60);
 		long curStep = 1;
@@ -162,7 +155,7 @@ public class StrategyRunner extends Thread
 			for(Indicator indicator: indicators)
 				indicator.compute(candle);
 			strategy.process(journal, candle);
-			progress(0.81 + (curStep / steps) * 0.19);
+			progress(0.8 + (curStep / steps) * 0.2);
 			curStep++;
 		}
 
@@ -208,10 +201,7 @@ public class StrategyRunner extends Thread
 
 	public StrategyRun generateStrategyRun()
 	{
-		List<Parameter<?>> params = new ArrayList<Parameter<?>>();
-		for (Map.Entry<String, Object> parameter: parameters.entrySet())
-			params.add(Parameter.getParameter(parameter.getKey(), parameter.getValue()));
 		Report report = journal.generateReport();
-		return new StrategyRun(params, report);
+		return new StrategyRun(parameters, report);
 	}
 }

@@ -480,16 +480,22 @@ public class RequestHandler extends Thread
 		runner.setPriority(MIN_PRIORITY);
 		runner.start();
 		while (runner.isAlive() && runner.getException() == null) {
-			lastReturnedProgress = runner.progress();
-			if (lastReturnedProgress > progress)
-				progress = lastReturnedProgress;
-			new ResponseMessage(new ProgressInfo(progress)).send(outputStream);
-			if (progress < 0.79)
-				progress += 0.01;
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
+			lastReturnedProgress = runner.progress();
+			if (lastReturnedProgress < 0)
+				continue;
+			if (lastReturnedProgress > progress)
+				progress = lastReturnedProgress;
+			// Not an estimation of the execution completion (there is no way
+			// to get the completion progress of an aggregation pipeline): this
+			// is just to create an animation on the client that says "hey! I'm
+			// still alive!".
+			new ResponseMessage(new ProgressInfo(progress)).send(outputStream);
+			if (progress < 0.75)
+				progress += 0.01*(0.75 - progress);
 		}
 		if (runner.getException() != null)
 			return new ResponseMessage("Error during the execution of the strategy: " + runner.getException().getMessage());
@@ -501,7 +507,7 @@ public class RequestHandler extends Thread
 		StrategyRun strategyRun = runner.generateStrategyRun();
 		strategyRun.setUser(authToken.getUsername());
 		strategy.addRun(strategyRun);
-		manager.save(strategy); //FIXME: need a custom codec for Parameter<?> class
+		manager.save(strategy);
 
 		Report report = strategyRun.getReport();
 		return new ResponseMessage(new ReportInfo(

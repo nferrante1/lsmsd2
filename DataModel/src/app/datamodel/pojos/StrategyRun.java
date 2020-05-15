@@ -1,6 +1,6 @@
 package app.datamodel.pojos;
 
-import java.util.List;
+import java.util.Map;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
@@ -15,7 +15,7 @@ public class StrategyRun extends StorablePojo
 	@PojoId
 	protected ObjectId id;
 	protected String user;
-	protected List<Parameter<?>> parameters;
+	protected Map<String, Object> parameters;
 	protected Report report;
 
 	public StrategyRun()
@@ -23,7 +23,7 @@ public class StrategyRun extends StorablePojo
 		super();
 	}
 
-	public StrategyRun(String user, List<Parameter<?>> parameters, Report report)
+	public StrategyRun(String user, Map<String, Object> parameters, Report report)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.id = new ObjectId();
@@ -32,7 +32,7 @@ public class StrategyRun extends StorablePojo
 		this.report = report;
 	}
 
-	public StrategyRun(List<Parameter<?>> parameters, Report report)
+	public StrategyRun(Map<String, Object> parameters, Report report)
 	{
 		this(null, parameters, report);
 	}
@@ -57,12 +57,12 @@ public class StrategyRun extends StorablePojo
 		updateField("user", user);
 	}
 
-	public List<Parameter<?>> getParameters()
+	public Map<String, Object> getParameters()
 	{
 		return this.parameters;
 	}
 
-	public void setParameters(List<Parameter<?>> parameters)
+	public void setParameters(Map<String, Object> parameters)
 	{
 		this.parameters = parameters;
 	}
@@ -78,11 +78,8 @@ public class StrategyRun extends StorablePojo
 	}
 
 	@BsonIgnore
-	public Parameter<?> getParameter(String name)
+	public Object getParameter(String name)
 	{
-		for (Parameter<?> parameter: parameters)
-			if (parameter.getName().equals(name))
-				return parameter;
-		return null;
+		return parameters.get(name);
 	}
 }

@@ -161,4 +161,14 @@ public class ReportInfo extends BaseReportInfo
 	{
 		this.deletable = deletable;
 	}
+
+	public long getClosedTrades()
+	{
+		return totalTrades - openTrades;
+	}
+
+	public long getLosingTrades()
+	{
+		return getClosedTrades() - winningTrades;
+	}
 }

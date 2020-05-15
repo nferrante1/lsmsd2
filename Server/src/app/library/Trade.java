@@ -11,11 +11,11 @@ public final class Trade
 	private Instant exitTime;
 	private long duration;
 
-	Trade(Instant entryTime, double amount, double entryValue)
+	Trade(Instant entryTime, double amount, double value)
 	{
 		this.entryTime = entryTime;
 		this.amount = amount;
-		this.entryValue = entryValue;
+		entryValue = value;
 	}
 
 	void close(Instant time, double value, int granularity)
@@ -64,7 +64,7 @@ public final class Trade
 	{
 		if (open())
 			return 0.0;
-		return (exitValue - entryValue) * amount;
+		return ((exitValue - entryValue) / entryValue) * amount;
 	}
 
 	public long duration()
