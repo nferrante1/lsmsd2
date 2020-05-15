@@ -538,7 +538,7 @@ public class RequestHandler extends Thread
 	    // TODO query da rivedere
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.findPaged(
-			marketId == null ? null : Filters.and(Filters.regex("runs.parameters.[0]", Pattern.compile(marketId, Pattern.CASE_INSENSITIVE)), Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE))),
+			marketId == null ? null : Filters.and(Filters.regex("runs.parameters.market", Pattern.compile(marketId, Pattern.CASE_INSENSITIVE)), Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE))),
 			Projections.fields(Projections.excludeId()),
 			Sorts.ascending("name"),
 			browseInfo.getPage(), browseInfo.getPerPage());
@@ -561,13 +561,12 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))));
-		// TODO query da rivedere
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))),null);
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
 		
 		Strategy strategy = cursor.next();
-		StrategyRun run = strategy.getRun(Integer.parseInt(reportId));
+		StrategyRun run = strategy.getRun(reportId);
 		Report report = run.getReport();
 		return new ResponseMessage( new ReportInfo(
 				reportId, strategy.getName(), run.getParameter("market").toString(), 
@@ -586,8 +585,7 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))));
-		// TODO query da rivedere
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null,Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))), null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();

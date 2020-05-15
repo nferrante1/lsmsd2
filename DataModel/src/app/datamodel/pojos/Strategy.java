@@ -37,11 +37,7 @@ public class Strategy extends StorablePojo
 	}
 	
 	public void deleteRun(String id) {
-		for(StrategyRun r : this.runs) {
-			if(r.getId().toHexString().equals(id)) {
-				runs.remove(r);
-			}
-		}
+		getRun(id).delete();
 	}
 
 	public void setName(String name)
@@ -54,7 +50,16 @@ public class Strategy extends StorablePojo
 	{
 		return runs.get(index);
 	}
-
+	
+	@BsonIgnore
+	public StrategyRun getRun(String id) {
+		for(StrategyRun r : this.runs) {
+			if(r.getId().toHexString().equals(id)) {
+				return r;
+			}
+		}
+		return null;
+	}
 	public String getName()
 	{
 		return this.name;
