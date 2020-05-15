@@ -561,7 +561,7 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Projections.elemMatch("runs", Filters.eq("id", reportId)));
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))));
 		// TODO query da rivedere
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
@@ -586,7 +586,7 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Projections.elemMatch("runs", Filters.eq("id", reportId)));
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))));
 		// TODO query da rivedere
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
