@@ -24,6 +24,7 @@ import com.mongodb.client.model.Sorts;
 import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
+import app.common.net.entities.BaseReportInfo;
 import app.common.net.entities.BrowseInfo;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
@@ -520,4 +521,81 @@ public class RequestHandler extends Thread
 			report.getAvgAmount(), report.getAvgDuration(),
 			report.getMaxDrawdown(), true));
 	}
+	
+	@RequestHandlerMethod
+	private ResponseMessage handleBrowseReports(RequestMessage reqMsg)
+	{
+		BrowseInfo browseInfo = reqMsg.getEntity(BrowseInfo.class);
+		List<KVParameter> parameters = reqMsg.getEntities(KVParameter.class);
+		String strategyName = null;
+		String marketId = null;
+		for (KVParameter parameter: parameters) {			
+			if (parameter.getName().equals("STRATEGYNAME"))
+				strategyName = parameter.getValue();
+			else if (parameter.getName().equals("MARKETID"))
+				marketId = parameter.getValue();
+		}
+	    // TODO query da rivedere
+		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.findPaged(
+			marketId == null ? null : Filters.and(Filters.regex("runs.parameters.[0]", Pattern.compile(marketId, Pattern.CASE_INSENSITIVE)), Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE))),
+			Projections.fields(Projections.excludeId()),
+			Sorts.ascending("name"),
+			browseInfo.getPage(), browseInfo.getPerPage());
+		
+		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
+		if (!cursor.hasNext())
+			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
+		
+		Strategy strategy = cursor.next();
+		List<StrategyRun> runs = strategy.getRuns();
+		for(StrategyRun r : runs) {
+			
+			reportInfos.add(new BaseReportInfo(r.getId().toHexString(), strategy.getName(),r.getParameter("market").toString(), r.getReport().getNetProfit()));
+		}
+		return new ResponseMessage(reportInfos.toArray(new BaseReportInfo[0]));
+	}
+	
+	@RequestHandlerMethod
+	private ResponseMessage handleViewReport(RequestMessage reqMsg)
+	{
+		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
+		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Projections.elemMatch("runs", Filters.eq("id", reportId)));
+		// TODO query da rivedere
+		if (!cursor.hasNext())
+			return new ResponseMessage("Details of report '" + reportId + "' not found.");
+		
+		Strategy strategy = cursor.next();
+		StrategyRun run = strategy.getRun(Integer.parseInt(reportId));
+		Report report = run.getReport();
+		return new ResponseMessage( new ReportInfo(
+				reportId, strategy.getName(), run.getParameter("market").toString(), 
+				report.getNetProfit(), run.getUser(), 
+				report.getGrossProfit(), report.getGrossLoss(), 
+				report.getHodlProfit(),report.getTotalTrades(), 
+				report.getOpenTrades(), report.getWinningTrades(), 
+				report.getMaxConsecutiveLosing(),report.getAvgAmount(), 
+				report.getAvgDuration(), report.getMaxDrawdown(), authToken.isAdmin() || authToken.getUsername().equals(run.getUser())));
+	
+		
+	}
+	
+	@RequestHandlerMethod
+	private ResponseMessage handleDeleteReport(RequestMessage reqMsg)
+	{
+		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
+		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Projections.elemMatch("runs", Filters.eq("id", reportId)));
+		// TODO query da rivedere
+		if(!cursor.hasNext())
+			return new ResponseMessage("Report '" + reportId + "' not found.");
+		Strategy strategy = cursor.next();
+		strategy.deleteRun(reportId);
+		manager.save(strategy);
+		
+		return new ResponseMessage();
+	}
+	
+	
 }

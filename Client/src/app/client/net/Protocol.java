@@ -202,13 +202,14 @@ public class Protocol implements AutoCloseable
 	}
 
 	public ResponseMessage browseReports(int page, int perPage, String strategyName, String marketId)
-	{
-		Entity browseReportInfo;
+	{	
+		List<Entity> entities = new ArrayList<Entity>();
+		entities.add(new BrowseInfo(page, perPage));
+		if (strategyName != null && !strategyName.isBlank())
+			entities.add(new KVParameter("STRATEGYNAME", strategyName));
 		if (marketId != null && !marketId.isBlank())
-			browseReportInfo = new BrowseReportInfo(strategyName, marketId, page, perPage);
-		else
-			browseReportInfo = new BrowseReportInfo(strategyName, page, perPage);
-		return sendRequest(ActionRequest.BROWSE_REPORTS, browseReportInfo);
+			entities.add(new KVParameter("MARKETID", marketId));
+		return sendRequest(ActionRequest.BROWSE_REPORTS, entities);
 	}
 
 	public ResponseMessage browseUsers()

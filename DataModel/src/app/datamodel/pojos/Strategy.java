@@ -35,6 +35,14 @@ public class Strategy extends StorablePojo
 	{
 		runs.add(run);
 	}
+	
+	public void deleteRun(String id) {
+		for(StrategyRun r : this.runs) {
+			if(r.getId().toHexString().equals(id)) {
+				runs.remove(r);
+			}
+		}
+	}
 
 	public void setName(String name)
 	{
