@@ -30,7 +30,7 @@ public class Market extends StorablePojo
 		this.id = id;
 		this.baseCurrency = base;
 		this.quoteCurrency = quote;
-		this.granularity = 5;
+		this.granularity = 60;
 	}
 
 	public String getId()

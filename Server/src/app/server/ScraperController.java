@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class ScraperController
 {
@@ -28,13 +29,14 @@ public class ScraperController
 			output.close();
 			socket.close();
 		} catch (IOException e) {
+			Logger.getLogger(ScraperController.class.getName()).warning(e.getMessage());
 		}
 	}
 
 	public static void stop()
 	{
 		try {
-			Socket socket = new Socket(address, port);
+			Socket socket = new Socket();
 			socket.connect(new InetSocketAddress(address, port), 3000);
 			DataInputStream input = new DataInputStream(socket.getInputStream());
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
@@ -48,6 +50,7 @@ public class ScraperController
 			output.close();
 			socket.close();
 		} catch (IOException e) {
+			Logger.getLogger(ScraperController.class.getName()).warning(e.getMessage());;
 		}
 	}
 

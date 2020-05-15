@@ -182,13 +182,12 @@ public final class Scraper
 				Socket socket = listeningSocket.accept();
 				InputStream is = socket.getInputStream();
 				DataInputStream dis = new DataInputStream(is);
-
 				String msg = dis.readUTF();
 				if (msg.equals("START"))
 					start();
 				else if (msg.equals("STOP"))
 					stop();
-
+				System.out.println("DONE");
 				OutputStream os = socket.getOutputStream();
 				DataOutputStream dos = new DataOutputStream(os);
 				dos.writeUTF("ACK");

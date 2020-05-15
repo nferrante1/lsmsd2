@@ -11,6 +11,7 @@ public final class Journal
 	private List<Trade> trades = new ArrayList<Trade>();
 	private int granularity;
 	private double investedAmount;
+	private double totalAmount;
 	private Instant currentTime;
 	private Trade hodlTrade;
 	private double currentValue;
@@ -24,7 +25,9 @@ public final class Journal
 	private double avgAmount;
 	private double avgDuration;
 	private double currentDrawdown;
-	private double maxDrawdown = Double.NaN; //FIXME: not correctly computed (sometimes gives 0 with a negative net profit)
+	private double maxAmount;
+	private double maxDrawdown; 
+	private final double MIN_TRADEABLE = 1e-8;
 
 	public Journal(int granularity, Instant startTime, double initialValue)
 	{
@@ -32,6 +35,8 @@ public final class Journal
 		currentTime = startTime;
 		currentValue = initialValue;
 		hodlTrade = new Trade(startTime, 1.0, initialValue);
+		totalAmount = 1.0;
+		maxAmount = 1.0;
 	}
 
 	public void setCurrentCandle(Candle candle)
@@ -39,9 +44,18 @@ public final class Journal
 		currentTime = candle.getCloseTime();
 		currentValue = candle.getClose();
 	}
+	
+	public double getTotalAmount(){
+		return roundDown(totalAmount);
+	}
+	
+	public boolean hasAmount() {
+		return (getTotalAmount() > 0);
+	}
 
 	public Trade openTrade(double amount)
 	{
+		amount = roundDown(amount);
 		if (amount > availAmount())
 			throw new IllegalArgumentException("Trying to trade too much (time: " + currentTime + ").");
 		Trade trade = new Trade(currentTime, amount, currentValue);
@@ -49,6 +63,10 @@ public final class Journal
 		totalTrades++;
 		investedAmount += amount;
 		return trade;
+	}
+	
+	public double roundDown(double amount) {
+		return amount - (amount % MIN_TRADEABLE);
 	}
 
 	public Trade allIn()
@@ -64,25 +82,32 @@ public final class Journal
 			throw new IllegalStateException("Trade already closed (time: " + currentTime + ").");
 		if (!trade.entryTime().isBefore(currentTime))
 			throw new IllegalArgumentException("Trying to open and close the same trade during a single day (time: " + currentTime + ").");
+		
 		trade.close(currentTime, currentValue, granularity);
 		trades.remove(trade);
 		netProfit += trade.profit();
+		totalAmount += trade.profit();
+		
+		if(totalAmount > maxAmount){
+			maxAmount = totalAmount;
+			currentDrawdown = 0;
+		}		
+		
 		if (trade.profitable()) {
 			winningTrades++;
 			maxConsecutiveLosing = 0;
 			grossProfit += trade.profit();
-			if (netProfit > maxProfit)
-				currentDrawdown = 0;
 		} else {
 			maxConsecutiveLosing++;
 			grossLoss += trade.profit();
 			currentDrawdown += trade.profit();
 		}
-		if (Double.isNaN(maxDrawdown) || currentDrawdown > maxDrawdown)
-			maxDrawdown = currentDrawdown;
+				
 		avgAmount += (trade.amount() - avgAmount) / closedTradesCount();
 		avgDuration += (trade.duration() - avgDuration) / closedTradesCount();
 		investedAmount -= trade.amount();
+		if(currentDrawdown < maxDrawdown)
+			maxDrawdown = currentDrawdown;
 		return trade;
 	}
 
@@ -143,7 +168,7 @@ public final class Journal
 
 	public double availAmount()
 	{
-		return 1.0 - investedAmount();
+		return roundDown(totalAmount - investedAmount());
 	}
 
 	public Report generateReport()
@@ -152,7 +177,7 @@ public final class Journal
 		return new Report(netProfit, grossProfit, grossLoss,
 			hodlTrade.profit(), totalTrades, openTradesCount(),
 			winningTrades, maxConsecutiveLosing, avgAmount, avgDuration,
-			Double.isNaN(maxDrawdown) ? 0.0 : maxDrawdown);
+			maxDrawdown);
 	}
 
 	public Instant getCurrentTime()
