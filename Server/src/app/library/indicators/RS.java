@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.library.Candle;
+import app.library.indicators.enums.InputPrice;
 
 public class RS extends Indicator
 {
 	private int period;
-	private RSMA rsmau;
-	private RSMA rsmad;
-	private double value;
+	private SMA smau;
+	private SMA smad;
+	private double value = Double.NaN;
 
 	public RS(int period)
 	{
-		this.rsmau = new RSMA(period, true);
-		this.rsmad = new RSMA(period, false);
+		this.smau = new SMA(period, InputPrice.INCREMENT);
+		this.smad = new SMA(period, InputPrice.DECREMENT);
 		this.period = period;
 	}
 
@@ -23,17 +24,21 @@ public class RS extends Indicator
 	public List<Indicator> depends()
 	{
 		List<Indicator> indicators = new ArrayList<Indicator>();
-		indicators.add(rsmau);
-		indicators.add(rsmad);
+		indicators.add(smau);
+		indicators.add(smad);
 		return indicators;
 	}
 
 	@Override
 	public void compute(Candle candle)
 	{
-		rsmau.compute(candle);
-		rsmad.compute(candle);
-		value = rsmau.getValue() / rsmad.getValue();
+		smau.compute(candle);
+		smad.compute(candle);
+		double smauV = smau.getValue(); 
+		double smadV = smad.getValue();
+		if(Double.isNaN(smadV) && Double.isNaN(smauV)) 
+			return;
+		value =  smauV / smadV;
 	}
 
 	public double getValue()
@@ -41,13 +46,13 @@ public class RS extends Indicator
 		return this.value;
 	}
 
-	public RSMA getRSMAu()
+	public SMA getSMAu()
 	{
-		return rsmau;
+		return smau;
 	}
 
-	public RSMA getRSMAd()
+	public SMA getSMAd()
 	{
-		return rsmad;
+		return smad;
 	}
 }

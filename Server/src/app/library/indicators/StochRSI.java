@@ -13,7 +13,7 @@ public class StochRSI extends Indicator
 	private int period;
 	private double previousRSI[];
 
-	private double value;
+	private double value = Double.NaN;
 
 	public StochRSI(int period, RSI rsi)
 	{

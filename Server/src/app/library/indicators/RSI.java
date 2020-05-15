@@ -7,7 +7,7 @@ import app.library.Candle;
 
 public class RSI extends Indicator
 {
-	private double value;
+	private double value = Double.NaN;
 	private int period;
 	private RS rs;
 
@@ -29,6 +29,8 @@ public class RSI extends Indicator
 	public void compute(Candle candle)
 	{
 		rs.compute(candle);
+		if(Double.isNaN(rs.getValue()))
+			return;
 		value = 100 - (100/(1+rs.getValue()));
 	}
 
