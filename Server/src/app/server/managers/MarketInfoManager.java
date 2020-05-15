@@ -41,11 +41,12 @@ public class MarketInfoManager extends PojoManager<MarketInfo>
 
 		stages.add(Aggregates.project(Projections.fields(
 			Projections.excludeId(),
+			Projections.computed("sourceName", "$_id"),
 			Projections.computed("marketId", "$markets.id"),
 			Projections.computed("baseCurrency", "$markets.baseCurrency"),
 			Projections.computed("quoteCurrency", "$markets.quoteCurrency"),
-			Projections.computed("sourceName", "$_id"),
-			Projections.computed("granularity", "$markets.granularity"), Projections.computed("selectable", "$markets.selectable"),
+			Projections.computed("granularity", "$markets.granularity"),
+			Projections.computed("selectable", "$markets.selectable"),
 			Projections.computed("sync", "$markets.sync")
 			)));
 		stages.add(Aggregates.sort(Sorts.ascending("sourceName", "marketId")));

@@ -120,4 +120,29 @@ public class Candle
 	{
 		this.openTime = openTime;
 	}
+
+	public double getRange()
+	{
+		return high - low;
+	}
+
+	public double getTrueRange()
+	{
+		return Math.max(high - low, Math.max(Math.abs(high - close), Math.abs(low - close)));
+	}
+
+	public double getTypicalPrice()
+	{
+		return (high + low + close) / 3;
+	}
+
+	public double getIncrement()
+	{
+		return Math.max(close - open, 0);
+	}
+
+	public double getDecrement()
+	{
+		return Math.max(open - close, 0);
+	}
 }
