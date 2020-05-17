@@ -535,13 +535,12 @@ public class RequestHandler extends Thread
 			else if (parameter.getName().equals("MARKETID"))
 				marketId = parameter.getValue();
 		}
-	    // TODO query da rivedere
+		
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.findPaged(
-			marketId == null ? null : Filters.and(Filters.regex("runs.parameters.market", Pattern.compile(marketId, Pattern.CASE_INSENSITIVE)), Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE))),
-			Projections.fields(Projections.excludeId()),
-			Sorts.ascending("name"),
-			browseInfo.getPage(), browseInfo.getPerPage());
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(
+			marketId == null ? null : Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE)),
+			Projections.fields(Projections.elemMatch("runs.parameters.market", Filters.eq("value", marketId)), Projections.slice("runs", browseInfo.getPage() , browseInfo.getPerPage())),
+			Sorts.ascending("name"));
 		
 		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
 		if (!cursor.hasNext())
