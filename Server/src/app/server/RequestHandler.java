@@ -552,16 +552,7 @@ public class RequestHandler extends Thread
 					    new Document("$eq", Arrays.asList("$$run.parameters.market", "BINANCE:ADABNB")))))), 
 					    new Document("$project", 
 					    new Document("runs", 
-					    new Document("$slice", Arrays.asList("$runs", browseInfo.getPage(), browseInfo.getPerPage()))))));
-				
-				
-			/*	
-			marketId == null ? null : Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE)),
-			Projections.fields(Projections.elemMatch("runs", Filters.eq("parameters.market", marketId))),
-			//Projections.slice("runs", browseInfo.getPage() , browseInfo.getPerPage())
-			Sorts.ascending("name"));*/
-		
-		
+					    new Document("$slice", Arrays.asList("$runs", (browseInfo.getPage() -1)*browseInfo.getPerPage() , browseInfo.getPerPage()))))));		
 		
 		
 		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
