@@ -17,9 +17,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -540,11 +542,27 @@ public class RequestHandler extends Thread
 		}
 		
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.aggregate(
+				Arrays.asList(new Document("$project", 
+					    new Document("runs", 
+					    new Document("$filter", 
+					    new Document("input", "$runs")
+					                    .append("as", "run")
+					                    .append("cond", 
+					    new Document("$eq", Arrays.asList("$$run.parameters.market", "BINANCE:ADABNB")))))), 
+					    new Document("$project", 
+					    new Document("runs", 
+					    new Document("$slice", Arrays.asList("$runs", browseInfo.getPage(), browseInfo.getPerPage()))))));
+				
+				
+			/*	
 			marketId == null ? null : Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE)),
 			Projections.fields(Projections.elemMatch("runs", Filters.eq("parameters.market", marketId))),
 			//Projections.slice("runs", browseInfo.getPage() , browseInfo.getPerPage())
-			Sorts.ascending("name"));
+			Sorts.ascending("name"));*/
+		
+		
+		
 		
 		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
 		if (!cursor.hasNext())
