@@ -57,7 +57,7 @@ public class ReportListMenu extends PagedMenu
 
 		ReportInfo info = resMsg.getEntity(ReportInfo.class);
 		List<KVParameter> parameters = resMsg.getEntities(KVParameter.class);
-		new ReportMenu(info, parameters);
+		new ReportMenu(info, parameters).show();
 
 	}
 }

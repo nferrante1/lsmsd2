@@ -10,11 +10,14 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.client.model.Filters;
@@ -539,7 +542,8 @@ public class RequestHandler extends Thread
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(
 			marketId == null ? null : Filters.regex("name", Pattern.compile(strategyName, Pattern.CASE_INSENSITIVE)),
-			Projections.fields(Projections.elemMatch("runs.parameters.market", Filters.eq("value", marketId)), Projections.slice("runs", browseInfo.getPage() , browseInfo.getPerPage())),
+			Projections.fields(Projections.elemMatch("runs", Filters.eq("parameters.market", marketId))),
+			//Projections.slice("runs", browseInfo.getPage() , browseInfo.getPerPage())
 			Sorts.ascending("name"));
 		
 		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
@@ -560,7 +564,7 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))),null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")),null);
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
 		
@@ -584,7 +588,7 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null,Projections.fields(Projections.elemMatch("runs", Filters.eq("id", reportId))), null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null,Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")), null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();

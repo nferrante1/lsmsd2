@@ -60,7 +60,7 @@ public class StrategyMenu extends Menu
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
 		String market = marketMenu.getSelection().getFullId();
-		new ReportListMenu((StrategyInfo)entry.getHandlerData(), market).show();
+		new ReportListMenu(this.strategy, market).show();
 	}
 
 	private void sleep()
