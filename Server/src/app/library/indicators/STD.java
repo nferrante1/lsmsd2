@@ -16,29 +16,16 @@ import com.mongodb.client.model.Projections;
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
-public class SMA extends Indicator implements ComputableIndicator {
-
+public class STD extends Indicator implements ComputableIndicator {
 	private int period;
 	private InputPrice inputPrice;
 	private double value = Double.NaN;
 	private long elapsedPeriods;
-	public SMA(int period, InputPrice input) {
-		if(period <= 0)
-			throw new IllegalArgumentException("Period must be a positive number");
-		this.period = period;
-		if(input == null)
-			throw new IllegalArgumentException("Input price must not be null");
-		this.inputPrice = input;		
-	}
-	
-	public SMA(int period) {
-		this(period, InputPrice.CLOSE);
-	}
 	
 	@Override
 	public String getName()
 	{
-		return "SMA" + inputPrice.getShortName() + period;
+		return "STD" + inputPrice.getShortName() + period;
 	}
 
 	@Override
@@ -107,9 +94,12 @@ public class SMA extends Indicator implements ComputableIndicator {
 					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 				.append("as", "z")
 				.append("in",
-					new Document("value", new Document("$avg", new Document("$slice", Arrays.asList("$candles", 
+					new Document("value", new Document("$stdDevPop", new Document("$slice", Arrays.asList("$candles", 
 				                            new Document("$max", Arrays.asList(0L, 
-					                                    new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
+					                                    new Document("$subtract", Arrays.asList("$$z", period)))), period))
+							))
+					)
+				))));
 		return stages;
 	}
 

@@ -59,7 +59,10 @@ public class StrategyMenu extends Menu
 		HashMap<String, String> response = new SearchForm("Market Name").show();
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
 		marketMenu.show();
-		String market = marketMenu.getSelection().getFullId();
+		MarketInfo m = marketMenu.getSelection();
+		if(m == null)
+			return;
+		String market = m.getFullId();
 		new ReportListMenu(this.strategy, market).show();
 	}
 
