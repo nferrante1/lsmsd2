@@ -18,16 +18,22 @@ The server will use the \standout{read preference mode} \code{``nearest''},
 meaning that it will read from the server with the lowest network latency. It is
 in fact acceptable that some data that the server reads may not be up to date.
 
-To ensure a good load balancing between cluster's servers the
-\code{Market\-Data} collection is \standout{sharded}, because it is the biggest
-one and it is often read when running a strategy.
+To ensure a good load balancing between cluster's servers the \code{AuthTokens}
+and \code{MarketData} collections are \standout{sharded}. The former is queried
+every time the server receives a request; The latter is the biggest collection
+and it's intensively accessed when a strategy is executed.
 
-The \code{market} field is the \standout{shard key} since it has a good
-granularity (so \mongodb{} can split the documents into a large number of
-chunks). The field is hash-indexed, thus the chunks will be randomly distributed
-across the configured servers. Moreover this field will be always present in all
-queries to the database that get market data, making the \mongodb's router to
-route each query directly to the machine containing the requested data.
+The \code{\_id} field is the \standout{shard key} for the \code{AuthTokens}
+collection. Since the values are random strings, the tokens will be sharded
+randomly between the replica sets.
+
+The \code{market} field is the \standout{shard key} for the \code{MarketData}
+collection since it has a good granularity (so \mongodb{} can split the
+documents into a large number of chunks). The field is hash-indexed, thus the
+chunks will be randomly distributed across the configured servers. Moreover this
+field will be always present in all queries to the database that get market
+data, making the \mongodb's router to route each query directly to the machine
+containing the requested data.
 
 Note that, during the development of the application, we may decide to amend the
 above architecture if other setups allows for better performances.

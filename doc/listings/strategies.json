@@ -39,7 +39,9 @@
 			"maxConsecutiveLosing": 19,
 			"avgAmount": 0.05,
 			"avgDuration": 22.334,
-			"maxDrawdown": 0.56
+			"maxDrawdown": 0.56,
+			"aggregationTime": 328,
+			"executionTime": 8
 		}
 	},
 	...

@@ -28,19 +28,23 @@ selected strategy. After that, the application will apply the defined strategy
 to all the historical data available for that market. At the end, the
 application shows a report with the following informations:
 \begin{itemize}
+	\item The total amount at the end of the execution;
 	\item The net profit or loss;
 	\item The gross profit \idest{the sum of the profits from all winning
 		trades} and the gross loss;
 	\item The Buy and Hold return (for comparison purpose);
 	\item The total number of trades concluded by the strategy;
-	\item The remaining open trades at the end of evaluation;
-	\item The average amount of money involved in trades;
-	\item The average duration of a trade (in terms of trading days);
+	\item The remaining open trades at the end of execution;
 	\item The percent of winning (profitable) and losing trades;
 	\item The maximum number of consecutive losing trades;
+	\item The average amount of money involved in trades;
+	\item The average duration of a trade (in terms of trading days);
 	\item The maximum drawdown \idest{the maximum observed loss from a peak
 		to a trough in the total invested amount during the execution of
-		a strategy}.
+		a strategy};
+	\item The execution time, divided in the time needed to execute the
+		aggregation defined in~\secref{subsec:marketdata-aggregations}
+		and the time needed by the strategy to process all the candles.
 \end{itemize}
 
 For the development of strategies, the application provides a library for easily
