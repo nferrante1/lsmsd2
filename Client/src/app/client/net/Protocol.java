@@ -331,9 +331,9 @@ public class Protocol implements AutoCloseable
 		return resMsg;
 	}
 
-	public ResponseMessage addStrategy(String className, String fileName) throws IOException
+	public ResponseMessage addStrategy(String fileName) throws IOException
 	{
-		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("CLASSNAME", className), new FileContent(fileName));
+		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("CLASSNAME", fileName.substring(0, fileName.lastIndexOf("."))), new FileContent(fileName));
 	}
 
 	public ResponseMessage downloadStrategy(String strategyName)

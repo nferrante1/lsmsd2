@@ -344,7 +344,7 @@ public class RequestHandler extends Thread
 			strategyFile.delete();
 			return new ResponseMessage("A strategy with this name already exists.");
 		}
-		return new ResponseMessage();
+		return new ResponseMessage(new StrategyInfo(strategy.getName(), strategy.getAuthor(), true));
 	}
 
 	@RequestHandlerMethod

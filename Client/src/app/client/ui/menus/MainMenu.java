@@ -12,6 +12,7 @@ import app.client.ui.menus.forms.SearchForm;
 import app.client.ui.menus.forms.StrategyFileForm;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
+import app.common.net.entities.StrategyInfo;
 
 public class MainMenu extends Menu
 {
@@ -44,23 +45,20 @@ public class MainMenu extends Menu
 	private void handleAddStrategy(MenuEntry entry)
 	{
 		HashMap<String, String> response = new StrategyFileForm("Insert a strategy file to upload (the file must be .java)", true).show();
+		ResponseMessage resMsg;
 		try {
-			File file = new File(response.get("File"));
-			if(file.isFile() || file.getName().endsWith(".java")) {
-				String className = file.getName().replace(".java", "");
-				ResponseMessage resMsg = Protocol.getInstance().addStrategy(className, response.get("File"));
-				if (!resMsg.isSuccess()) {
-					Console.println(resMsg.getErrorMsg());
-					return;
-				}
-				Console.println("Strategy successfully added.");
-			}
-			else {
-				Console.println("You must select a file .java");
-			}
+			resMsg = Protocol.getInstance().addStrategy(response.get("File"));
 		} catch (IOException e) {
 			Console.println("Can not read file '" + response.get("File") + "': " + e.getMessage());
+			return;
 		}
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		Console.println("Strategy successfully added.");
+		Console.newLine();
+		new StrategyMenu(resMsg.getEntity(StrategyInfo.class)).show();
 
 	}
 
