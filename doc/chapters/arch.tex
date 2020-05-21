@@ -1,11 +1,13 @@
 \chapter{Architecture}\label{ch:arch}
 
-The application is compound by three components:
+The application is compound of three components:
 \begin{enumerate*}[label=]
 	\item Scraper;
 	\item Server;
 	\item Client.
 \end{enumerate*}
+A library (DataModel) is used by the Server and the Scraper to access the
+database. Server and Client exchange messages using a Common library.
 
 \begin{figure}[p]
 	\includegraphics[width=\textwidth]{arch}
