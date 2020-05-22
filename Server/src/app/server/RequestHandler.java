@@ -45,6 +45,7 @@ import app.common.net.entities.enums.ParameterType;
 import app.datamodel.AuthTokenManager;
 import app.datamodel.DataSourceManager;
 import app.datamodel.MarketDataManager;
+import app.datamodel.PojoCursor;
 import app.datamodel.StorablePojoCursor;
 import app.datamodel.StorablePojoManager;
 import app.datamodel.pojos.AuthToken;
@@ -57,6 +58,7 @@ import app.datamodel.pojos.User;
 import app.library.ExecutableStrategy;
 import app.library.annotations.StrategyParameter;
 import app.server.annotations.RequestHandlerMethod;
+import app.server.managers.BaseReportInfoManager;
 import app.server.managers.MarketInfoManager;
 import app.server.runner.StrategyFile;
 import app.server.runner.StrategyRunner;
@@ -541,25 +543,10 @@ public class RequestHandler extends Thread
 				marketId = parameter.getValue();
 		}
 
-		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.aggregate(
-				Arrays.asList(new Document("$project", //TODO: add sort, use Aggregates.* and move to a manager
-					new Document("runs",
-					new Document("$filter",
-					new Document("input", "$runs").append("as", "run").append("cond",
-					new Document("$eq", Arrays.asList("$$run.parameters.market", "BINANCE:ADABNB")))))),
-					new Document("$project",
-					new Document("runs",
-					new Document("$slice", Arrays.asList("$runs", (browseInfo.getPage() -1)*browseInfo.getPerPage() , browseInfo.getPerPage()))))));
-
-		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
-		if (!cursor.hasNext())
-			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
-
-		Strategy strategy = cursor.next();
-		List<StrategyRun> runs = strategy.getRuns();
-		for(StrategyRun r : runs)
-			reportInfos.add(new BaseReportInfo(r.getId().toHexString(), strategy.getName(),r.getParameter("market").toString(), r.getReport().getNetProfit()));
+		BaseReportInfoManager reportManager = new BaseReportInfoManager();
+		PojoCursor<BaseReportInfo> cursor = reportManager.getBaseReportInfo(strategyName, marketId, browseInfo.getPage(), browseInfo.getPerPage());
+		
+		List<BaseReportInfo> reportInfos = cursor.toList();
 		return new ResponseMessage(reportInfos.toArray(new BaseReportInfo[0]));
 	}
 
