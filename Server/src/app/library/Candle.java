@@ -66,6 +66,8 @@ public class Candle
 	@BsonIgnore
 	public double getTa(String name)
 	{
+		if (!ta.containsKey(name) || ta.get(name) == null)
+			return Double.NaN;
 		return ta.get(name);
 	}
 
