@@ -11,6 +11,7 @@ import org.bson.conversions.Bson;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 
 import app.library.Candle;
@@ -58,17 +59,41 @@ public class SMA extends Indicator implements ComputableIndicator
 		case INCREMENT:
 			projections.add(Projections.include("c","o"));
 			push.append("o", "$o");
-			mapDoc = new Document("$max", Arrays.asList(
-					new Document("$subtract",
-							Arrays.asList("$$candle.c", "$$candle.o")), 0L));
+			mapDoc = new Document ("$cond", 
+					new Document("if", 
+							new Document("$eq", 
+								Arrays.asList(new Document("$max", 
+								Arrays.asList(
+									new Document("$subtract",
+									Arrays.asList("$$candle.c", "$$candle.o"))
+									, 0L)
+								), 0L)))
+							.append("then", new BsonNull())
+							.append("else",new Document("$max", Arrays.asList(
+							new Document("$subtract",
+									Arrays.asList("$$candle.c", "$$candle.o")), 0L)))
+											
+					);
 			break;
 		case DECREMENT:
 			projections.add(Projections.include("c","o"));
 			push.append("o", "$o");
-			mapDoc = new Document("$max", Arrays.asList(
-					new Document("$subtract",
-							Arrays.asList("$$candle.o", "$$candle.c")), 0L));
-			break;
+			
+			mapDoc = new Document ("$cond", 
+					new Document("if", 
+							new Document("$eq", 
+								Arrays.asList(new Document("$max", 
+								Arrays.asList(
+									new Document("$subtract",
+									Arrays.asList("$$candle.o", "$$candle.c"))
+									, 0L)
+								), 0L)))
+							.append("then", new BsonNull())
+							.append("else",new Document("$max", Arrays.asList(
+							new Document("$subtract",
+									Arrays.asList("$$candle.o", "$$candle.c")), 0L)))
+											
+					);break;
 		case TRUE_RANGE:
 			projections.add(Projections.include("h","l","c"));
 			push.append("l", "$l");
