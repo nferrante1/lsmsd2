@@ -52,9 +52,46 @@ public class ResponseMessage extends Message
 		if (!isSuccess())
 			return getEntityCount() == 0;
 		switch (actionRequest) {
-		// TODO: check validity
-		default:
+		case ADD_STRATEGY:
 			return true;
+		case ADD_USER:
+			return true;
+		case BROWSE_DATA_SOURCES:
+			return true;
+		case BROWSE_MARKETS:
+			return true;
+		case BROWSE_REPORTS:
+			return true;
+		case BROWSE_STRATEGIES:
+			return true;
+		case BROWSE_USERS:
+			return true;
+		case DELETE_DATA:
+			return true;
+		case DELETE_REPORT:
+			return true;
+		case DELETE_STRATEGY:
+			return true;
+		case DELETE_USER:
+			return true;
+		case DOWNLOAD_STRATEGY:
+			return true;
+		case EDIT_DATA_SOURCE:
+			return true;
+		case EDIT_MARKET:
+			return true;
+		case GET_STRATEGY_PARAMETERS:
+			return true;
+		case LOGIN:
+			return true;
+		case LOGOUT:
+			return true;
+		case RUN_STRATEGY:
+			return true;
+		case VIEW_REPORT:
+			return true;
+		default:
+			return false;
 		}
 	}
 
