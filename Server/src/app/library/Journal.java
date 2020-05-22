@@ -26,8 +26,9 @@ public final class Journal
 	private double avgDuration;
 	private double currentDrawdown;
 	private double maxAmount;
-	private double maxDrawdown; 
+	private double maxDrawdown;
 	private final double MIN_TRADEABLE = 1e-8;
+	private boolean finish;
 
 	public Journal(int granularity, Instant startTime, double initialValue)
 	{
@@ -44,12 +45,14 @@ public final class Journal
 		currentTime = candle.getCloseTime();
 		currentValue = candle.getClose();
 	}
-	
-	public double getTotalAmount(){
+
+	public double getTotalAmount()
+	{
 		return roundDown(totalAmount);
 	}
-	
-	public boolean hasAmount() {
+
+	public boolean hasAmount()
+	{
 		return (getTotalAmount() > 0);
 	}
 
@@ -64,14 +67,20 @@ public final class Journal
 		investedAmount += amount;
 		return trade;
 	}
-	
-	public double roundDown(double amount) {
+
+	public double roundDown(double amount)
+	{
 		return amount - (amount % MIN_TRADEABLE);
 	}
 
 	public Trade allIn()
 	{
 		return openTrade(availAmount());
+	}
+
+	public void finish()
+	{
+		finish = true;
 	}
 
 	public Trade closeTrade(Trade trade)
@@ -82,19 +91,19 @@ public final class Journal
 			throw new IllegalArgumentException("Trade not registered (time: " + currentTime + ").");
 		if (trade.closed())
 			throw new IllegalStateException("Trade already closed (time: " + currentTime + ").");
-		if (!trade.entryTime().isBefore(currentTime))
+		if (!finish && !trade.entryTime().isBefore(currentTime))
 			throw new IllegalArgumentException("Trying to open and close the same trade during a single day (time: " + currentTime + ").");
-		
+
 		trade.close(currentTime, currentValue, granularity);
 		trades.remove(trade);
 		netProfit += trade.profit();
 		totalAmount += trade.profit();
-		
+
 		if(totalAmount > maxAmount){
 			maxAmount = totalAmount;
 			currentDrawdown = 0;
-		}		
-		
+		}
+
 		currentDrawdown += trade.profit();
 		if (trade.profitable()) {
 			winningTrades++;
@@ -104,7 +113,7 @@ public final class Journal
 			maxConsecutiveLosing++;
 			grossLoss += trade.profit();
 		}
-				
+
 		avgAmount += (trade.amount() - avgAmount) / closedTradesCount();
 		avgDuration += (trade.duration() - avgDuration) / closedTradesCount();
 		investedAmount -= trade.amount();
