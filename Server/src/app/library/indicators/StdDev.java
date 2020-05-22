@@ -23,19 +23,19 @@ public class StdDev extends Indicator implements ComputableIndicator
 	private double value = Double.NaN;
 	private long elapsedPeriods;
 
-	
-	public StdDev(int period, InputPrice inputPrice) {
+	public StdDev(int period, InputPrice inputPrice)
+	{
 		this.period = period;
-		if(inputPrice == InputPrice.DECREMENT || inputPrice == InputPrice.INCREMENT ) 
-			throw new IllegalArgumentException("Cannot compute StdDev on Increment/Decrement");
+		if(inputPrice == InputPrice.DECREMENT || inputPrice == InputPrice.INCREMENT)
+			throw new IllegalArgumentException("Can not compute StdDev on price increment/decrement.");
 		this.inputPrice = inputPrice;
 	};
-	
-	public StdDev(int period) {
+
+	public StdDev(int period)
+	{
 		this(period, InputPrice.CLOSE);
 	}
-	
-	
+
 	@Override
 	public String getName()
 	{
@@ -59,8 +59,8 @@ public class StdDev extends Indicator implements ComputableIndicator
 				push.append("l", "$l");
 				push.append("h", "$h");
 				mapDoc = new Document("$max", Arrays.asList(new Document("$subtract",
-						Arrays.asList("$h","$l")), 
-						new Document("$abs", 
+						Arrays.asList("$h","$l")),
+						new Document("$abs",
 							new Document("$subtract",
 									Arrays.asList("$h", "$c")
 								)
@@ -117,5 +117,4 @@ public class StdDev extends Indicator implements ComputableIndicator
 	{
 		return value;
 	}
-
 }

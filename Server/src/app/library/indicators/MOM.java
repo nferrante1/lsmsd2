@@ -14,7 +14,6 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Projections;
 
 import app.library.Candle;
-import app.library.indicators.enums.InputPrice;
 
 public class MOM extends Indicator implements ComputableIndicator
 {
@@ -74,8 +73,9 @@ public class MOM extends Indicator implements ComputableIndicator
 		if(elapsedPeriods >= period)
 			value = candle.getTa(getName());
 	}
-	
-	public double getValue() {
+
+	public double getValue()
+	{
 		return value;
 	}
 

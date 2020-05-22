@@ -72,12 +72,12 @@ public class EMA extends Indicator implements ComputableIndicator
 
 	@Override
 	public void compute(Candle candle)
-	{	
+	{
 		++elapsedPeriods;
 		if(elapsedPeriods >= period)
 			value = candle.getTa(getName());
 	}
-	
+
 	public double getValue()
 	{
 		return value;

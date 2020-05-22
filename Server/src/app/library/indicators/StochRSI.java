@@ -36,17 +36,17 @@ public class StochRSI extends Indicator
 		previousK = new double[kPeriod];
 		Arrays.fill(previousK, Double.NaN);
 	}
-	
+
 	public StochRSI(int period, int stochPeriod,int rsiPeriod)
 	{
 		this(period, stochPeriod, stochPeriod, new RSI(rsiPeriod));
 	}
-	
+
 	public StochRSI(int period, int stochPeriod, int kPeriod, int rsiPeriod)
 	{
 		this(period, stochPeriod, kPeriod, new RSI(rsiPeriod));
 	}
-	
+
 	public StochRSI(int period, int rsiPeriod)
 	{
 		this(period, period, period, new RSI(rsiPeriod));
@@ -71,23 +71,23 @@ public class StochRSI extends Indicator
 		rsi.compute(candle);
 		previousRSI[index] = rsi.getValue();
 		double minRSI = Double.NaN;
-		
+
 		for (int i = 0; i < previousRSI.length; i++)
 			if (!Double.isNaN(previousRSI[i]) && (Double.isNaN(minRSI) || previousRSI[i] < minRSI))
 				minRSI = previousRSI[i];
 		double maxRSI = Double.NaN;
-		
+
 		for (int i = 0; i < previousRSI.length; i++)
 			if (!Double.isNaN(previousRSI[i]) && (Double.isNaN(minRSI) || previousRSI[i] > maxRSI))
 				maxRSI = previousRSI[i];
 		if(!Double.isNaN(minRSI) && !Double.isNaN(maxRSI))
 			value = ((previousRSI[index] - minRSI) / (maxRSI - minRSI)) * 100;
-		
+
 		index = (index + 1) % period;
-		
+
 		if(Double.isNaN(value))
 			return;
-		
+
 		previousStochRSI[stochIndex] = value;
 		stochIndex = (stochIndex + 1) % stochPeriod;
 		double sum = 0.0;
@@ -98,9 +98,7 @@ public class StochRSI extends Indicator
 				count++;
 			}
 		KValue  = sum / count;
-		
-		
-		
+
 		previousK[kIndex] = KValue;
 		kIndex = (kIndex + 1) % kPeriod;
 		sum = 0.0;
@@ -112,7 +110,7 @@ public class StochRSI extends Indicator
 			}
 		DValue = sum / count;
 	}
-	
+
 	public int getPeriod()
 	{
 		return period;

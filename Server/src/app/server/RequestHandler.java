@@ -10,18 +10,15 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -545,7 +542,7 @@ public class RequestHandler extends Thread
 
 		BaseReportInfoManager reportManager = new BaseReportInfoManager();
 		PojoCursor<BaseReportInfo> cursor = reportManager.getBaseReportInfo(strategyName, marketId, browseInfo.getPage(), browseInfo.getPerPage());
-		
+
 		List<BaseReportInfo> reportInfos = cursor.toList();
 		return new ResponseMessage(reportInfos.toArray(new BaseReportInfo[0]));
 	}
@@ -558,7 +555,7 @@ public class RequestHandler extends Thread
 		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")),null);
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
-		
+
 		Strategy strategy = cursor.next();
 		StrategyRun run = strategy.getRun(reportId);
 		Report report = run.getReport();
@@ -570,10 +567,8 @@ public class RequestHandler extends Thread
 				report.getOpenTrades(), report.getWinningTrades(), 
 				report.getMaxConsecutiveLosing(),report.getAvgAmount(), 
 				report.getAvgDuration(), report.getMaxDrawdown(), authToken.isAdmin() || authToken.getUsername().equals(run.getUser())));
-	
-		
 	}
-	
+
 	@RequestHandlerMethod
 	private ResponseMessage handleDeleteReport(RequestMessage reqMsg)
 	{
@@ -585,9 +580,8 @@ public class RequestHandler extends Thread
 		Strategy strategy = cursor.next();
 		strategy.deleteRun(reportId);
 		manager.save(strategy);
-		
+
 		return new ResponseMessage();
 	}
-	
-	
+
 }

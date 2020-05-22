@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import app.library.annotations.*;
+import app.library.indicators.enums.*;
 import app.library.indicators.*;
 import app.library.*;
 

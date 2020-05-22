@@ -11,7 +11,6 @@ import org.bson.conversions.Bson;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 
 import app.library.Candle;
@@ -23,6 +22,7 @@ public class SMA extends Indicator implements ComputableIndicator
 	private InputPrice inputPrice;
 	private double value = Double.NaN;
 	private long elapsedPeriods;
+
 	public SMA(int period, InputPrice input)
 	{
 		if(period <= 0)
@@ -59,10 +59,10 @@ public class SMA extends Indicator implements ComputableIndicator
 		case INCREMENT:
 			projections.add(Projections.include("c","o"));
 			push.append("o", "$o");
-			mapDoc = new Document ("$cond", 
-					new Document("if", 
-							new Document("$eq", 
-								Arrays.asList(new Document("$max", 
+			mapDoc = new Document ("$cond",
+					new Document("if",
+							new Document("$eq",
+								Arrays.asList(new Document("$max",
 								Arrays.asList(
 									new Document("$subtract",
 									Arrays.asList("$$candle.c", "$$candle.o"))
@@ -72,17 +72,15 @@ public class SMA extends Indicator implements ComputableIndicator
 							.append("else",new Document("$max", Arrays.asList(
 							new Document("$subtract",
 									Arrays.asList("$$candle.c", "$$candle.o")), 0L)))
-											
 					);
 			break;
 		case DECREMENT:
 			projections.add(Projections.include("c","o"));
 			push.append("o", "$o");
-			
-			mapDoc = new Document ("$cond", 
-					new Document("if", 
-							new Document("$eq", 
-								Arrays.asList(new Document("$max", 
+			mapDoc = new Document ("$cond",
+					new Document("if",
+							new Document("$eq",
+								Arrays.asList(new Document("$max",
 								Arrays.asList(
 									new Document("$subtract",
 									Arrays.asList("$$candle.o", "$$candle.c"))
@@ -91,9 +89,8 @@ public class SMA extends Indicator implements ComputableIndicator
 							.append("then", new BsonNull())
 							.append("else",new Document("$max", Arrays.asList(
 							new Document("$subtract",
-									Arrays.asList("$$candle.o", "$$candle.c")), 0L)))
-											
-					);break;
+									Arrays.asList("$$candle.o", "$$candle.c")), 0L))));
+			break;
 		case TRUE_RANGE:
 			projections.add(Projections.include("h","l","c"));
 			push.append("l", "$l");
@@ -103,9 +100,7 @@ public class SMA extends Indicator implements ComputableIndicator
 					new Document("$abs",
 						new Document("$subtract",
 								Arrays.asList("$h", "$c")
-							)
-						)
-					, new Document("$abs",
+							)), new Document("$abs",
 						new Document("$subtract",
 							Arrays.asList("$l", "$c")
 							)
@@ -117,7 +112,7 @@ public class SMA extends Indicator implements ComputableIndicator
 			projections.add(Projections.include("h","l","c"));
 			push.append("l", "$l");
 			push.append("h", "$h");
-			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")),3));
+			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")), 3));
 			break;
 		}
 
@@ -152,5 +147,4 @@ public class SMA extends Indicator implements ComputableIndicator
 	{
 		return value;
 	}
-
 }

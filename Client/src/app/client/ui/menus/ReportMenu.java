@@ -9,7 +9,6 @@ import java.util.List;
 import app.client.net.Protocol;
 import app.client.ui.Console;
 import app.client.ui.menus.forms.AmountForm;
-import app.client.ui.menus.forms.SearchForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.ReportInfo;

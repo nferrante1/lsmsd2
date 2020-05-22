@@ -13,7 +13,6 @@ import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BrowseInfo;
-import app.common.net.entities.BrowseReportInfo;
 import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;

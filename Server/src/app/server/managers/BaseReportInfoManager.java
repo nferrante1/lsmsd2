@@ -1,7 +1,6 @@
 package app.server.managers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -13,7 +12,6 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 
 import app.common.net.entities.BaseReportInfo;
-import app.common.net.entities.MarketInfo;
 import app.datamodel.PojoCursor;
 import app.datamodel.PojoManager;
 
