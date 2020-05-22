@@ -1,34 +1,30 @@
 package app.client.ui.animations;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import app.client.ui.Console;
 
 public abstract class AnimatedText extends Thread
 {
 	protected String text;
-	protected boolean running;
-	private Object lock;
+	protected AtomicBoolean running;
 
 	public AnimatedText(String text)
 	{
 		this.text = text;
-		lock = new Object();
 	}
 
 	@Override
 	public void run()
 	{
-		synchronized(lock) {
-			running = true;
-		}
+		running.set(true);
 		while (isRunning())
 			animate();
 	}
 
 	public boolean isRunning()
 	{
-		synchronized(lock) {
-			return running;
-		}
+		return running.get();
 	}
 
 	protected abstract void animate();
@@ -37,9 +33,8 @@ public abstract class AnimatedText extends Thread
 	{
 		if (!isAlive())
 			return;
-		synchronized(lock) {
-			running = false;
-		}
+		if (!running.getAndSet(false))
+			return;
 		try {
 			this.join();
 		} catch (InterruptedException e) {
