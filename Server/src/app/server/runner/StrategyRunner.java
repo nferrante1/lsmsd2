@@ -161,6 +161,7 @@ public class StrategyRunner extends Thread
 		}
 
 		progress(0.99);
+		journal.finish();
 		strategy.finish(journal);
 		parameters.put("endTime", candle.getCloseTime());
 	}

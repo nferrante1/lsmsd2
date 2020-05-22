@@ -91,8 +91,13 @@ public final class Journal
 			throw new IllegalArgumentException("Trade not registered (time: " + currentTime + ").");
 		if (trade.closed())
 			throw new IllegalStateException("Trade already closed (time: " + currentTime + ").");
-		if (!finish && !trade.entryTime().isBefore(currentTime))
-			throw new IllegalArgumentException("Trying to open and close the same trade during a single day (time: " + currentTime + ").");
+		if (!trade.entryTime().isBefore(currentTime))
+			if (finish) {
+				trades.remove(trade);
+				return trade;
+			} else {
+				throw new IllegalArgumentException("Trying to open and close the same trade during a single day (time: " + currentTime + ").");
+			}
 
 		trade.close(currentTime, currentValue, granularity);
 		trades.remove(trade);
