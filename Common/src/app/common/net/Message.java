@@ -96,7 +96,7 @@ class Message implements Serializable
 
 	public <E extends Entity> E getEntity(Class<E> clazz)
 	{
-		for (Entity entity : entities)
+		for (Entity entity: entities)
 			if (clazz.isAssignableFrom(entity.getClass()))
 				return clazz.cast(entity);
 		return null;
@@ -105,10 +105,18 @@ class Message implements Serializable
 	public <E extends Entity> List<E> getEntities(Class<E> clazz)
 	{
 		List<E> entityList = new ArrayList<E>();
-		for (Entity entity : entities)
+		for (Entity entity: entities)
 			if (clazz.isAssignableFrom(entity.getClass()))
 				entityList.add(clazz.cast(entity));
 		return entityList;
+	}
+
+	public boolean hasEntity(Class<?> clazz)
+	{
+		for (Entity entity: entities)
+			if (clazz.isAssignableFrom(entity.getClass()))
+				return true;
+		return false;
 	}
 
 	public void addEntity(Entity entity)

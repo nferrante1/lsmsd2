@@ -363,7 +363,7 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage deleteUser(String username)
 	{
-		return sendRequest(ActionRequest.DELETE_USER, new KVParameter("REPORTID", username));
+		return sendRequest(ActionRequest.DELETE_USER, new KVParameter("USERNAME", username));
 	}
 
 	public ResponseMessage editDataSource(String sourceName, boolean enabled)
