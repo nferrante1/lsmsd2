@@ -526,7 +526,7 @@ public class RequestHandler extends Thread
 			report.getAvgAmount(), report.getAvgDuration(),
 			report.getMaxDrawdown(), true));
 	}
-	
+
 	@RequestHandlerMethod
 	private ResponseMessage handleBrowseReports(RequestMessage reqMsg)
 	{
@@ -534,40 +534,35 @@ public class RequestHandler extends Thread
 		List<KVParameter> parameters = reqMsg.getEntities(KVParameter.class);
 		String strategyName = null;
 		String marketId = null;
-		for (KVParameter parameter: parameters) {			
+		for (KVParameter parameter: parameters) {
 			if (parameter.getName().equals("STRATEGYNAME"))
 				strategyName = parameter.getValue();
 			else if (parameter.getName().equals("MARKETID"))
 				marketId = parameter.getValue();
 		}
-		
+
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.aggregate(
-				Arrays.asList(new Document("$project", 
-					    new Document("runs", 
-					    new Document("$filter", 
-					    new Document("input", "$runs")
-					                    .append("as", "run")
-					                    .append("cond", 
-					    new Document("$eq", Arrays.asList("$$run.parameters.market", "BINANCE:ADABNB")))))), 
-					    new Document("$project", 
-					    new Document("runs", 
-					    new Document("$slice", Arrays.asList("$runs", (browseInfo.getPage() -1)*browseInfo.getPerPage() , browseInfo.getPerPage()))))));		
-		
-		
+				Arrays.asList(new Document("$project", //TODO: add sort, use Aggregates.* and move to a manager
+					new Document("runs",
+					new Document("$filter",
+					new Document("input", "$runs").append("as", "run").append("cond",
+					new Document("$eq", Arrays.asList("$$run.parameters.market", "BINANCE:ADABNB")))))),
+					new Document("$project",
+					new Document("runs",
+					new Document("$slice", Arrays.asList("$runs", (browseInfo.getPage() -1)*browseInfo.getPerPage() , browseInfo.getPerPage()))))));
+
 		List<BaseReportInfo> reportInfos = new ArrayList<BaseReportInfo>();
 		if (!cursor.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
-		
+
 		Strategy strategy = cursor.next();
 		List<StrategyRun> runs = strategy.getRuns();
-		for(StrategyRun r : runs) {
-			
+		for(StrategyRun r : runs)
 			reportInfos.add(new BaseReportInfo(r.getId().toHexString(), strategy.getName(),r.getParameter("market").toString(), r.getReport().getNetProfit()));
-		}
 		return new ResponseMessage(reportInfos.toArray(new BaseReportInfo[0]));
 	}
-	
+
 	@RequestHandlerMethod
 	private ResponseMessage handleViewReport(RequestMessage reqMsg)
 	{
