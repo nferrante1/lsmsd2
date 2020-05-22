@@ -23,6 +23,19 @@ public class StdDev extends Indicator implements ComputableIndicator
 	private double value = Double.NaN;
 	private long elapsedPeriods;
 
+	
+	public StdDev(int period, InputPrice inputPrice) {
+		this.period = period;
+		if(inputPrice == InputPrice.DECREMENT || inputPrice == InputPrice.INCREMENT ) 
+			throw new IllegalArgumentException("Cannot compute StdDev on Increment/Decrement");
+		this.inputPrice = inputPrice;
+	};
+	
+	public StdDev(int period) {
+		this(period, InputPrice.CLOSE);
+	}
+	
+	
 	@Override
 	public String getName()
 	{
@@ -40,20 +53,6 @@ public class StdDev extends Indicator implements ComputableIndicator
 		switch(inputPrice) {
 			case CLOSE:
 				projections.add(Projections.computed("v" , "$c"));
-				break;
-			case INCREMENT:
-				projections.add(Projections.include("c","o"));
-				push.append("o", "$o");
-				mapDoc = new Document("$max", Arrays.asList(
-						new Document("$subtract",
-								Arrays.asList("$$candle.c", "$$candle.o")), 0L));
-				break;
-			case DECREMENT:
-				projections.add(Projections.include("c","o"));
-				push.append("o", "$o");
-				mapDoc = new Document("$max", Arrays.asList(
-						new Document("$subtract",
-								Arrays.asList("$$candle.o", "$$candle.c")), 0L));
 				break;
 			case TRUE_RANGE:
 				projections.add(Projections.include("h","l","c"));
@@ -79,6 +78,8 @@ public class StdDev extends Indicator implements ComputableIndicator
 				push.append("l", "$l");
 				push.append("h", "$h");
 				mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")),3));
+				break;
+			default:
 				break;
 		}
 

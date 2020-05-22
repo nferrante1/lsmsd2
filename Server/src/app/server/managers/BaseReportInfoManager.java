@@ -29,7 +29,7 @@ public class BaseReportInfoManager extends PojoManager<BaseReportInfo> {
 		List<Bson> stages = new ArrayList<Bson>();
 		if(strategyName != null)
 			stages.add(Aggregates.match(Filters.eq("name", strategyName)));
-		stages.add(Aggregates.unwind("runs"));
+		stages.add(Aggregates.unwind("$runs"));
 		if(marketId != null)
 			stages.add(Aggregates.match(Filters.eq("runs.parameters.market", marketId)));
 		
@@ -39,7 +39,7 @@ public class BaseReportInfoManager extends PojoManager<BaseReportInfo> {
 				Projections.excludeId(), 
 				Projections.computed("strategyName", "$name"),
 				Projections.computed("market", "$runs.parameters.market"),
-				Projections.computed("netProfit", "$runs.parameters.netProfit"),
+				Projections.computed("netProfit", "$runs.report.netProfit"),
 				Projections.computed("id", new Document("$toString", "$runs.id")))));
 		
 		return aggregate(stages);
