@@ -16,16 +16,19 @@ import com.mongodb.client.model.Projections;
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
-public class MOM extends Indicator implements ComputableIndicator {
+public class MOM extends Indicator implements ComputableIndicator
+{
 	private int period;
 	private int elapsedPeriods;
 	private double value = Double.NaN;
-	
-	public MOM(int period) {
+
+	public MOM(int period)
+	{
 		this.period = period;
 	}
-	
-	public MOM() {
+
+	public MOM()
+	{
 		this(14);
 	}
 
@@ -41,17 +44,17 @@ public class MOM extends Indicator implements ComputableIndicator {
 		List<Bson> stages = new ArrayList<Bson>();
 		stages.add(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("c", "$c"))));
 		stages.add(Aggregates.group(new BsonNull(),Accumulators.push("candles", new Document("c", "$c"))));
-		stages.add(Aggregates.addFields(new Field<Document>("candles",						
+		stages.add(Aggregates.addFields(new Field<Document>("candles",
 				new Document("$map",
 					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 				.append("as", "z")
 				.append("in",
 					new Document("value", new Document("$subtract",
 							Arrays.asList(
-									new Document("$arrayElemAt", 
+									new Document("$arrayElemAt",
 											Arrays.asList("$candles.c", "$$z")
-											), new Document("$arrayElemAt", 
-													Arrays.asList("$candles.c", 
+											), new Document("$arrayElemAt",
+													Arrays.asList("$candles.c",
 															new Document("$subtract", Arrays.asList("$candles.c", period)
 																	)
 															)

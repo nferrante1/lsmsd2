@@ -16,16 +16,17 @@ import com.mongodb.client.model.Projections;
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
-public class STD extends Indicator implements ComputableIndicator {
+public class StdDev extends Indicator implements ComputableIndicator
+{
 	private int period;
 	private InputPrice inputPrice;
 	private double value = Double.NaN;
 	private long elapsedPeriods;
-	
+
 	@Override
 	public String getName()
 	{
-		return "STD" + inputPrice.getShortName() + period;
+		return "StdDev" + inputPrice.getShortName() + period;
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class STD extends Indicator implements ComputableIndicator {
 		Document push = new Document("c", "$c");
 		Document mapDoc = null;
 		projections.add(Projections.excludeId());
-	
+
 		switch(inputPrice) {
 			case CLOSE:
 				projections.add(Projections.computed("v" , "$c"));
@@ -58,15 +59,15 @@ public class STD extends Indicator implements ComputableIndicator {
 				projections.add(Projections.include("h","l","c"));
 				push.append("l", "$l");
 				push.append("h", "$h");
-				mapDoc = new Document("$max", Arrays.asList(new Document("$subtract", 
+				mapDoc = new Document("$max", Arrays.asList(new Document("$subtract",
 						Arrays.asList("$h","$l")), 
 						new Document("$abs", 
 							new Document("$subtract",
 									Arrays.asList("$h", "$c")
 								)
 							)
-						, new Document("$abs", 
-							new Document("$subtract", 
+						, new Document("$abs",
+							new Document("$subtract",
 								Arrays.asList("$l", "$c")
 								)
 							)
@@ -78,9 +79,9 @@ public class STD extends Indicator implements ComputableIndicator {
 				push.append("l", "$l");
 				push.append("h", "$h");
 				mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")),3));
-				break;			
+				break;
 		}
-		
+
 		List<Bson> stages = new ArrayList<Bson>();
 		stages.add(Aggregates.project(Projections.fields(projections)));
 		stages.add(Aggregates.group(new BsonNull(),Accumulators.push("candles", push)));
@@ -89,14 +90,14 @@ public class STD extends Indicator implements ComputableIndicator {
 					new Document("input", "$candles")
 					.append("as", "candle")
 					.append("in", new Document("v", mapDoc))))));
-		stages.add(Aggregates.addFields(new Field<Document>("candles",						
+		stages.add(Aggregates.addFields(new Field<Document>("candles",
 				new Document("$map",
 					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 				.append("as", "z")
 				.append("in",
-					new Document("value", new Document("$stdDevPop", new Document("$slice", Arrays.asList("$candles", 
-				                            new Document("$max", Arrays.asList(0L, 
-					                                    new Document("$subtract", Arrays.asList("$$z", period)))), period))
+					new Document("value", new Document("$stdDevPop", new Document("$slice", Arrays.asList("$candles",
+				new Document("$max", Arrays.asList(0L,
+					new Document("$subtract", Arrays.asList("$$z", period)))), period))
 							))
 					)
 				))));
@@ -105,7 +106,7 @@ public class STD extends Indicator implements ComputableIndicator {
 
 	@Override
 	public void compute(Candle candle)
-	{	
+	{
 		++elapsedPeriods;
 		if(elapsedPeriods >= period)
 			value = candle.getTa(getName());
