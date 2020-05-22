@@ -34,10 +34,16 @@ public class RS extends Indicator
 	{
 		smau.compute(candle);
 		smad.compute(candle);
-		double smauV = smau.getValue(); 
+		double smauV = smau.getValue();
 		double smadV = smad.getValue();
-		if(Double.isNaN(smadV) && Double.isNaN(smauV)) 
+		if(Double.isNaN(smadV) && Double.isNaN(smauV)) {
+			value = Double.NaN;
 			return;
+		}
+		if (Double.isNaN(smadV)) {
+			value = Double.POSITIVE_INFINITY;
+			return;
+		}
 		value =  smauV / smadV;
 	}
 
