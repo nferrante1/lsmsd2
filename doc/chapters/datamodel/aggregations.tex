@@ -64,14 +64,17 @@ been defined:
 		\code{market}. This stage includes the entire shard key, so the
 		query is directed only to the specific server where the shard
 		containing the documents is saved;
-	\item \code{\$sort} stage to order the documents ascending by the
-		\code{start} field;
 	\item \code{\$unwind} and \code{\$replaceRoot} stages to split the array
 		of candles in a document for each candle;
+	\item \code{\$match} stage to ensure that the aggregation returns only
+		the data in the date range in which we want to execute the
+		strategy;
 	\item \code{\$addFields} and \code{\$group} stages to group candles in
 		bucket according to the desired granularity;
 	\item \code{\$project} stage to exclude unnecessary fields from
-		documents.
+		documents;
+	\item \code{\$sort} stage to order the documents ascending by the
+		\code{start} field.
 \end{enumerate}
 
 The above aggregation returns the market data in the format shown in
@@ -96,6 +99,10 @@ compute them. In the final implementation, a lot indicators may be defined and
 implemented. Here we will define only some of them just to give an idea of how
 it works.
 
+After the \code{\$facet} stage, we use some other stages (\code{\$project},
+\code{\$unwind} and \code{\$replaceRoot}) in order to reformat the output in a
+way that it can automatically converted in a Java class.
+
 At the end, the final output of the complete aggregation pipeline (including the
 \code{\$facet} stage with the pipelines for the requested indicators) will be
 something like the output shown in~\lstref{lst:pipelineoutput}.
@@ -116,6 +123,14 @@ total data available}); \(t\) represents the index, in the range
 closing price of the \(i\)-th candle \idest{\(C\) is the vector of the closing
 price of all candles in the period \(n\)}.
 
+In the application two types of indicators will be developed: those that need
+computation by \mongodb{}; others that derives from other indicators and do not
+need to run an aggregation pipeline on \mongodb{}. An example of a ``derived''
+indicator is the \(\rsi\) presented below. Other derived indicators that will be
+developed are the Stochastic RSI (StochRSI), the Moving Average
+Convergence/Divergence (MACD), the Average True Range (ATR) and the Bollinger
+Bands.
+
 \subsubsection{Simple Moving Average}
 
 The Simple Moving Average (\(\sma\)), computed on the closing price of the
@@ -129,12 +144,10 @@ trading days, is defined as follows:
 We can compute the \(\sma\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \code{\$group} stage to group candles in an array;
-	\item \code{\$addFields} using \code{\$map} operator to compute the
-		\(\sma\) on the previously created array of candles;
-	\item \code{\$unwind} to split the array in a document for each element;
-	\item \code{\$replaceRoot} and \code{\$project} to format the document
-		in the desired way.
+	\item \code{\$project} and \code{\$group} stages to group candles in an
+		array and remove unnecessary fields;
+	\item \code{\$addFields} stage using the \code{\$map} operator to
+		compute the \(\sma\) on the previously created array of candles.
 \end{enumerate}
 
 \subsubsection{Exponential Moving Average}
@@ -157,12 +170,16 @@ equal to \(\frac{2}{n + 1}\).
 We can compute the \(\ema\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \code{\$group} stage to group candles in an array;
-	\item \code{\$addFields} using \code{\$reduce} operator to compute the
-		\(\ema\) on the previously created array of candles;
-	\item \code{\$unwind} to split the array in a document for each element;
-	\item \code{\$replaceRoot} and \code{\$project} to format the document
-		in the desired way.
+	\item \code{\$project} and \code{\$group} stages to group candles in an
+		array and remove unnecessary fields;
+	\item \code{\$addFields} stage using the \code{\$map} operator split the
+		array of candles in an array of size \(n\) for each
+		\emph{period} for which we want to compute the \(\ema\);
+	\item \code{\$unwind} and \code{\$replaceRoot} to reformat the output in
+		order to pass it to the \code{\$reduce} operator below;
+	\item \code{\$addFields} stage using the \code{\$reduce} operator to
+		compute the \(\ema\) for each previously created array of
+		candles.
 \end{enumerate}
 
 \subsubsection{Relative Strength Index}
@@ -192,19 +209,12 @@ the opening price of the \(t\)-th candle). \(n_U \leq n\) is the number of
 rising candles while \(n_D \leq n\) is the number of falling candles. If the
 denominator is equal to \(0\), the \(\rs_n\) is set to \(+\infty\).
 
-We can compute the two \(\sma\)s with the following aggregation pipeline (the
-\(\rs\) and \(\rsi\) can then be computed by the server application
-applying~\eqref{eq:rs} and~\eqref{eq:rsi}):
+We can compute the two \(\sma\)s with the aggregation pipeline shown above for
+the \(\sma\). The only difference is that now we need to add a stage to compute
+the increment and the decrement of each candle.
 
-\begin{enumerate}
-	\item \code{\$group} stage to group candles in an array;
-	\item \code{\$addFields} stage to compute the increments and decrements
-		in price for each candle;
-	\item \code{\$addFields} stage to compute the \(\sma\) of the increments
-		and decrements in price for each candle;
-	\item \code{\$unwind}, \code{\$replaceRoot} and \code{\$project} to
-		format the document in the desired way.
-\end{enumerate}
+The \(\rs\) and \(\rsi\) can then be computed by the server application
+applying~\eqref{eq:rs} and~\eqref{eq:rsi}.
 
 \subsubsection{Momentum Indicator}
 
@@ -219,10 +229,25 @@ days, is defined as follows:
 We can compute the \(\mom\) with the following aggregation pipeline:
 
 \begin{enumerate}
-	\item \code{\$group} stage to group candles in an array;
-	\item \code{\$addFields} stage to compute the difference between the
-		closing price of the trading day \(t\) and the closing price of
-		the candle at \(n\) days before;
-	\item \code{\$replaceRoot} and \code{\$project} to format the document
-		in the desired way.
+	\item \code{\$project} and \code{\$group} stages to group candles in an
+		array and remove unnecessary fields;
+	\item \code{\$addFields} stage using the \code{\$map} operator to
+		compute the difference between the closing price of the trading
+		day \(t\) and the closing price of the candle at \(n\) days
+		before.
+\end{enumerate}
+
+\subsubsection{Standard Deviation}
+
+The Standard Deviation (\(\stddev\)) is the well-known standard deviation
+computed on a window of \(n\) days (like all the other indicators, it's applied
+only to a continuous subset of all the data). We can compute it with the
+following aggregation pipeline:
+
+\begin{enumerate}
+	\item \code{\$project} and \code{\$group} stages to group candles in an
+		array and remove unnecessary fields;
+	\item \code{\$addFields} stage using the \code{\$map} and the
+		\code{\$stdDevPop} operators to compute the \(\stddev\) on the
+		previously created array of candles.
 \end{enumerate}
