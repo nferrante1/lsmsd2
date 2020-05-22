@@ -12,6 +12,7 @@ public abstract class AnimatedText extends Thread
 	public AnimatedText(String text)
 	{
 		this.text = text;
+		this.running = new AtomicBoolean();
 	}
 
 	@Override
@@ -28,6 +29,14 @@ public abstract class AnimatedText extends Thread
 	}
 
 	protected abstract void animate();
+
+	@Override
+	public void start()
+	{
+		super.start();
+		while (!isAlive() || !isRunning())
+			;
+	}
 
 	public void stopShowing()
 	{
