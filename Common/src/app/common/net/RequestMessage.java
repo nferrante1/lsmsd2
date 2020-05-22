@@ -1,6 +1,7 @@
 package app.common.net;
 
 import java.io.DataInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,10 +61,13 @@ public class RequestMessage extends Message
 	private boolean hasDuplicateParameters()
 	{
 		List<KVParameter> parameters = getEntities(KVParameter.class);
-		for (KVParameter parameter1: parameters)
-			for (KVParameter parameter2: parameters)
-				if (parameter2.getName().equals(parameter1.getName()))
-					return true;
+		List<String> names = new ArrayList<String>();
+		
+		for (KVParameter parameter: parameters)
+			if(names.contains(parameter.getName()))
+				return true;
+			else
+				names.add(parameter.getName());
 		return false;
 	}
 
@@ -134,7 +138,7 @@ public class RequestMessage extends Message
 				if (!hasEntity(BrowseInfo.class))
 					return false;
 				for (Entity entity: getEntities())
-					if (!KVParameter.class.isAssignableFrom(entity.getClass()))
+					if (!KVParameter.class.isAssignableFrom(entity.getClass()) && !BrowseInfo.class.isAssignableFrom(entity.getClass()))
 						return false;
 				switch (action) {
 				case BROWSE_MARKETS:

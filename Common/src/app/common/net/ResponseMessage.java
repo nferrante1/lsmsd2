@@ -5,7 +5,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import app.common.net.entities.AuthTokenInfo;
+import app.common.net.entities.BaseReportInfo;
 import app.common.net.entities.Entity;
+import app.common.net.entities.FileContent;
+import app.common.net.entities.KVParameter;
+import app.common.net.entities.MarketInfo;
+import app.common.net.entities.ParameterInfo;
+import app.common.net.entities.ProgressInfo;
+import app.common.net.entities.ReportInfo;
+import app.common.net.entities.SourceInfo;
+import app.common.net.entities.StrategyInfo;
+import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
 
 public class ResponseMessage extends Message
@@ -53,43 +64,60 @@ public class ResponseMessage extends Message
 			return getEntityCount() == 0;
 		switch (actionRequest) {
 		case ADD_STRATEGY:
-			return true;
-		case ADD_USER:
-			return true;
+			return getEntityCount() == 1 && hasEntity(StrategyInfo.class);
+		
 		case BROWSE_DATA_SOURCES:
+			for (Entity entity: getEntities())
+				if (!SourceInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
 		case BROWSE_MARKETS:
+			for (Entity entity: getEntities())
+				if (!MarketInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
+
 		case BROWSE_REPORTS:
+			for (Entity entity: getEntities())
+				if (!BaseReportInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
+
 		case BROWSE_STRATEGIES:
+			for (Entity entity: getEntities())
+				if (!StrategyInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
+
 		case BROWSE_USERS:
+			for (Entity entity: getEntities())
+				if (!UserInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
-		case DELETE_DATA:
-			return true;
-		case DELETE_REPORT:
-			return true;
-		case DELETE_STRATEGY:
-			return true;
-		case DELETE_USER:
-			return true;
+
 		case DOWNLOAD_STRATEGY:
-			return true;
-		case EDIT_DATA_SOURCE:
-			return true;
-		case EDIT_MARKET:
-			return true;
+			return getEntityCount() == 1 && hasEntity(FileContent.class);
+
 		case GET_STRATEGY_PARAMETERS:
+			for (Entity entity: getEntities())
+				if (!ParameterInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
 			return true;
 		case LOGIN:
-			return true;
+			return getEntityCount() == 1 && hasEntity(AuthTokenInfo.class);
+		case ADD_USER:
+		case EDIT_DATA_SOURCE:
+		case EDIT_MARKET:
+		case DELETE_DATA:
+		case DELETE_REPORT:
+		case DELETE_STRATEGY:
+		case DELETE_USER:
 		case LOGOUT:
-			return true;
+			return getEntityCount()==0;
 		case RUN_STRATEGY:
-			return true;
+			return getEntityCount() == 1 && (hasEntity(ReportInfo.class) || hasEntity(ProgressInfo.class));
 		case VIEW_REPORT:
-			return true;
+			return getEntityCount() == 1 && hasEntity(ReportInfo.class);
 		default:
 			return false;
 		}
