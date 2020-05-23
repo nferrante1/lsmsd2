@@ -1,7 +1,6 @@
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import app.library.annotations.*;
 import app.library.indicators.enums.*;
@@ -62,6 +61,7 @@ public class StrategyName implements ExecutableStrategy
 		//TODO
 	}
 
+	@Override
 	public void finish(Journal journal)
 	{
 		//TODO

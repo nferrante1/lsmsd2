@@ -41,7 +41,7 @@ public class MOM extends Indicator implements ComputableIndicator
 	public List<Bson> getPipeline()
 	{
 		List<Bson> stages = new ArrayList<Bson>();
-		stages.add(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("c", "$c"))));
+		stages.add(Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("c"))));
 		stages.add(Aggregates.group(new BsonNull(),Accumulators.push("candles", new Document("c", "$c"))));
 		stages.add(Aggregates.addFields(new Field<Document>("candles",
 				new Document("$map",
@@ -54,7 +54,7 @@ public class MOM extends Indicator implements ComputableIndicator
 											Arrays.asList("$candles.c", "$$z")
 											), new Document("$arrayElemAt",
 													Arrays.asList("$candles.c",
-															new Document("$subtract", Arrays.asList("$candles.c", period)
+															new Document("$subtract", Arrays.asList("$$z", period)
 																	)
 															)
 													)
@@ -70,7 +70,7 @@ public class MOM extends Indicator implements ComputableIndicator
 	public void compute(Candle candle)
 	{
 		++elapsedPeriods;
-		if(elapsedPeriods >= period)
+		if(elapsedPeriods > period)
 			value = candle.getTa(getName());
 	}
 
@@ -79,4 +79,8 @@ public class MOM extends Indicator implements ComputableIndicator
 		return value;
 	}
 
+	public int getPeriod()
+	{
+		return period;
+	}
 }

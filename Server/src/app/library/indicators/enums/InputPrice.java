@@ -24,4 +24,19 @@ public enum InputPrice
 			return "";
 		}
 	}
+
+	public static InputPrice fromShortName(String name)
+	{
+		if (name == null)
+			return null;
+		if (name.equalsIgnoreCase("d"))
+			return DECREMENT;
+		if (name.equalsIgnoreCase("u"))
+			return INCREMENT;
+		if (name.equalsIgnoreCase("tr"))
+			return TRUE_RANGE;
+		if (name.equalsIgnoreCase("tp"))
+			return TYPICAL;
+		return CLOSE;
+	}
 }

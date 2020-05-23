@@ -70,7 +70,7 @@ public final class Console
 	public static boolean askConfirm(String prompt, boolean defaultYes)
 	{
 		while (true) {
-			print(prompt + " [" + ((defaultYes) ? "Y/n" : "y/N") + "]");
+			print(prompt + " [" + ((defaultYes) ? "Y/n" : "y/N") + "] ");
 			String selection = scanner.nextLine();
 			if ((defaultYes && selection.isBlank()) || selection.trim().equalsIgnoreCase("Y"))
 				return true;
@@ -83,7 +83,7 @@ public final class Console
 	public static boolean askChoice(String prompt, String c1, String c2)
 	{
 		while (true) {
-			print(prompt + " [" + c1 + "/" + c2 + "]");
+			print(prompt + " [" + c1 + "/" + c2 + "] ");
 			String selection = scanner.nextLine();
 			if (selection.trim().equalsIgnoreCase(c1))
 				return true;

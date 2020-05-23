@@ -38,6 +38,16 @@ public class SMA extends Indicator implements ComputableIndicator
 		this(period, InputPrice.CLOSE);
 	}
 
+	public SMA(InputPrice input)
+	{
+		this(14, input);
+	}
+
+	public SMA()
+	{
+		this(14);
+	}
+
 	@Override
 	public String getName()
 	{
@@ -54,10 +64,10 @@ public class SMA extends Indicator implements ComputableIndicator
 
 		switch(inputPrice) {
 		case CLOSE:
-			projections.add(Projections.computed("v" , "$c"));
+			projections.add(Projections.computed("v", "$c"));
 			break;
 		case INCREMENT:
-			projections.add(Projections.include("c","o"));
+			projections.add(Projections.include("c", "o"));
 			push.append("o", "$o");
 			mapDoc = new Document ("$cond",
 					new Document("if",
@@ -75,7 +85,7 @@ public class SMA extends Indicator implements ComputableIndicator
 					);
 			break;
 		case DECREMENT:
-			projections.add(Projections.include("c","o"));
+			projections.add(Projections.include("c", "o"));
 			push.append("o", "$o");
 			mapDoc = new Document ("$cond",
 					new Document("if",
@@ -92,7 +102,7 @@ public class SMA extends Indicator implements ComputableIndicator
 									Arrays.asList("$$candle.o", "$$candle.c")), 0L))));
 			break;
 		case TRUE_RANGE:
-			projections.add(Projections.include("h","l","c"));
+			projections.add(Projections.include("h", "l", "c"));
 			push.append("l", "$l");
 			push.append("h", "$h");
 			mapDoc = new Document("$max", Arrays.asList(new Document("$subtract",
@@ -109,7 +119,7 @@ public class SMA extends Indicator implements ComputableIndicator
 				);
 			break;
 		case TYPICAL:
-			projections.add(Projections.include("h","l","c"));
+			projections.add(Projections.include("h", "l", "c"));
 			push.append("l", "$l");
 			push.append("h", "$h");
 			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")), 3));
@@ -139,12 +149,22 @@ public class SMA extends Indicator implements ComputableIndicator
 	public void compute(Candle candle)
 	{
 		++elapsedPeriods;
-		if(elapsedPeriods >= period)
+		if(elapsedPeriods > period)
 			value = candle.getTa(getName());
 	}
 
 	public double getValue()
 	{
 		return value;
+	}
+
+	public int getPeriod()
+	{
+		return period;
+	}
+
+	public InputPrice getInputPrice()
+	{
+		return inputPrice;
 	}
 }

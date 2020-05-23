@@ -25,7 +25,7 @@ public class FileContent extends Entity
 
 	public void writeFile(String fileName) throws IOException
 	{
-		fileName.replace("/", File.separator);
+		fileName = fileName.replace("/", File.separator);
 		if (fileName.contains(File.separator)) {
 			String dirName = fileName.substring(0, fileName.lastIndexOf(File.separator));
 			File dir = new File(dirName);

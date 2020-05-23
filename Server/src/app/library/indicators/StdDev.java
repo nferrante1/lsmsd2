@@ -29,11 +29,21 @@ public class StdDev extends Indicator implements ComputableIndicator
 		if(inputPrice == InputPrice.DECREMENT || inputPrice == InputPrice.INCREMENT)
 			throw new IllegalArgumentException("Can not compute StdDev on price increment/decrement.");
 		this.inputPrice = inputPrice;
-	};
+	}
 
 	public StdDev(int period)
 	{
 		this(period, InputPrice.CLOSE);
+	}
+
+	public StdDev(InputPrice inputPrice)
+	{
+		this(14, inputPrice);
+	}
+
+	public StdDev()
+	{
+		this(14);
 	}
 
 	@Override
@@ -109,12 +119,22 @@ public class StdDev extends Indicator implements ComputableIndicator
 	public void compute(Candle candle)
 	{
 		++elapsedPeriods;
-		if(elapsedPeriods >= period)
+		if(elapsedPeriods > period)
 			value = candle.getTa(getName());
 	}
 
 	public double getValue()
 	{
 		return value;
+	}
+
+	public int getPeriod()
+	{
+		return period;
+	}
+
+	public InputPrice getInputPrice()
+	{
+		return inputPrice;
 	}
 }

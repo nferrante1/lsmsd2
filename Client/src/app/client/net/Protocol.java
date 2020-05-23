@@ -2,6 +2,7 @@ package app.client.net;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
@@ -332,7 +333,9 @@ public class Protocol implements AutoCloseable
 
 	public ResponseMessage addStrategy(String fileName) throws IOException
 	{
-		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("CLASSNAME", fileName.substring(0, fileName.lastIndexOf("."))), new FileContent(fileName));
+		String className = fileName.replace("/", File.separator);
+		className = className.substring(className.lastIndexOf(File.separator) + File.separator.length(), className.lastIndexOf("."));
+		return sendRequest(ActionRequest.ADD_STRATEGY, new KVParameter("CLASSNAME", className), new FileContent(fileName));
 	}
 
 	public ResponseMessage downloadStrategy(String strategyName)
