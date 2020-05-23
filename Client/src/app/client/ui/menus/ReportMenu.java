@@ -69,10 +69,10 @@ public class ReportMenu extends Menu
 		Console.println("Gross Loss: " + df.format(report.getGrossLoss() * amount) + " (" + pf.format(report.getGrossLoss()) + ")");
 		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount) + " (" + pf.format(report.getHodlProfit()) + "; strategy relative performance: " + pf.format(report.getNetProfit() - report.getHodlProfit()) + ")");
 		Console.println("Total Trades: " + report.getTotalTrades());
-		Console.println("Total Completed Trades: " + report.getClosedTrades());
-		Console.println("Open Trades At End: " + report.getOpenTrades());
-		Console.println("Winning Trades: " + report.getWinningTrades());
-		Console.println("Losing Trades: " + report.getLosingTrades());
+		Console.println("Total Completed Trades: " + report.getClosedTrades() + "(" + pf.format(report.getClosedTrades() / report.getTotalTrades()) + ")");
+		Console.println("Open Trades At End: " + report.getOpenTrades() + "(" + pf.format(report.getOpenTrades() / report.getTotalTrades()) + ")");
+		Console.println("Winning Trades: " + report.getWinningTrades() + "(" + pf.format(report.getWinningTrades() / report.getClosedTrades()) + " of completed trades)");
+		Console.println("Losing Trades: " + report.getLosingTrades() + "(" + pf.format(report.getLosingTrades() / report.getClosedTrades()) + " of completed trades)");
 		Console.println("Max Consecutive Losing Trades: " + report.getMaxConsecutiveLosing());
 		Console.println("Average Traded Amount: " + of.format(report.getAvgAmount() * amount));
 		Console.println("Average Trade Duration: " + of.format(report.getAvgDuration()) + " trading days");
