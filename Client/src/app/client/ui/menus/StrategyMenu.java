@@ -54,7 +54,7 @@ public class StrategyMenu extends Menu
 		Console.pause();
 	}
 
-	private void handleBrowseReports(MenuEntry entry)
+	private void handleBrowseReports(MenuEntry entry) // TODO: add entry "All Markets"
 	{
 		HashMap<String, String> response = new SearchForm("Market Name").show();
 		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
