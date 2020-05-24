@@ -33,7 +33,7 @@ public class SampleStrategy implements ExecutableStrategy
 	@Override
 	public String getName()
 	{
-		return "Real RSI Strategy";
+		return "Sample Strategy";
 	}
 
 	@Override
