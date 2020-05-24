@@ -40,7 +40,7 @@ public class EMA extends Indicator implements ComputableIndicator
 	@Override
 	public List<Bson> getPipeline()
 	{
-		double alpha = 2/(period + 1);
+		double alpha = 2/((double)period + 1);
 		return Arrays.asList(
 				Aggregates.project(Projections.fields(Projections.include("c"), Projections.excludeId())),
 				Aggregates.group(new BsonNull(), Accumulators.push("candles", "$c")),
