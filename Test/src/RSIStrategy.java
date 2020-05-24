@@ -19,13 +19,13 @@ public class RSIStrategy implements ExecutableStrategy
 	@StrategyParameter
 	private Instant endTime;
 
-	@StrategyParameter("RSI period")
+	@StrategyParameter("RSI Period (>0)")
 	private int period;
-	@StrategyParameter("RSI oversold (0-100)")
+	@StrategyParameter("RSI Oversold (0-100)")
 	private int oversold;
-	@StrategyParameter("RSI overbought (0-100)")
+	@StrategyParameter("RSI Overbought (0-100)")
 	private int overbought;
-	@StrategyParameter("Trade amount (0-1)")
+	@StrategyParameter("Amount to Trade (0-1)")
 	private double amount;
 
 	private double previousRSI = Double.NaN;
@@ -34,7 +34,7 @@ public class RSIStrategy implements ExecutableStrategy
 	@Override
 	public String getName()
 	{
-		return "Real RSI Strategy v3";
+		return "RSI Strategy";
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class RSIStrategy implements ExecutableStrategy
 
 	public boolean validate()
 	{
-		return oversold >= 0 && overbought > oversold && overbought <= 100 && amount >= 0.0 && amount <= 1.0;
+		return oversold >= 0 && overbought > oversold && overbought <= 100 && amount > 0.0 && amount <= 1.0;
 	}
 
 	@Override

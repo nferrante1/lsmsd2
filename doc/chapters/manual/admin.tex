@@ -1,0 +1,88 @@
+\section{Administration manual}\label{sec:adminmanual}
+
+The administrator has more options in the main menu:
+
+\begin{verbatim}
+Select an action:
+1)      Browse strategies
+2)      Upload a new strategy
+3)      Browse users
+4)      Create user
+5)      Browse data sources
+0)      Log-Out
+
+Enter number:
+\end{verbatim}
+
+\subsection{Browse users}
+
+When you select the ``Browse users'' menu entry, the application will ask for a
+username. You can write it partially or leave the field empty to search for all
+users. After that, you can select a user to \standout{delete} it.
+
+\subsection{Browse data source}
+
+When you select the ``Browse data sources'' menu entry, the application will
+list all the data sources available in the system. You can select one of them in
+order to change its configuration:
+
+\begin{verbatim}
+Select a Data Source: 
+1)      COINBASE
+2)      BINANCE
+0)      Go back
+
+Enter number: 1
+
+COINBASE | select an action:
+1)      View details
+2)      Disable Data Source
+3)      Browse markets
+4)      Delete data
+0)      Go back
+
+Enter number:
+\end{verbatim}
+
+You can \standout{disable} the source entirely (users will not be able to select it anymore
+to run strategies); \standout{view and edit the markets} provided by the data
+source; \standout{delete} the downloaded data for all the markets of the data
+source.
+
+\subsubsection{Browse markets}
+
+When you select the ``Browse markets'' menu entry, the application will ask to
+search by market name. Then you can select a market and edit its configuration:
+
+\begin{verbatim}
+COINBASE:BTC/EUR | Select an action:
+1)      View details
+2)      Change granularity
+3)      Disable selectability
+4)      Enable data sync
+5)      Delete data
+0)      Go back
+
+Enter number:
+\end{verbatim}
+
+You can \standout{view the details} of the market; change the minimum
+\standout{granularity} that the user can select when running a strategy on the
+market; \standout{enable/disable} the market for the selection by the users
+when running a strategy and the synchronization of data with the remote data
+source; \standout{delete} the downloaded data of the market.
+
+\subsubsection{Delete data}
+
+When you select the ``Delete data'' menu entry, the application will ask for a
+date. If you do not specify a date, all the data will be deleted. Otherwise,
+only the data older that the specified date will be deleted. The date must be in
+the format \code{yyyy-mm-dd hh:mm}.
+
+\begin{verbatim}
+Insert the date until you want to delete candles (Format:
+  yyyy-mm-dd hh:mm) or leave blank to delete all:
+
+Date: 2019-04-15 12:00
+Done!
+\end{verbatim}

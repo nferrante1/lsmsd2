@@ -1,5 +1,26 @@
-\chapter{User manual}\label{ch:manual}
+\chapter[User manual]{User manual\footnote{Note that if you run the
+application inside the Eclipse IDE environment, you should enable the
+``Interpret ASCII control characters'' from \textit{Window > Preferences >
+Run/Debug > Console} in order to get proper output during the execution of the
+strategy. Note that this feature of Eclipse IDE is not available in all systems
+(seems to not be available in Windows).}}\label{ch:manual}
 
-\textellipsis
+To setup the application in a new system, see~\appendixref{appendix:setup}.
 
-\section{Administration manual}\label{ch:adminmanual}
+\input{manual/clientrun}
+
+When logged-in in the application, you can \standout{browse all available
+strategies} in the system or \standout{upload a new strategy}.
+
+\begin{verbatim}
+Select an action: 
+1)      Browse strategies
+2)      Upload a new strategy
+0)      Log-Out
+
+Enter number:
+\end{verbatim}
+
+\input{manual/browsestrategies}
+\input{manual/uploadstrategy}
+\input{manual/admin}
