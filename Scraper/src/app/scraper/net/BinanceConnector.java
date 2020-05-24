@@ -38,7 +38,7 @@ public class BinanceConnector implements SourceConnector
 	{
 		for (int i = ACCEPTED_GRANULARITY.length - 1; i >= 0; i--) {
 			if (granularity % ACCEPTED_GRANULARITY[i] == 0)
-				return granularity;
+				return ACCEPTED_GRANULARITY[i];
 		}
 		return ACCEPTED_GRANULARITY[0];
 	}
