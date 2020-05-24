@@ -67,7 +67,8 @@ public class EMA extends Indicator implements ComputableIndicator
 				new Document("total",
 				new Document("$sum", Arrays.asList(new Document("$multiply", Arrays.asList("$$this", alpha)),
 					new Document("$multiply", Arrays.asList("$$value.total", (1-alpha)))))))))),
-						Aggregates.project(Projections.computed("value", "$value.total")));
+				Aggregates.project(Projections.computed("candle", new Document("value", "$value.total"))),
+				Aggregates.group(new BsonNull(), Accumulators.push("candles", "$candle")));
 	}
 
 	@Override
