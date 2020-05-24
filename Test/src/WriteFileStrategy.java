@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,22 +47,22 @@ public class WriteFileStrategy implements ExecutableStrategy
 	@Override
 	public String getName()
 	{
-		return "Write File Strategy (for debugging)";
+		return "Write File Strategy (for debugging) [randId: " + (new Random()).nextInt(Integer.MAX_VALUE) + "]";
 	}
 
 	@Override
-	public List<Indicator> indicators() // FIXME: MOM9 not working
+	public List<Indicator> indicators()
 	{
 		List<Indicator> indicators = new ArrayList<Indicator>();
-		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)([ud(tp)(tr)])?([1-9][0-9]*)?$");
+		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)(u|d|tp|tr)?([1-9][0-9]*)?$");
 		Matcher matcher = regex.matcher(indicatorName);
 		matcher.matches();
-		String name = matcher.group(0);
+		String name = matcher.group(1);
 		String ipName = null;
 		String period = null;
 		try {
-			ipName = matcher.group(1);
-			period = matcher.group(2);
+			ipName = matcher.group(2);
+			period = matcher.group(3);
 		} catch(IndexOutOfBoundsException e) {
 		}
 		InputPrice ip = InputPrice.fromShortName(ipName);
@@ -99,7 +100,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 		fileName = fileName.replace("/", File.separator);
 		return (fileName.endsWith(".txt") || fileName.endsWith(".csv")
 			|| fileName.endsWith(".dat") || fileName.endsWith(".json"))
-			&& indicatorName.matches("^(SMA[ud(tp)(tr)]*|EMA|MOM|StdDev[(tp)(tr)]*)([1-9][0-9]*)?$");
+			&& indicatorName.matches("^(SMA(u|d|tp|tr)*|EMA|MOM|StdDev(tp|tr)*)([1-9][0-9]*)?$");
 	}
 
 	@Override
