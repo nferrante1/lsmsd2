@@ -50,10 +50,10 @@ public class WriteFileStrategy implements ExecutableStrategy
 	}
 
 	@Override
-	public List<Indicator> indicators()
+	public List<Indicator> indicators() // FIXME: MOM9 not working
 	{
 		List<Indicator> indicators = new ArrayList<Indicator>();
-		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)([ud(tp)(tr)]?)([1-9][0-9]*)?$");
+		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)([ud(tp)(tr)])?([1-9][0-9]*)?$");
 		Matcher matcher = regex.matcher(indicatorName);
 		matcher.matches();
 		String name = matcher.group(0);
@@ -61,7 +61,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 		String period = null;
 		try {
 			ipName = matcher.group(1);
-			period = matcher.group(2); // FIXME: "MOM9" not working
+			period = matcher.group(2);
 		} catch(IndexOutOfBoundsException e) {
 		}
 		InputPrice ip = InputPrice.fromShortName(ipName);
@@ -173,7 +173,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 				+ candle.getOpen() + "\t" + candle.getHigh() + "\t"
 				+ candle.getLow() + "\t" + candle.getClose() + "\t"
 				+ candle.getVolume() + "\t" + indValue);
-		} else if (fileName.endsWith(".json")) { //TODO: test
+		} else if (fileName.endsWith(".json")) {
 			Document doc = new Document("time", candle.getTime().getEpochSecond());
 			doc.append("open", candle.getOpen());
 			doc.append("high", candle.getHigh());
