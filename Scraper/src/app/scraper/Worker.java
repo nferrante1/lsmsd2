@@ -102,7 +102,7 @@ final class Worker extends Thread
 					DataRange range = market.getRange();
 					if (range != null && range.end != null && range.end
 						.isAfter(Instant.now().minusSeconds(market.getGranularity() * 60))) {
-						Logger.getLogger(Worker.class.getName() + " - " + getName()).info("Market " + source.getName() + ":" + market.getId() + " is now up-to-date.");
+						Logger.getLogger(Worker.class.getName() + " - " + getName()).fine("Market " + source.getName() + ":" + market.getId() + " is now up-to-date.");
 						Thread.sleep(1000);
 						continue;
 					}

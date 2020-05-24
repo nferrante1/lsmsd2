@@ -109,22 +109,23 @@ public final class Scraper
 				"", options,
 				"\nLOG LEVELS:\n" + "ALL: print all logs.\n" + "FINEST: print all tracing logs.\n" +
 					"FINER: print most tracing logs.\n" + "FINE: print some tracing logs.\n" +
-					"CONFIG: print all config logs.\n" + "INFO: print all informational logs.\n" +
-					"WARNING: print all warnings and errors. (default)\n" +
+					"CONFIG: print all config logs.\n" + "INFO: print all informational logs (default).\n" +
+					"WARNING: print all warnings and errors.\n" +
 					"SEVERE: print only errors.\n" + "OFF: disable all logs.");
 			System.exit(0);
 		}
+		Level logLevel = Level.INFO;
 		if (cmd.hasOption("log-level")) {
 			String logLevelName = cmd.getOptionValue("log-level").toUpperCase();
-			Level logLevel;
+			
 			try {
 				logLevel = Level.parse(logLevelName);
 			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(Scraper.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: WARNING.");
-				logLevel = Level.WARNING;
-			}
-			setLogLevel(logLevel);
+				Logger.getLogger(Scraper.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: INFO.");
+				logLevel = Level.INFO;
+			}	
 		}
+		setLogLevel(logLevel);
 		if(cmd.hasOption("connection-string")) {
 			String conn = cmd.getOptionValue("connection-string");
 			if(!conn.isBlank())
