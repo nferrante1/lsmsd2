@@ -52,7 +52,7 @@ public class StrategyFile
 	{
 		String fileHash;
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
 			byte[] bytes = md.digest(file);
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < bytes.length; i++)
