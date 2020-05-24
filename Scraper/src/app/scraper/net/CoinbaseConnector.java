@@ -208,7 +208,8 @@ public class CoinbaseConnector implements SourceConnector
 
 		start = curCandles.get(curCandles.size() - 1).getTime();
 		curCandles.clear();
-
+		granularity = getAcceptedGranularity(granularity);
+		
 		while (curCandles.size() == 0) {
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			curCandles = getCandles(marketId, granularity, start, end);
