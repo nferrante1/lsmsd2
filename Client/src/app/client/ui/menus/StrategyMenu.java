@@ -54,15 +54,15 @@ public class StrategyMenu extends Menu
 		Console.pause();
 	}
 
-	private void handleBrowseReports(MenuEntry entry) // TODO: add entry "All Markets"
+	private void handleBrowseReports(MenuEntry entry)
 	{
 		HashMap<String, String> response = new SearchForm("Market Name").show();
-		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"));
+		SelectMarketMenu marketMenu = new SelectMarketMenu(response.get("Market Name"), true);
 		marketMenu.show();
 		MarketInfo m = marketMenu.getSelection();
 		if(m == null)
 			return;
-		String market = m.getFullId();
+		String market = m.getSourceName().isEmpty() && m.getMarketId().isEmpty() ? null : m.getFullId();
 		new ReportListMenu(this.strategy, market).show();
 	}
 

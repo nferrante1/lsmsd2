@@ -12,25 +12,42 @@ public class SelectMarketMenu extends SelectMenu<MarketInfo>
 {
 	protected String dataSource;
 	protected String nameFilter;
+	protected boolean allowAll;
 
-	public SelectMarketMenu(String dataSource, String nameFilter)
+	public SelectMarketMenu(String dataSource, String nameFilter, boolean allowAll)
 	{
-		super("Select a market");
+		super("Select a market", allowAll ? 19 : 20);
 		this.dataSource = dataSource;
 		if (nameFilter != null && nameFilter.contains("/"))
 			this.nameFilter = nameFilter.replaceFirst("/", "[/-]?");
 		else
 			this.nameFilter = nameFilter;
+		this.allowAll = allowAll;
+	}
+
+	public SelectMarketMenu(String dataSource, String nameFilter)
+	{
+		this(dataSource, nameFilter, false);
+	}
+
+	public SelectMarketMenu(String nameFilter, boolean allowAll)
+	{
+		this(null, nameFilter, allowAll);
 	}
 
 	public SelectMarketMenu(String nameFilter)
 	{
-		this(null, nameFilter);
+		this(nameFilter, false);
+	}
+
+	public SelectMarketMenu(boolean allowAll)
+	{
+		this(null, allowAll);
 	}
 
 	public SelectMarketMenu()
 	{
-		this(null, null);
+		this(false);
 	}
 
 	@Override
@@ -45,7 +62,9 @@ public class SelectMarketMenu extends SelectMenu<MarketInfo>
 		List<MarketInfo> markets = resMsg.getEntities(MarketInfo.class);
 
 		List<MenuEntry> menu = new ArrayList<MenuEntry>();
-		int i = 1;
+		if (allowAll)
+			menu.add(new MenuEntry(1, "All Markets", true, this::handleSelectAll));
+		int i = allowAll ? 2 : 1;
 		for (MarketInfo market : markets) {
 			menu.add(new MenuEntry(i, market.getDisplayName(), true, this::handleSelectMarket, market));
 			i++;
@@ -57,5 +76,10 @@ public class SelectMarketMenu extends SelectMenu<MarketInfo>
 	private void handleSelectMarket(MenuEntry entry)
 	{
 		setSelection(((MarketInfo)entry.getHandlerData()));
+	}
+
+	private void handleSelectAll(MenuEntry entry)
+	{
+		setSelection(new MarketInfo("", ""));
 	}
 }
