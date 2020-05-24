@@ -88,9 +88,8 @@ public class BinanceConnector implements SourceConnector
 		Response<ExchangeInfo> response;
 		try {
 			response = call.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} catch (IOException | RuntimeException e) {
+			throw new TemporaryAPIException("Unexpected error.", e, 5 * 60 * 1000);
 		}
 
 		checkResponse(response);

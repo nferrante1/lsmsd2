@@ -88,11 +88,14 @@ public class CoinbaseConnector implements SourceConnector
 		Response<List<APIMarket>> response;
 		try {
 			response = call.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} catch (IOException | RuntimeException e) {
+			throw new TemporaryAPIException("Unexpected error.", e, 5 * 60 * 1000);
 		}
-		return response.body();
+
+		checkResponse(response);
+
+		List<APIMarket> markets = response.body();
+		return markets == null ? null : markets;
 	}
 
 	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end)
@@ -112,10 +115,12 @@ public class CoinbaseConnector implements SourceConnector
 		Response<List<APICandle>> response;
 		try {
 			response = call.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} catch (IOException  | RuntimeException e) {
+			throw new TemporaryAPIException("Unexpected error.", e, 5 * 60 * 1000);
 		}
+
+		checkResponse(response);
+
 		return response.body();
 	}
 
