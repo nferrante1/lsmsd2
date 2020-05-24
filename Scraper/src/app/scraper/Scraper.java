@@ -187,7 +187,6 @@ public final class Scraper
 					start();
 				else if (msg.equals("STOP"))
 					stop();
-				System.out.println("DONE");
 				OutputStream os = socket.getOutputStream();
 				DataOutputStream dos = new DataOutputStream(os);
 				dos.writeUTF("ACK");
