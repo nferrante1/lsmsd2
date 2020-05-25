@@ -1,6 +1,29 @@
 \section{Run the client}
 
-TODO command line options.
+The client supports the following parameters:
+
+%TODO: complete help message in implementation
+\begin{verbatim}
+$ java -jar Client.jar --help
+usage: app [-h | --help] [-H <HOSTLIST> | --host <HOSTLIST>]
+ -h,--help              Print this message.
+ -H,--host <HOSTLIST>   List of server hostname:port.
+\end{verbatim}
+
+To connect the client to the server application deployed on the machines of the
+\theinstitute, connect to the institute's VPN and then run:
+
+\begin{verbatim}
+$ java -jar Client.jar
+\end{verbatim}
+
+If you want to connect to a different server (or a cluster of servers, if the
+server application is distributed with \standout{Docker Swarm}), run:
+
+\begin{verbatim}
+$ java -jar Client.jar
+  -H <host>:<port>[,<alternative-host>:<alternative-port>,...]
+\end{verbatim}
 
 After that, you can log-in (the administrator must create the user for you):
 
