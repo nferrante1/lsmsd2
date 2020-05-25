@@ -32,7 +32,7 @@ public class RSIStrategy implements ExecutableStrategy
 	private RSI rsi;
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "RSI Strategy";
 	}

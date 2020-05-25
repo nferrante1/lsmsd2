@@ -138,7 +138,7 @@ public class StrategyFile
 	public String getStrategyName()
 	{
 		ExecutableStrategy strategy = getStrategy();
-		return strategy == null ? null : strategy.getName();
+		return strategy == null ? null : strategy.name();
 	}
 
 	public boolean compile()

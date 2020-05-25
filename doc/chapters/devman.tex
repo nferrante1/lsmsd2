@@ -1,4 +1,14 @@
 \chapter{Strategy development manual}\label{appendix:devman}
 
-TODO ExecutableStrategy methods description; order of execution; paste of
-Skel.java; description of Journal methods
+To create a new strategy, a Java class must be developed. The Java class must
+be public and implement the \code{app.library.ExecutableStrategy} interface and
+it must be placed in a file called \code{<ClassName>.java}. The class must be
+placed in the default package.
+
+The base skeleton for a strategy can be found in \code{strategies/Skel.java}.
+The content is shown in~\lstref{lst:strategyskel}.
+
+Various examples of strategies can be found in the \code{strategies} folder.
+
+\lstinputlisting[language=java, style=javacode, label={lst:strategyskel},
+caption={Base skeleton for a strategy.}]{Skel.java}

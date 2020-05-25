@@ -34,7 +34,7 @@ public class RandomStrategy implements ExecutableStrategy
 	}
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "Random Strategy v2";
 	}

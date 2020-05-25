@@ -45,7 +45,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 	}
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "Write File Strategy (for debugging) [randId: " + (new Random()).nextInt(Integer.MAX_VALUE) + "]";
 	}
