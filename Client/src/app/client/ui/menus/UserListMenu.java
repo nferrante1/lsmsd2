@@ -8,11 +8,11 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.UserInfo;
 
-public class UserListMenu extends PagedMenu
+final class UserListMenu extends PagedMenu
 {
-	protected String filter;
+	private final String filter;
 
-	public UserListMenu(String filter)
+	UserListMenu(String filter)
 	{
 		super("Select a user to DELETE it");
 		this.filter = filter;

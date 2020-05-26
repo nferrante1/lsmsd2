@@ -1,15 +1,11 @@
 package app.common.net.entities;
 
-public class UserInfo extends Entity
+public final class UserInfo extends Entity
 {
 	private static final long serialVersionUID = -6433251173793910131L;
 
-	private String username;
-	private boolean admin;
-
-	public UserInfo()
-	{
-	}
+	private final String username;
+	private final boolean admin;
 
 	public UserInfo(String username, boolean admin)
 	{
@@ -22,18 +18,8 @@ public class UserInfo extends Entity
 		return username;
 	}
 
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
-
 	public boolean isAdmin()
 	{
 		return admin;
-	}
-
-	public void setAdmin(boolean isAdmin)
-	{
-		this.admin = isAdmin;
 	}
 }

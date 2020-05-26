@@ -23,7 +23,7 @@ import app.datamodel.mongo.DBManager;
 import app.datamodel.pojos.User;
 import app.server.runner.StrategyFile;
 
-public class Server
+public final class Server
 {
 	private static int port = 8888;
 
@@ -40,7 +40,7 @@ public class Server
 		} catch (ParseException ex) {
 			Logger.getLogger(Server.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
 		}
-	
+
 		setupDBManager();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
@@ -50,7 +50,6 @@ public class Server
 		Logger.getLogger(Server.class.getName()).exiting(Server.class.getName(), "main", args);
 	}
 
-	
 	private static void createAdmin()
 	{
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
@@ -240,12 +239,9 @@ public class Server
 				StrategyFile.setMainDirectory("strategies");
 			else
 				StrategyFile.setMainDirectory(dir);
-				
 		}
 		if(cmd.hasOption("standalone"))
-		{
 			DBManager.setStandalone(true);
-		}
 	}
 
 	private static void setLogLevel(Level level)
@@ -257,12 +253,9 @@ public class Server
 
 		Logger.getLogger(Server.class.getName()).config("Log level set to " + level + ".");
 	}
-	
+
 	public static void setupDBManager()
 	{
 		DBManager.setReadPreference(ReadPreference.nearest());
-		//DBManager.addCodec();
 	}
-	
-
 }

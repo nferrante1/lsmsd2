@@ -6,12 +6,8 @@ public class ParameterInfo extends Entity
 {
 	private static final long serialVersionUID = 1605222247978013829L;
 
-	protected String name;
-	protected ParameterType type;
-
-	public ParameterInfo()
-	{
-	}
+	private final String name;
+	private final ParameterType type;
 
 	public ParameterInfo(String name, ParameterType type)
 	{
@@ -29,36 +25,8 @@ public class ParameterInfo extends Entity
 		return name;
 	}
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	/*public String getDisplayName()
-	{
-		char[] chars = name.toCharArray();
-		StringBuilder sb = new StringBuilder();
-		sb.append(Character.toUpperCase(chars[0]));
-		for (int i = 1; i < chars.length; i++) {
-			char c = chars[i];
-			if (c == '_') {
-				sb.append(' ');
-				continue;
-			}
-			if (Character.isUpperCase(c))
-				sb.append(' ');
-			sb.append(c);
-		}
-		return sb.toString();
-	}*/
-
 	public ParameterType getType()
 	{
 		return type;
-	}
-
-	public void setType(ParameterType type)
-	{
-		this.type = type;
 	}
 }

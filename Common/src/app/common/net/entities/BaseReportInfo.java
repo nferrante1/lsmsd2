@@ -4,10 +4,10 @@ public class BaseReportInfo extends Entity
 {
 	private static final long serialVersionUID = -2889788078149965866L;
 
-	protected String id;
-	protected String strategyName;
-	protected String market;
-	protected double netProfit;
+	private String id;
+	private String strategyName;
+	private String market;
+	private double netProfit;
 
 	public BaseReportInfo()
 	{

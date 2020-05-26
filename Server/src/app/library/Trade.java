@@ -4,12 +4,12 @@ import java.time.Instant;
 
 public final class Trade
 {
-	private Instant entryTime;
-	private double amount;
-	private double entryValue;
-	private double exitValue;
+	private final Instant entryTime;
+	private final double amount;
+	private final double entryValue;
+	private double exitValue = Double.NaN;
 	private Instant exitTime;
-	private long duration;
+	private long duration = -1L;
 
 	Trade(Instant entryTime, double amount, double value)
 	{
@@ -69,8 +69,6 @@ public final class Trade
 
 	public long duration()
 	{
-		if (open())
-			return -1L;
 		return duration;
 	}
 

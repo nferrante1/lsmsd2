@@ -13,9 +13,9 @@ import app.datamodel.pojos.enums.StorablePojoState;
 
 public abstract class StorablePojo
 {
-	protected transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
-	protected transient StorablePojoState state;
-	protected transient boolean deleted;
+	private transient HashMap<String, Object> updatedFields = new HashMap<String, Object>();
+	private transient StorablePojoState state;
+	private transient boolean deleted;
 
 	public StorablePojo()
 	{

@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileContent extends Entity
+public final class FileContent extends Entity
 {
 	private static final long serialVersionUID = 2004229420089692143L;
 
-	protected byte[] content;
+	private final byte[] content;
 
 	public FileContent(String fileName) throws IOException
 	{

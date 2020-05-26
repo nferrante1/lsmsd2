@@ -26,14 +26,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CoinbaseConnector implements SourceConnector
+public final class CoinbaseConnector implements SourceConnector
 {
 	private final int[] ACCEPTED_GRANULARITY = { 1, 5, 15, 60, 360, 1440 };
-	private Retrofit retrofit;
-	private CoinbaseInterface apiInterface;
+	private final Retrofit retrofit;
+	private final CoinbaseInterface apiInterface;
 	private int additionalRateLimit = 0;
 
-	protected int getAcceptedGranularity(int granularity)
+	private int getAcceptedGranularity(int granularity)
 	{
 		for (int i = ACCEPTED_GRANULARITY.length - 1; i >= 0; i--) {
 			if (granularity % ACCEPTED_GRANULARITY[i] == 0)
@@ -60,14 +60,8 @@ public class CoinbaseConnector implements SourceConnector
 
 	public CoinbaseConnector()
 	{
-		// TODO: remove the following 3 lines and the client from below
-		// HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-		// interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-		// OkHttpClient client = new
-		// OkHttpClient.Builder().addInterceptor(interceptor).build();
-
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
-		retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/")// .client(client)
+		retrofit = new Retrofit.Builder().baseUrl("https://api.pro.coinbase.com/")
 			.addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(CoinbaseInterface.class);
 	}
@@ -98,7 +92,7 @@ public class CoinbaseConnector implements SourceConnector
 		return markets == null ? null : markets;
 	}
 
-	protected List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end)
+	private List<APICandle> getCandles(String marketId, int granularity, Instant start, Instant end)
 		throws InterruptedException
 	{
 		rateLimit();
@@ -124,7 +118,7 @@ public class CoinbaseConnector implements SourceConnector
 		return response.body();
 	}
 
-	protected void checkResponse(Response<?> response)
+	private void checkResponse(Response<?> response)
 	{
 		if (response.isSuccessful())
 			return;
@@ -198,7 +192,7 @@ public class CoinbaseConnector implements SourceConnector
 		return candles;
 	}
 
-	protected Instant findFirstInstant(String marketId, int granularity) throws InterruptedException
+	private Instant findFirstInstant(String marketId, int granularity) throws InterruptedException
 	{
 		Logger.getLogger(CoinbaseConnector.class.getName()).info("Searching first available candle for market " + marketId + ".");
 		Instant start = Instant.ofEpochSecond(1437428220);
@@ -214,7 +208,7 @@ public class CoinbaseConnector implements SourceConnector
 		start = curCandles.get(curCandles.size() - 1).getTime();
 		curCandles.clear();
 		granularity = getAcceptedGranularity(granularity);
-		
+
 		while (curCandles.size() == 0) {
 			Instant end = start.plusSeconds(granularity * 60 * 300);
 			curCandles = getCandles(marketId, granularity, start, end);

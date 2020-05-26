@@ -1,16 +1,16 @@
 package app.common.net.entities;
 
-public class MarketInfo extends Entity
+public final class MarketInfo extends Entity
 {
 	private static final long serialVersionUID = 4212262098735608977L;
 
-	protected String sourceName;
-	protected String marketId;
-	protected String baseCurrency;
-	protected String quoteCurrency;
-	protected int granularity;
-	protected boolean sync;
-	protected boolean selectable;
+	private String sourceName;
+	private String marketId;
+	private String baseCurrency;
+	private String quoteCurrency;
+	private int granularity;
+	private boolean sync;
+	private boolean selectable;
 
 	public MarketInfo()
 	{

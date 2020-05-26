@@ -8,12 +8,12 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
-public class MarketListMenu extends PagedMenu
+final class MarketListMenu extends PagedMenu
 {
-	protected String dataSource;
-	protected String nameFilter;
+	private final String dataSource;
+	private final String nameFilter;
 
-	public MarketListMenu(String dataSource, String nameFilter)
+	MarketListMenu(String dataSource, String nameFilter)
 	{
 		super("Select a market");
 		this.dataSource = dataSource;
@@ -23,7 +23,7 @@ public class MarketListMenu extends PagedMenu
 			this.nameFilter = nameFilter;
 	}
 
-	public MarketListMenu(String nameFilter)
+	MarketListMenu(String nameFilter)
 	{
 		this(null, nameFilter);
 	}

@@ -3,9 +3,9 @@ package app.client.ui.menus.forms;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchForm extends TextForm
+public final class SearchForm extends TextForm
 {
-	protected String searchBy;
+	private final String searchBy;
 
 	public SearchForm(String searchBy)
 	{

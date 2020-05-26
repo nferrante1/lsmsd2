@@ -11,7 +11,7 @@ import com.mongodb.client.model.Sorts;
 
 import app.datamodel.pojos.DataRange;
 
-public class DataRangeManager extends PojoManager<DataRange>
+public final class DataRangeManager extends PojoManager<DataRange>
 {
 	public DataRangeManager()
 	{

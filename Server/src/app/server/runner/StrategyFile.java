@@ -14,9 +14,9 @@ import javax.tools.ToolProvider;
 
 import app.library.ExecutableStrategy;
 
-public class StrategyFile
+public final class StrategyFile
 {
-	protected String hash;
+	private final String hash;
 	private static String mainDirectory = "strategies";
 	private String className;
 
@@ -48,7 +48,7 @@ public class StrategyFile
 		StrategyFile.mainDirectory = mainDirectory;
 	}
 
-	protected String computeHash(byte[] file)
+	private String computeHash(byte[] file)
 	{
 		String fileHash;
 		try {

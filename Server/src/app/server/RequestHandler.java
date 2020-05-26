@@ -60,9 +60,8 @@ import app.server.managers.MarketInfoManager;
 import app.server.runner.StrategyFile;
 import app.server.runner.StrategyRunner;
 
-public class RequestHandler extends Thread
+final class RequestHandler extends Thread
 {
-
 	private Socket socket;
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
@@ -144,12 +143,8 @@ public class RequestHandler extends Thread
 	{
 		KVParameter userInfo = reqMsg.getEntity(KVParameter.class);
 		StorablePojoManager<User> userManager = new StorablePojoManager<User>(User.class);
-		StorablePojoCursor<User> cursor = (StorablePojoCursor<User>)userManager.find(userInfo.getValue());
-		if(!cursor.hasNext())
+		if (userManager.delete(userInfo.getValue()) == 0)
 			return new ResponseMessage("User '" + userInfo.getValue() + "' does not exists.");
-		User user = cursor.next();
-		user.delete();
-		userManager.save(user);
 		return new ResponseMessage();
 	}
 
@@ -559,7 +554,7 @@ public class RequestHandler extends Thread
 		Strategy strategy = cursor.next();
 		StrategyRun run = strategy.getRun(reportId);
 		Report report = run.getReport();
-		return new ResponseMessage( new ReportInfo(
+		return new ResponseMessage(new ReportInfo(
 				reportId, strategy.getName(), run.getParameter("market").toString(), 
 				report.getNetProfit(), run.getUser(), 
 				report.getGrossProfit(), report.getGrossLoss(), 
@@ -574,13 +569,12 @@ public class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null,Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")), null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")), null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();
 		strategy.deleteRun(reportId);
 		manager.save(strategy);
-
 		return new ResponseMessage();
 	}
 

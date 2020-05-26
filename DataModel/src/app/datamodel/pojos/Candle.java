@@ -9,21 +9,21 @@ import app.datamodel.pojos.annotations.PojoId;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("MarketData")
-public class Candle extends StorablePojo
+public final class Candle extends StorablePojo
 {
 	@PojoId
 	@BsonProperty("t")
-	protected Instant time;
+	private Instant time;
 	@BsonProperty("o")
-	protected double open;
+	private double open;
 	@BsonProperty("h")
-	protected double high;
+	private double high;
 	@BsonProperty("l")
-	protected double low;
+	private double low;
 	@BsonProperty("c")
-	protected double close;
+	private double close;
 	@BsonProperty("v")
-	protected double volume;
+	private double volume;
 
 	public Candle(Instant time, double open, double high, double low, double close, double volume)
 	{

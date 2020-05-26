@@ -7,17 +7,17 @@ import app.datamodel.pojos.annotations.PojoId;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Sources")
-public class Market extends StorablePojo
+public final class Market extends StorablePojo
 {
 	@PojoId
-	public String id;
-	protected String baseCurrency;
-	protected String quoteCurrency;
-	protected int granularity;
-	protected boolean selectable;
-	protected boolean sync;
-	protected transient DataRange range;
-	protected transient int lastCandlesCount = -1;
+	private String id;
+	private String baseCurrency;
+	private String quoteCurrency;
+	private int granularity;
+	private boolean selectable;
+	private boolean sync;
+	private transient DataRange range;
+	private transient int lastCandlesCount = -1;
 
 	public Market()
 	{

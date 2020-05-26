@@ -8,11 +8,11 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.StrategyInfo;
 
-public class StrategyListMenu extends PagedMenu
+final class StrategyListMenu extends PagedMenu
 {
-	protected String filter;
+	private final String filter;
 
-	public StrategyListMenu(String filter)
+	StrategyListMenu(String filter)
 	{
 		super("Select a strategy");
 		this.filter = filter;

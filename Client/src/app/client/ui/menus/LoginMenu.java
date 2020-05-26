@@ -9,7 +9,7 @@ import app.client.ui.Console;
 import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 
-public class LoginMenu extends Menu
+public final class LoginMenu extends Menu
 {
 	public LoginMenu()
 	{

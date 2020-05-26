@@ -4,40 +4,40 @@ import java.util.function.Predicate;
 
 import app.client.ui.Console;
 
-public class FormField
+class FormField
 {
-	protected String name;
-	protected String defaultValue;
+	protected final String name;
+	protected final String defaultValue;
 	protected String value;
-	protected boolean inputHidden;
-	protected Predicate<String> validator;
+	protected final boolean inputHidden;
+	protected final Predicate<String> validator;
 
-	public FormField(String name)
+	protected FormField(String name)
 	{
 		this(name, false);
 	}
 
-	public FormField(String name, boolean inputHidden)
+	protected FormField(String name, boolean inputHidden)
 	{
 		this(name, inputHidden, null);
 	}
 
-	public FormField(String name, String defaultValue)
+	protected FormField(String name, String defaultValue)
 	{
 		this(name, defaultValue, null);
 	}
 
-	public FormField(String name, Predicate<String> validator)
+	protected FormField(String name, Predicate<String> validator)
 	{
 		this(name, false, validator);
 	}
 
-	public FormField(String name, boolean inputHidden, Predicate<String> validator)
+	protected FormField(String name, boolean inputHidden, Predicate<String> validator)
 	{
 		this(name, inputHidden, null, validator);
 	}
 
-	public FormField(String name, String defaultValue, Predicate<String> validator)
+	protected FormField(String name, String defaultValue, Predicate<String> validator)
 	{
 		this(name, false, defaultValue, validator);
 	}

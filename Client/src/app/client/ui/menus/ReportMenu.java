@@ -13,12 +13,12 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.ReportInfo;
 
-public class ReportMenu extends Menu
+final class ReportMenu extends Menu
 {
-	protected ReportInfo report;
-	protected List<KVParameter> parameters;
+	private final ReportInfo report;
+	private final List<KVParameter> parameters;
 
-	public ReportMenu(ReportInfo report, List<KVParameter> parameters)
+	ReportMenu(ReportInfo report, List<KVParameter> parameters)
 	{
 		super("Report of " + report.getStrategyName() + " on " + report.getMarket() + " | Select an action");
 		this.report = report;
@@ -42,7 +42,7 @@ public class ReportMenu extends Menu
 		double amount = Double.parseDouble(response.get("Amount"));
 		showReport(report, parameters, amount);
 	}
-	public static void showReport(ReportInfo report, List<KVParameter> parameters, double amount)
+	static void showReport(ReportInfo report, List<KVParameter> parameters, double amount)
 	{
 		DecimalFormat df = new DecimalFormat("#,##0.00");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);

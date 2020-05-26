@@ -7,9 +7,9 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public class StrategyFileForm extends TextForm
+public final class StrategyFileForm extends TextForm
 {
-	private boolean mustExists;
+	private final boolean mustExists;
 
 	public StrategyFileForm(boolean mustExists)
 	{

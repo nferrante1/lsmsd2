@@ -117,7 +117,7 @@ public final class Scraper
 		Level logLevel = Level.INFO;
 		if (cmd.hasOption("log-level")) {
 			String logLevelName = cmd.getOptionValue("log-level").toUpperCase();
-			
+
 			try {
 				logLevel = Level.parse(logLevelName);
 			} catch (IllegalArgumentException ex) {

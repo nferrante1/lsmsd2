@@ -7,12 +7,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-public class ScraperController
+final class ScraperController
 {
 	private static String address = "localhost";
 	private static int port = 5656;
 
-	public static void start()
+	static void start()
 	{
 		try {
 			Socket socket = new Socket();
@@ -33,7 +33,7 @@ public class ScraperController
 		}
 	}
 
-	public static void stop()
+	static void stop()
 	{
 		try {
 			Socket socket = new Socket();
@@ -54,12 +54,12 @@ public class ScraperController
 		}
 	}
 
-	public static void setAddress(String address)
+	static void setAddress(String address)
 	{
 		ScraperController.address = address;
 	}
 
-	public static void setPort(int port)
+	static void setPort(int port)
 	{
 		ScraperController.port = port;
 	}

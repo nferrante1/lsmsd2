@@ -1,6 +1,6 @@
 package app.common.net.entities;
 
-public class AuthTokenInfo extends Entity
+public final class AuthTokenInfo extends Entity
 {
 	private static final long serialVersionUID = 1467121217034301020L;
 

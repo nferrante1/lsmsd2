@@ -10,12 +10,12 @@ import app.datamodel.pojos.annotations.CollectionName;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Sources")
-public class DataSource extends StorablePojo
+public final class DataSource extends StorablePojo
 {
 	@BsonId
-	protected String name;
-	protected boolean enabled;
-	protected List<Market> markets = new ArrayList<Market>();
+	private String name;
+	private boolean enabled;
+	private List<Market> markets = new ArrayList<Market>();
 
 	public DataSource()
 	{

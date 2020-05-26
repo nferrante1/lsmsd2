@@ -28,13 +28,13 @@ import app.library.indicators.ComputableIndicator;
 import app.library.indicators.Indicator;
 import app.server.runner.exceptions.StrategyRunException;
 
-public class StrategyRunner extends Thread
+public final class StrategyRunner extends Thread
 {
-	private ExecutableStrategy strategy;
-	private String marketId;
+	private final ExecutableStrategy strategy;
+	private final String marketId;
 	private int granularity;
 	private boolean inverseCross;
-	private Map<String, Object> parameters;
+	private final Map<String, Object> parameters;
 	private Journal journal;
 	private double progress = -1.0;
 	private Throwable exception;

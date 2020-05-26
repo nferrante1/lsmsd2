@@ -4,12 +4,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import app.client.ui.Console;
 
-public abstract class AnimatedText extends Thread
+abstract class AnimatedText extends Thread
 {
-	protected String text;
-	protected AtomicBoolean running;
+	protected final String text;
+	private final AtomicBoolean running;
 
-	public AnimatedText(String text)
+	protected AnimatedText(String text)
 	{
 		this.text = text;
 		this.running = new AtomicBoolean();

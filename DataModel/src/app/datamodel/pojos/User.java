@@ -10,12 +10,12 @@ import app.datamodel.pojos.annotations.CollectionName;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Users")
-public class User extends StorablePojo
+public final class User extends StorablePojo
 {
 	@BsonId
-	protected String username;
-	protected String passwordHash;
-	protected boolean admin;
+	private String username;
+	private String passwordHash;
+	private boolean admin;
 
 	public User()
 	{
@@ -45,7 +45,7 @@ public class User extends StorablePojo
 		return this.passwordHash;
 	}
 
-	protected final static String hashPassword(String password)
+	private final static String hashPassword(String password)
 	{
 		String passwordHash;
 		try {
@@ -60,16 +60,6 @@ public class User extends StorablePojo
 			Logger.getLogger(User.class.getName()).severe("Can not hash password: hash function SHA-256 not available.");
 		}
 		return passwordHash;
-	}
-
-	public static boolean validatePassword(String password)
-	{
-		return password != null && password.length() > 7;
-	}
-
-	public static boolean validateUsername(String username)
-	{
-		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
 
 	public boolean checkPassword(String password)
@@ -95,16 +85,6 @@ public class User extends StorablePojo
 	public void setAdmin(boolean admin)
 	{
 		updateField("admin", admin);
-	}
-
-	public void promote()
-	{
-		setAdmin(true);
-	}
-
-	public void demote()
-	{
-		setAdmin(false);
 	}
 
 	public AuthToken generateToken()

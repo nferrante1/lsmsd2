@@ -1,15 +1,11 @@
 package app.common.net.entities;
 
-public class SourceInfo extends Entity
+public final class SourceInfo extends Entity
 {
 	private static final long serialVersionUID = 2089675492960252661L;
 
-	private String name;
+	private final String name;
 	private boolean enabled;
-
-	public SourceInfo()
-	{
-	}
 
 	public SourceInfo(String name, boolean enabled)
 	{
@@ -20,11 +16,6 @@ public class SourceInfo extends Entity
 	public String getName()
 	{
 		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
 	public boolean isEnabled()

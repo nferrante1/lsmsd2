@@ -1,11 +1,11 @@
 package app.common.net.entities;
 
-public class BrowseInfo extends Entity
+public final class BrowseInfo extends Entity
 {
 	private static final long serialVersionUID = -5686831756818703207L;
 
-	protected final int page;
-	protected final int perPage;
+	private final int page;
+	private final int perPage;
 
 	public BrowseInfo(int page, int perPage)
 	{

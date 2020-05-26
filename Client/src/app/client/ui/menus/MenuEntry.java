@@ -4,14 +4,13 @@ import java.util.function.Consumer;
 
 public class MenuEntry
 {
-	protected int key;
-	protected String text;
-	protected boolean exit;
-	protected Object handlerData;
+	private final int key;
+	private final String text;
+	private final boolean exit;
+	private final Object handlerData;
+	private final Consumer<MenuEntry> handler;
 
-	protected Consumer<MenuEntry> handler;
-
-	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler, Object handlerData)
+	MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler, Object handlerData)
 	{
 		if (key < 0)
 			this.key = 0;
@@ -23,22 +22,22 @@ public class MenuEntry
 		this.handlerData = handlerData;
 	}
 
-	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler)
+	MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler)
 	{
 		this(key, text, exit, handler, null);
 	}
 
-	public MenuEntry(int key, String text, Consumer<MenuEntry> handler, Object handlerData)
+	MenuEntry(int key, String text, Consumer<MenuEntry> handler, Object handlerData)
 	{
 		this(key, text, false, handler, handlerData);
 	}
 
-	public MenuEntry(int key, String text, Consumer<MenuEntry> handler)
+	MenuEntry(int key, String text, Consumer<MenuEntry> handler)
 	{
 		this(key, text, false, handler);
 	}
 
-	public MenuEntry(int key, String text, boolean exit)
+	MenuEntry(int key, String text, boolean exit)
 	{
 		this(key, text, exit, null);
 	}
@@ -58,12 +57,7 @@ public class MenuEntry
 		return this.exit;
 	}
 
-	public void setHandler(Consumer<MenuEntry> handler)
-	{
-		this.handler = handler;
-	}
-
-	public void triggerHandler()
+	protected void triggerHandler()
 	{
 		if (this.handler != null)
 			this.handler.accept(this);

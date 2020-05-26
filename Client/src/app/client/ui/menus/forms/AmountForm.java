@@ -5,7 +5,7 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public class AmountForm extends TextForm
+public final class AmountForm extends TextForm
 {
 	public AmountForm()
 	{

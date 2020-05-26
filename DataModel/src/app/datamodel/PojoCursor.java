@@ -9,12 +9,12 @@ public class PojoCursor<T extends Object> implements AutoCloseable
 {
 	private MongoCursor<T> cursor;
 
-	public PojoCursor(MongoCursor<T> cursor)
+	PojoCursor(MongoCursor<T> cursor)
 	{
 		this.cursor = cursor;
 	}
 
-	public PojoCursor(PojoCursor<T> cursor)
+	PojoCursor(PojoCursor<T> cursor)
 	{
 		this.cursor = cursor.getCursor();
 	}

@@ -27,14 +27,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class BinanceConnector implements SourceConnector
+public final class BinanceConnector implements SourceConnector
 {
 	private final int[] ACCEPTED_GRANULARITY = { 1, 3, 5, 15, 30, 60, 120, 240, 360, 480, 720, 1440, 4320, 10080 };
-	private Retrofit retrofit;
-	private BinanceInterface apiInterface;
+	private final Retrofit retrofit;
+	private final BinanceInterface apiInterface;
 	private int additionalRateLimit = 0;
 
-	protected int getAcceptedGranularity(int granularity)
+	private int getAcceptedGranularity(int granularity)
 	{
 		for (int i = ACCEPTED_GRANULARITY.length - 1; i >= 0; i--) {
 			if (granularity % ACCEPTED_GRANULARITY[i] == 0)
@@ -61,14 +61,8 @@ public class BinanceConnector implements SourceConnector
 
 	public BinanceConnector()
 	{
-		// TODO: remove the following 3 lines and client from below
-		// HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-		// interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
-		// OkHttpClient client = new
-		// OkHttpClient.Builder().addInterceptor(interceptor).build();
-
 		Gson gson = new GsonBuilder().registerTypeAdapter(APICandle.class, new CandleDeserializer()).create();
-		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/")// .client(client)
+		retrofit = new Retrofit.Builder().baseUrl("https://api.binance.com/api/v3/")
 			.addConverterFactory(GsonConverterFactory.create(gson)).build();
 		apiInterface = retrofit.create(BinanceInterface.class);
 	}
@@ -115,7 +109,7 @@ public class BinanceConnector implements SourceConnector
 		return minutes + "m";
 	}
 
-	protected List<APICandle> _getCandles(String marketId, int granularity, Instant start)
+	private List<APICandle> _getCandles(String marketId, int granularity, Instant start)
 		throws InterruptedException
 	{
 		rateLimit();
@@ -144,7 +138,7 @@ public class BinanceConnector implements SourceConnector
 		return response.body();
 	}
 
-	protected void checkResponse(Response<?> response)
+	private void checkResponse(Response<?> response)
 	{
 		if (response.isSuccessful())
 			return;

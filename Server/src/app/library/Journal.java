@@ -16,7 +16,6 @@ public final class Journal
 	private Trade hodlTrade;
 	private double currentValue;
 	private double netProfit;
-	private double maxProfit = Double.MIN_VALUE;
 	private double grossProfit;
 	private double grossLoss;
 	private long totalTrades;

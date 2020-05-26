@@ -60,4 +60,9 @@ public class RS extends Indicator
 	{
 		return smad;
 	}
+
+	public int getPeriod()
+	{
+		return period;
+	}
 }

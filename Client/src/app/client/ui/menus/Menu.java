@@ -4,7 +4,7 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public abstract class Menu
+abstract class Menu
 {
 	protected String prompt;
 

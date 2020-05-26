@@ -1,30 +1,30 @@
 package app.client.ui.menus;
 
-public abstract class SelectMenu<T> extends PagedMenu
+abstract class SelectMenu<T> extends PagedMenu
 {
 	private T selection;
 
-	public SelectMenu()
+	SelectMenu()
 	{
 		super();
 	}
 
-	public SelectMenu(int perPage)
+	SelectMenu(int perPage)
 	{
 		super(perPage);
 	}
 
-	public SelectMenu(String prompt)
+	SelectMenu(String prompt)
 	{
 		super(prompt);
 	}
 
-	public SelectMenu(String prompt, int perPage)
+	SelectMenu(String prompt, int perPage)
 	{
 		super(prompt, perPage);
 	}
 
-	public T getSelection()
+	T getSelection()
 	{
 		return selection;
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public abstract class TextForm
+abstract class TextForm
 {
 	protected String prompt;
 	private List<FormField> fields;

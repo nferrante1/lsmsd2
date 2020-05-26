@@ -6,12 +6,12 @@ import app.datamodel.pojos.StorablePojo;
 
 public class StorablePojoCursor<T extends StorablePojo> extends PojoCursor<T>
 {
-	public StorablePojoCursor(MongoCursor<T> cursor)
+	StorablePojoCursor(MongoCursor<T> cursor)
 	{
 		super(cursor);
 	}
 
-	public StorablePojoCursor(PojoCursor<T> cursor)
+	StorablePojoCursor(PojoCursor<T> cursor)
 	{
 		super(cursor);
 	}

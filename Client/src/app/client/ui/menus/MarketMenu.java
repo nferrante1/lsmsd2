@@ -15,11 +15,11 @@ import app.client.ui.menus.forms.MarketGranularityForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
-public class MarketMenu extends Menu
+final class MarketMenu extends Menu
 {
-	protected MarketInfo market;
+	private final MarketInfo market;
 
-	public MarketMenu(MarketInfo market)
+	MarketMenu(MarketInfo market)
 	{
 		super(market.getDisplayName() + " | Select an action");
 		this.market = market;

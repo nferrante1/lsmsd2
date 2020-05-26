@@ -11,19 +11,19 @@ import app.datamodel.pojos.annotations.CollectionName;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("AuthTokens")
-public class AuthToken extends StorablePojo
+public final class AuthToken extends StorablePojo
 {
 	@BsonId
 	private String id;
-	protected String username;
-	protected Instant expireTime;
+	private String username;
+	private Instant expireTime;
 
 	public AuthToken()
 	{
 		super();
 	}
 
-	public AuthToken(String username, boolean isAdmin)
+	AuthToken(String username, boolean isAdmin)
 	{
 		super(StorablePojoState.UNTRACKED);
 		this.username = username;

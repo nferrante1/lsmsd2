@@ -6,23 +6,23 @@ import java.util.HashMap;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-public class Candle
+public final class Candle
 {
 	@BsonProperty("t")
-	protected Instant openTime;
+	private Instant openTime;
 	@BsonProperty("o")
-	protected double open;
+	private double open;
 	@BsonProperty("h")
-	protected double high;
+	private double high;
 	@BsonProperty("l")
-	protected double low;
+	private double low;
 	@BsonProperty("c")
-	protected double close;
+	private double close;
 	@BsonProperty("v")
-	protected double volume;
+	private double volume;
 	@BsonProperty("ta")
-	protected HashMap<String, Double> ta;
-	protected transient int granularity;
+	private HashMap<String, Double> ta;
+	private transient int granularity;
 
 	public Candle()
 	{

@@ -10,13 +10,13 @@ import app.datamodel.pojos.annotations.PojoId;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Strategies")
-public class StrategyRun extends StorablePojo
+public final class StrategyRun extends StorablePojo
 {
 	@PojoId
-	protected ObjectId id;
-	protected String user;
-	protected Map<String, Object> parameters;
-	protected Report report;
+	private ObjectId id;
+	private String user;
+	private Map<String, Object> parameters;
+	private Report report;
 
 	public StrategyRun()
 	{

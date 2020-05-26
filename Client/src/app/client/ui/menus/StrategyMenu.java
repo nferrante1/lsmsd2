@@ -23,11 +23,11 @@ import app.common.net.entities.ProgressInfo;
 import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
 
-public class StrategyMenu extends Menu
+final class StrategyMenu extends Menu
 {
-	protected StrategyInfo strategy;
+	private final StrategyInfo strategy;
 
-	public StrategyMenu(StrategyInfo strategy)
+	StrategyMenu(StrategyInfo strategy)
 	{
 		super(strategy.getName() + " | Select an action");
 		this.strategy = strategy;

@@ -2,14 +2,14 @@ package app.scraper.net.data;
 
 import java.time.Instant;
 
-public class APICandle
+public final class APICandle
 {
-	protected Instant time;
-	protected double open;
-	protected double high;
-	protected double low;
-	protected double close;
-	protected double volume;
+	private final Instant time;
+	private final double open;
+	private final double high;
+	private final double low;
+	private final double close;
+	private final double volume;
 
 	public APICandle(Instant time, double open, double high, double low, double close, double volume)
 	{
@@ -54,10 +54,5 @@ public class APICandle
 	public double getVolume()
 	{
 		return volume;
-	}
-
-	public void setTime(Instant time)
-	{
-		this.time = time;
 	}
 }

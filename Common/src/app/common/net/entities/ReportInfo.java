@@ -1,26 +1,21 @@
 package app.common.net.entities;
 
-public class ReportInfo extends BaseReportInfo
+public final class ReportInfo extends BaseReportInfo
 {
 	private static final long serialVersionUID = 7958042541743504580L;
 
-	protected String user;
-	protected double grossProfit;
-	protected double grossLoss;
-	protected double hodlProfit;
-	protected long totalTrades;
-	protected long openTrades;
-	protected long winningTrades;
-	protected long maxConsecutiveLosing;
-	protected double avgAmount;
-	protected double avgDuration;
-	protected double maxDrawdown;
-	protected boolean deletable;
-
-	public ReportInfo()
-	{
-		super();
-	}
+	private final String user;
+	private final double grossProfit;
+	private final double grossLoss;
+	private final double hodlProfit;
+	private final long totalTrades;
+	private final long openTrades;
+	private final long winningTrades;
+	private final long maxConsecutiveLosing;
+	private final double avgAmount;
+	private final double avgDuration;
+	private final double maxDrawdown;
+	private final boolean deletable;
 
 	public ReportInfo(String id, String strategyName, String market, double netProfit,
 		String user, double grossProfit, double grossLoss, double hodlProfit,
@@ -47,19 +42,9 @@ public class ReportInfo extends BaseReportInfo
 		return grossProfit;
 	}
 
-	public void setGrossProfit(double grossProfit)
-	{
-		this.grossProfit = grossProfit;
-	}
-
 	public double getGrossLoss()
 	{
 		return grossLoss;
-	}
-
-	public void setGrossLoss(double grossLoss)
-	{
-		this.grossLoss = grossLoss;
 	}
 
 	public double getHodlProfit()
@@ -67,19 +52,9 @@ public class ReportInfo extends BaseReportInfo
 		return hodlProfit;
 	}
 
-	public void setHodlProfit(double hodlProfit)
-	{
-		this.hodlProfit = hodlProfit;
-	}
-
 	public long getTotalTrades()
 	{
 		return totalTrades;
-	}
-
-	public void setTotalTrades(long totalTrades)
-	{
-		this.totalTrades = totalTrades;
 	}
 
 	public long getOpenTrades()
@@ -87,19 +62,9 @@ public class ReportInfo extends BaseReportInfo
 		return openTrades;
 	}
 
-	public void setOpenTrades(long openTrades)
-	{
-		this.openTrades = openTrades;
-	}
-
 	public long getWinningTrades()
 	{
 		return winningTrades;
-	}
-
-	public void setWinningTrades(long winningTrades)
-	{
-		this.winningTrades = winningTrades;
 	}
 
 	public long getMaxConsecutiveLosing()
@@ -107,19 +72,9 @@ public class ReportInfo extends BaseReportInfo
 		return maxConsecutiveLosing;
 	}
 
-	public void setMaxConsecutiveLosing(long maxConsecutiveLosing)
-	{
-		this.maxConsecutiveLosing = maxConsecutiveLosing;
-	}
-
 	public double getMaxDrawdown()
 	{
 		return maxDrawdown;
-	}
-
-	public void setMaxDrawdown(double maxDrawdown)
-	{
-		this.maxDrawdown = maxDrawdown;
 	}
 
 	public double getAvgAmount()
@@ -127,19 +82,9 @@ public class ReportInfo extends BaseReportInfo
 		return avgAmount;
 	}
 
-	public void setAvgAmount(double avgAmount)
-	{
-		this.avgAmount = avgAmount;
-	}
-
 	public double getAvgDuration()
 	{
 		return avgDuration;
-	}
-
-	public void setAvgDuration(double avgDuration)
-	{
-		this.avgDuration = avgDuration;
 	}
 
 	public String getUser()
@@ -147,19 +92,9 @@ public class ReportInfo extends BaseReportInfo
 		return user;
 	}
 
-	public void setUser(String user)
-	{
-		this.user = user;
-	}
-
 	public boolean isDeletable()
 	{
 		return deletable;
-	}
-
-	public void setDeletable(boolean deletable)
-	{
-		this.deletable = deletable;
 	}
 
 	public long getClosedTrades()

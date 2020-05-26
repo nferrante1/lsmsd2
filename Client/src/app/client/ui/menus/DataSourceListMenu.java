@@ -8,9 +8,9 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.SourceInfo;
 
-public class DataSourceListMenu extends Menu
+final class DataSourceListMenu extends Menu
 {
-	List<SourceInfo> sources = new ArrayList<SourceInfo>();
+	private List<SourceInfo> sources = new ArrayList<SourceInfo>();
 
 	DataSourceListMenu()
 	{
@@ -38,7 +38,7 @@ public class DataSourceListMenu extends Menu
 		return menu;
 	}
 
-	void handleDataSourceSelection(MenuEntry entry)
+	private void handleDataSourceSelection(MenuEntry entry)
 	{
 		new DataSourceMenu((SourceInfo)entry.getHandlerData()).show();
 	}

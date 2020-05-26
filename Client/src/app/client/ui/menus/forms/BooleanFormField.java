@@ -2,9 +2,9 @@ package app.client.ui.menus.forms;
 
 import app.client.ui.Console;
 
-public class BooleanFormField extends FormField
+class BooleanFormField extends FormField
 {
-	public BooleanFormField(String name)
+	BooleanFormField(String name)
 	{
 		super(name);
 	}

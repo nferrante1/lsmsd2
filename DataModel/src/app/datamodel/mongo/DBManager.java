@@ -1,14 +1,11 @@
 package app.datamodel.mongo;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.bson.Document;
-import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
@@ -33,7 +30,6 @@ public final class DBManager implements Closeable
 	private static String connectionString;
 	private static String databaseName = "mydb";
 	private static boolean standalone = false;
-	private static List<Codec<?>> codecs;
 
 	private static ReadConcern readConcern = ReadConcern.LOCAL;
 	private static WriteConcern writeConcern = WriteConcern.MAJORITY;
@@ -67,13 +63,6 @@ public final class DBManager implements Closeable
 	public static synchronized void setConnectionString(String conn)
 	{
 		connectionString = conn;
-	}
-
-	public static synchronized void addCodec(Codec<?> codec)
-	{
-		if (codecs == null)
-			codecs = new ArrayList<Codec<?>>();
-		codecs.add(codec);
 	}
 
 	public static synchronized DBManager getInstance()

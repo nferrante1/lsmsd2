@@ -13,7 +13,7 @@ import app.client.ui.menus.forms.UserForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.StrategyInfo;
 
-public class MainMenu extends Menu
+final class MainMenu extends Menu
 {
 	@Override
 	protected List<MenuEntry> getMenu()

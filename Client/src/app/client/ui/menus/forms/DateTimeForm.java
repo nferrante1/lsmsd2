@@ -10,7 +10,7 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public class DateTimeForm extends TextForm
+public final class DateTimeForm extends TextForm
 {
 	public DateTimeForm()
 	{

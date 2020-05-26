@@ -6,7 +6,7 @@ import java.util.HashMap;
 import app.datamodel.pojos.DataSource;
 import app.datamodel.pojos.Market;
 
-public class DataSourceManager extends StorablePojoManager<DataSource>
+public final class DataSourceManager extends StorablePojoManager<DataSource>
 {
 	public DataSourceManager()
 	{
@@ -51,12 +51,8 @@ public class DataSourceManager extends StorablePojoManager<DataSource>
 				e.printStackTrace();
 				continue;
 			}
-			// if (newGranularity == oldGranularity)
-			// continue;
 			if (newGranularity < oldGranularity || newGranularity % oldGranularity != 0)
 				marketDataManager.delete(source.getName(), market.getId());
-				// continue;
-			// marketDataManager.aggregateCandles(source.getName(), market.getId(), newGranularity);
 		}
 		super.update(source);
 	}

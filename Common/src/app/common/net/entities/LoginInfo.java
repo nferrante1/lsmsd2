@@ -1,11 +1,11 @@
 package app.common.net.entities;
 
-public class LoginInfo extends Entity
+public final class LoginInfo extends Entity
 {
 	private static final long serialVersionUID = -8607436036739782087L;
 
-	protected final String username;
-	protected final String password;
+	private final String username;
+	private final String password;
 
 	public LoginInfo(String username, String password)
 	{

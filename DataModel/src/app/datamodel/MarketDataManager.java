@@ -17,7 +17,7 @@ import com.mongodb.client.model.Updates;
 import app.datamodel.pojos.Candle;
 import app.datamodel.pojos.MarketData;
 
-public class MarketDataManager extends StorablePojoManager<MarketData>
+public final class MarketDataManager extends StorablePojoManager<MarketData>
 {
 	public MarketDataManager()
 	{
@@ -81,61 +81,5 @@ public class MarketDataManager extends StorablePojoManager<MarketData>
 			Updates.combine(
 				Updates.set("start", date),
 				Updates.pull("candles", new Document("t", new Document("$lt", date)))));
-	}
-
-	//TODO: maybe remove
-	protected void aggregateCandles(String sourceName, String marketName, int granularity)
-	{
-		/*aggregate(
-			Aggregates.match(Filters.eq("market", sourceName + ":" + marketName)),
-			Aggregates.unwind("$candles"),
-			Aggregates.addFields(new Field<Document>("bucket",
-				new Document("$floor",
-					new Document("$divide",
-						Arrays.asList(
-							new Document("$subtract",
-								Arrays.asList("$candles.t", Instant.EPOCH)
-								),
-							granularity*60*1000)))
-				)),
-			Aggregates.group("$bucket",
-				Accumulators.first("start", "$candles.t"),
-				Accumulators.first("market", "$market"),
-				Accumulators.first("t", "$candles.t"),
-				Accumulators.first("o", "$candles.o"),
-				Accumulators.max("h", "$candles.h"),
-				Accumulators.min("l", "$candles.l"),
-				Accumulators.last("c", "$candles.c"),
-				Accumulators.sum("v", "$candles.v")
-				),
-			Aggregates.sort(Sorts.ascending("start")),
-			Aggregates.project(Projections.fields(
-				Projections.excludeId(),
-				Projections.include("market"),
-				Projections.computed("candle.t", "$t"),
-				Projections.computed("candle.o", "$o"),
-				Projections.computed("candle.h", "$h"),
-				Projections.computed("candle.l", "$l"),
-				Projections.computed("candle.c", "$c"),
-				Projections.computed("candle.v", "$v")
-				)),
-			Aggregates.group(new BsonNull(),
-				Accumulators.first("market", "$market"),
-				Accumulators.push("candles", "$candle")
-				),
-			Aggregates.unwind("$candles", new UnwindOptions().includeArrayIndex("bucket")),
-			Aggregates.addFields(new Field<Document>("bucket",
-				new Document("$floor",
-					new Document("$divide", Arrays.asList("$bucket", 1000)))
-				)),
-			Aggregates.group("$bucket",
-				Accumulators.push("candles", "$candles"),
-				Accumulators.first("market", "$market"),
-				Accumulators.sum("ncandles", 1),
-				Accumulators.first("start", "$candles.t")
-				),
-			Aggregates.project(Projections.excludeId()),
-			Aggregates.merge("tmpMarketData", new MergeOptions().whenMatched(WhenMatched.REPLACE)))
-			);*/
 	}
 }

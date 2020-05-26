@@ -23,7 +23,7 @@ import app.common.net.entities.ReportInfo;
 import app.common.net.entities.SourceInfo;
 import app.common.net.enums.ActionRequest;
 
-public class Protocol implements AutoCloseable
+public final class Protocol implements AutoCloseable
 {
 	private Socket socket;
 	private DataInputStream inputStream;

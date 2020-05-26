@@ -14,19 +14,8 @@ public class StrategyRunException extends RuntimeException
 		super(message);
 	}
 
-	public StrategyRunException(Throwable cause)
-	{
-		super(cause);
-	}
-
 	public StrategyRunException(String message, Throwable cause)
 	{
 		super(message, cause);
-	}
-
-	public StrategyRunException(String message, Throwable cause, boolean enableSuppression,
-		boolean writableStackTrace)
-	{
-		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

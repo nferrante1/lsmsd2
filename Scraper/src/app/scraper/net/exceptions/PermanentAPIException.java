@@ -13,21 +13,4 @@ public class PermanentAPIException extends RuntimeException
 	{
 		super(message);
 	}
-
-	public PermanentAPIException(Throwable cause)
-	{
-		super(cause);
-	}
-
-	public PermanentAPIException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
-
-	public PermanentAPIException(String message, Throwable cause, boolean enableSuppression,
-		boolean writableStackTrace)
-	{
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-
 }

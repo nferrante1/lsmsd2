@@ -10,13 +10,13 @@ import app.datamodel.pojos.annotations.CollectionName;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Strategies")
-public class Strategy extends StorablePojo
+public final class Strategy extends StorablePojo
 {
 	@BsonId
-	protected String id;
-	protected String name;
-	protected String author;
-	protected List<StrategyRun> runs = new ArrayList<StrategyRun>();
+	private String id;
+	private String name;
+	private String author;
+	private List<StrategyRun> runs = new ArrayList<StrategyRun>();
 
 	public Strategy()
 	{
@@ -35,8 +35,9 @@ public class Strategy extends StorablePojo
 	{
 		runs.add(run);
 	}
-	
-	public void deleteRun(String id) {
+
+	public void deleteRun(String id)
+	{
 		getRun(id).delete();
 	}
 
@@ -50,14 +51,13 @@ public class Strategy extends StorablePojo
 	{
 		return runs.get(index);
 	}
-	
+
 	@BsonIgnore
-	public StrategyRun getRun(String id) {
-		for(StrategyRun r : this.runs) {
-			if(r.getId().toHexString().equals(id)) {
+	public StrategyRun getRun(String id)
+	{
+		for(StrategyRun r: this.runs)
+			if(r.getId().toHexString().equals(id))
 				return r;
-			}
-		}
 		return null;
 	}
 	public String getName()

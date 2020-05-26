@@ -14,12 +14,12 @@ import app.common.net.entities.MarketInfo;
 import app.common.net.entities.SourceInfo;
 import app.common.net.enums.ActionRequest;
 
-public class RequestMessage extends Message
+public final class RequestMessage extends Message
 {
 	private static final long serialVersionUID = 6989601732466426604L;
 
-	protected final ActionRequest action;
-	protected final String authToken;
+	private final ActionRequest action;
+	private final String authToken;
 
 	public RequestMessage(ActionRequest action, String authToken, List<Entity> entities)
 	{
@@ -62,7 +62,7 @@ public class RequestMessage extends Message
 	{
 		List<KVParameter> parameters = getEntities(KVParameter.class);
 		List<String> names = new ArrayList<String>();
-		
+
 		for (KVParameter parameter: parameters)
 			if(names.contains(parameter.getName()))
 				return true;

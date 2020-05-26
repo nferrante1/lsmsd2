@@ -5,7 +5,7 @@ import java.time.Instant;
 import app.datamodel.pojos.annotations.CollectionName;
 
 @CollectionName("MarketData")
-public class DataRange
+public final class DataRange
 {
 	public Instant start;
 	public Instant end;

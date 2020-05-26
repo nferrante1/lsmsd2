@@ -21,7 +21,7 @@ import app.datamodel.pojos.annotations.CollectionName;
 public class PojoManager<T extends Object>
 {
 	protected final Class<T> pojoClass;
-	protected String collectionName;
+	private String collectionName;
 
 	public PojoManager(Class<T> pojoClass)
 	{
@@ -147,11 +147,6 @@ public class PojoManager<T extends Object>
 		return find(filter, null, sort, skip, limit);
 	}
 
-	public PojoCursor<T> find(Object id, Bson sort, int skip, int limit)
-	{
-		return find(id == null ? null : Filters.eq("_id", id), sort, skip, limit);
-	}
-
 	public PojoCursor<T> find(Object id, Bson projection, Bson sort)
 	{
 		return find(id == null ? null : Filters.eq("_id", id), projection, sort);
@@ -162,19 +157,9 @@ public class PojoManager<T extends Object>
 		return find(filter, projection, sort, 0, 0);
 	}
 
-	public PojoCursor<T> find(Object id, Bson projection, Bson sort, int skip, int limit)
-	{
-		return find(id == null ? null : Filters.eq("_id", id), projection, sort, skip, limit);
-	}
-
 	public PojoCursor<T> find(Bson filter, int skip, int limit)
 	{
 		return find(filter, null, skip, limit);
-	}
-
-	public PojoCursor<T> find(Object id, int skip, int limit)
-	{
-		return find(id == null ? null : Filters.eq("_id", id), skip, limit);
 	}
 
 	public PojoCursor<T> find(Bson filter, Bson sort)
@@ -185,11 +170,6 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> find(int skip, int limit)
 	{
 		return find(null, skip, limit);
-	}
-
-	public PojoCursor<T> find(int limit)
-	{
-		return find(0, limit);
 	}
 
 	public PojoCursor<T> find(Bson filter)
@@ -210,26 +190,6 @@ public class PojoManager<T extends Object>
 	public PojoCursor<T> findPaged(Bson filter, Bson projection, Bson sort, int page, int perPage)
 	{
 		return find(filter, projection, sort, (page - 1) * perPage, perPage);
-	}
-
-	public PojoCursor<T> findPaged(Object id, Bson projection, Bson sort, int page, int perPage)
-	{
-		return findPaged(id == null ? null : Filters.eq("_id", id), projection, sort, page, perPage);
-	}
-
-	public PojoCursor<T> findPaged(Bson filter, Bson sort, int page, int perPage)
-	{
-		return findPaged(filter, null, sort, page, perPage);
-	}
-
-	public PojoCursor<T> findPaged(Object id, Bson sort, int page, int perPage)
-	{
-		return findPaged(id == null ? null : Filters.eq("_id", id), sort, page, perPage);
-	}
-
-	public PojoCursor<T> findPaged(Bson sort, int page, int perPage)
-	{
-		return findPaged(null, sort, page, perPage);
 	}
 
 	public long count()

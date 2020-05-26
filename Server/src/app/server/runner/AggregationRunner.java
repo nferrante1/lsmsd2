@@ -22,15 +22,15 @@ import app.datamodel.PojoManager;
 import app.datamodel.pojos.DataRange;
 import app.library.Candle;
 
-public class AggregationRunner extends PojoManager<Candle>
+final class AggregationRunner extends PojoManager<Candle>
 {
-	private String marketId;
-	private boolean inverseCross;
-	private int granularity;
-	private Instant start;
-	private Instant end;
+	private final String marketId;
+	private final boolean inverseCross;
+	private final int granularity;
+	private final Instant start;
+	private final Instant end;
 
-	public AggregationRunner(String marketId, boolean inverseCross, int granularity, DataRange range)
+	AggregationRunner(String marketId, boolean inverseCross, int granularity, DataRange range)
 	{
 		super(Candle.class, "MarketData");
 		this.marketId = marketId;
@@ -40,7 +40,7 @@ public class AggregationRunner extends PojoManager<Candle>
 		this.end = range.end;
 	}
 
-	public PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
+	PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
 	{
 		List<Facet> facets = new ArrayList<Facet>();
 		facets.add(new Facet("candles", Aggregates.project(Projections.excludeId())));

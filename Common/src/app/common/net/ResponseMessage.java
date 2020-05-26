@@ -18,12 +18,12 @@ import app.common.net.entities.StrategyInfo;
 import app.common.net.entities.UserInfo;
 import app.common.net.enums.ActionRequest;
 
-public class ResponseMessage extends Message
+public final class ResponseMessage extends Message
 {
 	private static final long serialVersionUID = -4469582259015203553L;
 
-	protected final boolean success;
-	protected final String errorMsg;
+	private final boolean success;
+	private final String errorMsg;
 
 	public ResponseMessage(String errorMsg)
 	{
@@ -64,7 +64,7 @@ public class ResponseMessage extends Message
 		switch (actionRequest) {
 		case ADD_STRATEGY:
 			return getEntityCount() == 1 && hasEntity(StrategyInfo.class);
-		
+
 		case BROWSE_DATA_SOURCES:
 			for (Entity entity: getEntities())
 				if (!SourceInfo.class.isAssignableFrom(entity.getClass()))
@@ -112,7 +112,7 @@ public class ResponseMessage extends Message
 		case DELETE_STRATEGY:
 		case DELETE_USER:
 		case LOGOUT:
-			return getEntityCount()==0;
+			return getEntityCount() == 0;
 		case RUN_STRATEGY:
 			return getEntityCount() == 1 && (hasEntity(ReportInfo.class) || hasEntity(ProgressInfo.class));
 		case VIEW_REPORT:

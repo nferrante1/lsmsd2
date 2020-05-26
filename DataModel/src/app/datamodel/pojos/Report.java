@@ -4,19 +4,19 @@ import app.datamodel.pojos.annotations.CollectionName;
 import app.datamodel.pojos.enums.StorablePojoState;
 
 @CollectionName("Strategies")
-public class Report extends StorablePojo
+public final class Report extends StorablePojo
 {
-	protected double netProfit;
-	protected double grossProfit;
-	protected double grossLoss;
-	protected double hodlProfit;
-	protected long totalTrades;
-	protected long openTrades;
-	protected long winningTrades;
-	protected long maxConsecutiveLosing;
-	protected double avgAmount;
-	protected double avgDuration;
-	protected double maxDrawdown;
+	private double netProfit;
+	private double grossProfit;
+	private double grossLoss;
+	private double hodlProfit;
+	private long totalTrades;
+	private long openTrades;
+	private long winningTrades;
+	private long maxConsecutiveLosing;
+	private double avgAmount;
+	private double avgDuration;
+	private double maxDrawdown;
 
 	public Report()
 	{

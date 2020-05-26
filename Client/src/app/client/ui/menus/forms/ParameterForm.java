@@ -10,9 +10,9 @@ import java.util.List;
 import app.client.ui.Console;
 import app.common.net.entities.ParameterInfo;
 
-public class ParameterForm extends TextForm
+public final class ParameterForm extends TextForm
 {
-	private List<ParameterInfo> parameters;
+	private final List<ParameterInfo> parameters;
 
 	public ParameterForm(List<ParameterInfo> parameters)
 	{

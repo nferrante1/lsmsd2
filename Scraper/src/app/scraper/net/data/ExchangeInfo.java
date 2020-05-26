@@ -2,7 +2,7 @@ package app.scraper.net.data;
 
 import java.util.List;
 
-public class ExchangeInfo
+public final class ExchangeInfo
 {
 	private List<APIMarket> symbols;
 

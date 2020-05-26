@@ -15,11 +15,11 @@ import app.client.ui.menus.forms.SearchForm;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.SourceInfo;
 
-public class DataSourceMenu extends Menu
+final class DataSourceMenu extends Menu
 {
-	protected SourceInfo dataSource;
+	private SourceInfo dataSource;
 
-	public DataSourceMenu(SourceInfo dataSource)
+	DataSourceMenu(SourceInfo dataSource)
 	{
 		super(dataSource.getName() + " | select an action");
 		this.dataSource = dataSource;

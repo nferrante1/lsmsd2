@@ -5,11 +5,11 @@ import java.time.format.DateTimeParseException;
 
 import app.common.net.entities.enums.ParameterType;
 
-public class KVParameter extends ParameterInfo
+public final class KVParameter extends ParameterInfo
 {
 	private static final long serialVersionUID = 5154503119353580029L;
 
-	protected String value;
+	private final String value;
 
 	public KVParameter(String name, String value, ParameterType type)
 	{
@@ -47,21 +47,11 @@ public class KVParameter extends ParameterInfo
 		return value;
 	}
 
-	public void setValue(String value)
-	{
-		this.value = value;
-	}
-
-	public ParameterType getType()
-	{
-		return type;
-	}
-
 	public Object getConvertedValue()
 	{
 		if (value == null)
 			return null;
-		switch(type) {
+		switch(getType()) {
 		case BOOLEAN:
 			return Boolean.parseBoolean(value);
 		case STRING:
@@ -81,7 +71,7 @@ public class KVParameter extends ParameterInfo
 	{
 		if (value == null)
 			return false;
-		switch(type) {
+		switch(getType()) {
 		case BOOLEAN:
 		case STRING:
 			return true;

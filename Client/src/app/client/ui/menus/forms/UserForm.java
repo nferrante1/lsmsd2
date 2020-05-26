@@ -5,9 +5,9 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public class UserForm extends TextForm
+public final class UserForm extends TextForm
 {
-	private boolean validate = false;
+	private boolean validate;
 
 	public UserForm(String prompt)
 	{

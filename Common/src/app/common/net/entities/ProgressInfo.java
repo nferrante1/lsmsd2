@@ -1,10 +1,10 @@
 package app.common.net.entities;
 
-public class ProgressInfo extends Entity
+public final class ProgressInfo extends Entity
 {
 	private static final long serialVersionUID = 5331206537641352490L;
 
-	protected final double progress;
+	private final double progress;
 
 	public ProgressInfo(double progress)
 	{

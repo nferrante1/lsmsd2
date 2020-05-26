@@ -5,9 +5,9 @@ import java.util.List;
 
 import app.client.ui.Console;
 
-public class MarketGranularityForm extends TextForm
+public final class MarketGranularityForm extends TextForm
 {
-	protected int previousGranularity;
+	private final int previousGranularity;
 
 	public MarketGranularityForm(int previousGranularity)
 	{

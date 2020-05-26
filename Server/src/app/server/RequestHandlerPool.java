@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RequestHandlerPool implements Runnable
+final class RequestHandlerPool implements Runnable
 {
 	private final ServerSocket serverSocket;
 	private final ExecutorService pool;

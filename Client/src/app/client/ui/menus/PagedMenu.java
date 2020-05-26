@@ -2,28 +2,28 @@ package app.client.ui.menus;
 
 import java.util.List;
 
-public abstract class PagedMenu extends Menu
+abstract class PagedMenu extends Menu
 {
 	private int page = 1;
 	private int perPage = 20;
 
-	public PagedMenu()
+	PagedMenu()
 	{
 		super();
 	}
 
-	public PagedMenu(int perPage)
+	PagedMenu(int perPage)
 	{
 		this();
 		this.perPage = perPage;
 	}
 
-	public PagedMenu(String prompt)
+	PagedMenu(String prompt)
 	{
 		super(prompt);
 	}
 
-	public PagedMenu(String prompt, int perPage)
+	PagedMenu(String prompt, int perPage)
 	{
 		this(prompt);
 		this.perPage = perPage;

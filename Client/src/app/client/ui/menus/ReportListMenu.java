@@ -13,12 +13,12 @@ import app.common.net.entities.KVParameter;
 import app.common.net.entities.ReportInfo;
 import app.common.net.entities.StrategyInfo;
 
-public class ReportListMenu extends PagedMenu
+final class ReportListMenu extends PagedMenu
 {
-	protected StrategyInfo strategy;
-	protected String marketId;
+	private final StrategyInfo strategy;
+	private final String marketId;
 
-	public ReportListMenu(StrategyInfo strategy, String marketId)
+	ReportListMenu(StrategyInfo strategy, String marketId)
 	{
 		super(strategy.getName() + " | Select a report");
 		this.strategy = strategy;

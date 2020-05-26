@@ -8,13 +8,13 @@ import app.client.ui.Console;
 import app.common.net.ResponseMessage;
 import app.common.net.entities.MarketInfo;
 
-public class SelectMarketMenu extends SelectMenu<MarketInfo>
+final class SelectMarketMenu extends SelectMenu<MarketInfo>
 {
-	protected String dataSource;
-	protected String nameFilter;
-	protected boolean allowAll;
+	private final String dataSource;
+	private final String nameFilter;
+	private final boolean allowAll;
 
-	public SelectMarketMenu(String dataSource, String nameFilter, boolean allowAll)
+	SelectMarketMenu(String dataSource, String nameFilter, boolean allowAll)
 	{
 		super("Select a market", allowAll ? 19 : 20);
 		this.dataSource = dataSource;
@@ -25,27 +25,27 @@ public class SelectMarketMenu extends SelectMenu<MarketInfo>
 		this.allowAll = allowAll;
 	}
 
-	public SelectMarketMenu(String dataSource, String nameFilter)
+	SelectMarketMenu(String dataSource, String nameFilter)
 	{
 		this(dataSource, nameFilter, false);
 	}
 
-	public SelectMarketMenu(String nameFilter, boolean allowAll)
+	SelectMarketMenu(String nameFilter, boolean allowAll)
 	{
 		this(null, nameFilter, allowAll);
 	}
 
-	public SelectMarketMenu(String nameFilter)
+	SelectMarketMenu(String nameFilter)
 	{
 		this(nameFilter, false);
 	}
 
-	public SelectMarketMenu(boolean allowAll)
+	SelectMarketMenu(boolean allowAll)
 	{
 		this(null, allowAll);
 	}
 
-	public SelectMarketMenu()
+	SelectMarketMenu()
 	{
 		this(false);
 	}

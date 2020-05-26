@@ -10,14 +10,14 @@ import org.bson.types.ObjectId;
 
 import app.datamodel.pojos.enums.StorablePojoState;
 
-public class MarketData extends StorablePojo
+public final class MarketData extends StorablePojo
 {
 	@BsonId
-	protected ObjectId id;
-	protected String market;
-	protected int ncandles;
-	protected Instant start;
-	protected List<Candle> candles = new ArrayList<Candle>();
+	private ObjectId id;
+	private String market;
+	private int ncandles;
+	private Instant start;
+	private List<Candle> candles = new ArrayList<Candle>();
 
 	public MarketData()
 	{
