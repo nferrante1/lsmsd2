@@ -1,22 +1,19 @@
 package app.library.indicators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Projections;
 
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
-public class StdDev extends Indicator implements ComputableIndicator
+// Standard Deviation
+public class StdDev extends Indicator implements FacetPipeline
 {
 	private int period;
 	private InputPrice inputPrice;
@@ -25,9 +22,11 @@ public class StdDev extends Indicator implements ComputableIndicator
 
 	public StdDev(int period, InputPrice inputPrice)
 	{
+		if(period <= 0)
+			throw new IllegalArgumentException("First argument to StdDev constructor must be a positive integer (supplied: " + period + ").");
+		if (inputPrice == null)
+			inputPrice = InputPrice.CLOSE;
 		this.period = period;
-		if(inputPrice == InputPrice.DECREMENT || inputPrice == InputPrice.INCREMENT)
-			throw new IllegalArgumentException("Can not compute StdDev on price increment/decrement.");
 		this.inputPrice = inputPrice;
 	}
 
@@ -47,71 +46,20 @@ public class StdDev extends Indicator implements ComputableIndicator
 	}
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "StdDev" + inputPrice.getShortName() + period;
 	}
 
 	@Override
-	public List<Bson> getPipeline()
+	public List<Bson> pipeline()
 	{
-		List<Bson> projections = new ArrayList<Bson>();
-		Document push = new Document("c", "$c");
-		Document mapDoc = null;
-		projections.add(Projections.excludeId());
-
-		switch(inputPrice) {
-			case CLOSE:
-				projections.add(Projections.computed("v" , "$c"));
-				break;
-			case TRUE_RANGE:
-				projections.add(Projections.include("h","l","c"));
-				push.append("l", "$l");
-				push.append("h", "$h");
-				mapDoc = new Document("$max", Arrays.asList(new Document("$subtract",
-						Arrays.asList("$h","$l")),
-						new Document("$abs",
-							new Document("$subtract",
-									Arrays.asList("$h", "$c")
-								)
-							)
-						, new Document("$abs",
-							new Document("$subtract",
-								Arrays.asList("$l", "$c")
-								)
-							)
-						)
-					);
-				break;
-			case TYPICAL:
-				projections.add(Projections.include("h","l","c"));
-				push.append("l", "$l");
-				push.append("h", "$h");
-				mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")),3));
-				break;
-			default:
-				break;
-		}
-
-		List<Bson> stages = new ArrayList<Bson>();
-		stages.add(Aggregates.project(Projections.fields(projections)));
-		stages.add(Aggregates.group(new BsonNull(),Accumulators.push("candles", push)));
-		if(inputPrice != InputPrice.CLOSE)
-			stages.add(Aggregates.addFields(new Field<Document>("candles", new Document("$map",
-					new Document("input", "$candles")
-					.append("as", "candle")
-					.append("in", new Document("v", mapDoc))))));
-		stages.add(Aggregates.addFields(new Field<Document>("candles",
-				new Document("$map",
-					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
-				.append("as", "z")
-				.append("in",
-					new Document("value", new Document("$stdDevPop", new Document("$slice", Arrays.asList("$candles",
-				new Document("$max", Arrays.asList(0L,
-					new Document("$subtract", Arrays.asList("$$z", period)))), period))
-							))
-					)
-				))));
+		List<Bson> stages = getMappingStages(inputPrice);
+		stages.add(Aggregates.addFields(new Field<Document>("candles", new Document("$map",
+			new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
+			.append("as", "z")
+			.append("in", new Document("value", new Document("$stdDevPop",
+				new Document("$slice", Arrays.asList("$candles", new Document("$max", Arrays.asList(0L, new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
 		return stages;
 	}
 
@@ -120,20 +68,20 @@ public class StdDev extends Indicator implements ComputableIndicator
 	{
 		++elapsedPeriods;
 		if(elapsedPeriods > period)
-			value = candle.getTa(getName());
+			value = candle.getTa(name());
 	}
 
-	public double getValue()
+	public double value()
 	{
 		return value;
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}
 
-	public InputPrice getInputPrice()
+	public InputPrice inputPrice()
 	{
 		return inputPrice;
 	}

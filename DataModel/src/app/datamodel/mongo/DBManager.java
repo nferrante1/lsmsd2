@@ -28,7 +28,7 @@ public final class DBManager implements Closeable
 	private static DBManager instance;
 
 	private static String connectionString;
-	private static String databaseName = "mydb";
+	private static String databaseName = "lsmsd2";
 	private static boolean standalone = false;
 
 	private static ReadConcern readConcern = ReadConcern.LOCAL;
@@ -41,7 +41,7 @@ public final class DBManager implements Closeable
 	private DBManager()
 	{
 		if (connectionString == null)
-			connectionString = "mongodb://localhost:27017" + (standalone ? "" : ",localhost:27018");
+			connectionString = "mongodb://localhost:27017" + (standalone ? "" : ",localhost:27018,localhost:27019");
 		CodecRegistry pojoCodecRegistry = CodecRegistries
 			.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder()

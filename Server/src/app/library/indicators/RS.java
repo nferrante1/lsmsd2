@@ -1,11 +1,12 @@
 package app.library.indicators;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
+// Relative Strength
 public class RS extends Indicator
 {
 	private int period;
@@ -20,13 +21,15 @@ public class RS extends Indicator
 		this.period = period;
 	}
 
+	public RS()
+	{
+		this(14);
+	}
+
 	@Override
 	public List<Indicator> depends()
 	{
-		List<Indicator> indicators = new ArrayList<Indicator>();
-		indicators.add(smau);
-		indicators.add(smad);
-		return indicators;
+		return Arrays.asList(smau, smad);
 	}
 
 	@Override
@@ -34,8 +37,8 @@ public class RS extends Indicator
 	{
 		smau.compute(candle);
 		smad.compute(candle);
-		double smauV = smau.getValue();
-		double smadV = smad.getValue();
+		double smauV = smau.value();
+		double smadV = smad.value();
 		if(Double.isNaN(smadV) && Double.isNaN(smauV))
 			value = Double.NaN;
 		else if (Double.isNaN(smadV))
@@ -46,22 +49,22 @@ public class RS extends Indicator
 			value =  smauV / smadV;
 	}
 
-	public double getValue()
+	public double value()
 	{
-		return this.value;
+		return value;
 	}
 
-	public SMA getSMAu()
+	public SMA smau()
 	{
 		return smau;
 	}
 
-	public SMA getSMAd()
+	public SMA smad()
 	{
 		return smad;
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}

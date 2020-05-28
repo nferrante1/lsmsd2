@@ -52,7 +52,7 @@ public final class Journal
 
 	public boolean hasAmount()
 	{
-		return (getTotalAmount() > 0);
+		return getTotalAmount() > 0;
 	}
 
 	public Trade openTrade(double amount)
@@ -90,20 +90,19 @@ public final class Journal
 			throw new IllegalArgumentException("Trade not registered (time: " + currentTime + ").");
 		if (trade.closed())
 			throw new IllegalStateException("Trade already closed (time: " + currentTime + ").");
-		if (!trade.entryTime().isBefore(currentTime))
-			if (finish) {
-				trades.remove(trade);
-				return trade;
-			} else {
+		if (!trade.entryTime().isBefore(currentTime)) {
+			if (!finish)
 				throw new IllegalArgumentException("Trying to open and close the same trade during a single day (time: " + currentTime + ").");
-			}
+			trades.remove(trade);
+			return trade;
+		}
 
 		trade.close(currentTime, currentValue, granularity);
 		trades.remove(trade);
 		netProfit += trade.profit();
 		totalAmount += trade.profit();
 
-		if(totalAmount > maxAmount){
+		if(totalAmount > maxAmount) {
 			maxAmount = totalAmount;
 			currentDrawdown = 0;
 		}

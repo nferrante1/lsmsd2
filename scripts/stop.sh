@@ -1,12 +1,18 @@
 #!/bin/bash
 
-mongo mongodb://localhost:27017,localhost:27018 --quiet --eval 'sh.stopBalancer()'
+# Root not needed
 
+# Stop balancer
+mongo mongodb://localhost:27017,localhost:27018,localhost:27019 --quiet --eval 'sh.stopBalancer()'
+
+# Stop mongos instances
 mongo admin --port 27017 --quiet --eval 'db.shutdownServer();'
 mongo admin --port 27018 --quiet --eval 'db.shutdownServer();'
+mongo admin --port 27019 --quiet --eval 'db.shutdownServer();'
 
 sleep 5
 
+# Stop servers of replica set 0 (first stop secondaries, then primary)
 RS00=`mongo --port 27117 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 RS01=`mongo --port 27118 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 RS02=`mongo --port 27119 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
@@ -29,6 +35,7 @@ fi
 sleep 20
 mongo admin --port $PRIMARYRS0 --quiet --eval 'db.shutdownServer();'
 
+# Stop servers of replica set 1 (first stop secondaries, then primary)
 RS10=`mongo --port 27217 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 RS11=`mongo --port 27218 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 RS12=`mongo --port 27219 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
@@ -51,6 +58,7 @@ fi
 sleep 20
 mongo admin --port $PRIMARYRS1 --quiet --eval 'db.shutdownServer();'
 
+# Stop config servers (first stop secondaries, then primary)
 CFG0=`mongo --port 27917 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 CFG1=`mongo --port 27918 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`
 CFG2=`mongo --port 27919 --quiet --eval "d=db.isMaster(); print(d['ismaster']);"`

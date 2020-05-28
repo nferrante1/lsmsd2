@@ -45,8 +45,7 @@ final class AggregationRunner extends PojoManager<Candle>
 		List<Facet> facets = new ArrayList<Facet>();
 		facets.add(new Facet("candles", Aggregates.project(Projections.excludeId())));
 
-		Document document = new Document("t",
-			new Document("$arrayElemAt", Arrays.asList("$candles.t", "$$z")))
+		Document document = new Document("t", new Document("$arrayElemAt", Arrays.asList("$candles.t", "$$z")))
 			.append("o", new Document("$arrayElemAt", Arrays.asList("$candles.o", "$$z")))
 			.append("h", new Document("$arrayElemAt", Arrays.asList("$candles.h", "$$z")))
 			.append("l", new Document("$arrayElemAt", Arrays.asList("$candles.l", "$$z")))
@@ -55,9 +54,14 @@ final class AggregationRunner extends PojoManager<Candle>
 
 		Document taDoc = new Document();
 		for(Entry<String, List<Bson>> entry: taFacets.entrySet()) {
-			facets.add(new Facet(entry.getKey(), entry.getValue()));
-			taDoc.append(entry.getKey(), new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + entry.getKey() + ".candles.value", 0)), "$$z")));
+			String name = entry.getKey();
+			List<Bson> pipeline = entry.getValue();
+			if (pipeline == null || pipeline.isEmpty())
+				continue;
+			facets.add(new Facet(name, pipeline));
+			taDoc.append(name, new Document("$arrayElemAt", Arrays.asList(new Document("$arrayElemAt", Arrays.asList("$" + name + ".candles.value", 0)), "$$z")));
 		}
+		if (!taDoc.isEmpty())
 			document.append("ta", taDoc);
 
 		List<Bson> stages = new ArrayList<Bson>();
@@ -85,11 +89,10 @@ final class AggregationRunner extends PojoManager<Candle>
 			Accumulators.sum("v", "$v")));
 		stages.add(Aggregates.sort(Sorts.ascending("t")));
 		stages.add(Aggregates.facet(facets));
-		stages.add(Aggregates.project(Projections.fields(
-			new Document("candles", new Document("$map",
-				new Document("input", new Document("$range", Arrays.asList(0,new Document("$subtract",Arrays.asList(new Document("$size", "$candles"), 1)))))
-				.append("as", "z")
-				.append("in", document))))));
+		stages.add(Aggregates.project(Projections.fields(new Document("candles", new Document("$map",
+			new Document("input", new Document("$range", Arrays.asList(0, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1)))))
+			.append("as", "z")
+			.append("in", document))))));
 		stages.add(Aggregates.unwind("$candles"));
 		stages.add(Aggregates.replaceRoot("$candles"));
 

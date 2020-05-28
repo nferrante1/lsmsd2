@@ -5,22 +5,20 @@ import java.util.List;
 
 import app.library.Candle;
 
+// Moving Average Convergence/Divergence
 public class MACD extends Indicator
 {
-	private int shortPeriod;
-	private int longPeriod;
 	private EMA shortEMA;
 	private EMA longEMA;
 	private double value = Double.NaN;
 
 	public MACD()
 	{
-		this(12,26);
+		this(12, 26);
 	}
-	public MACD(int shortPeriod,int longPeriod)
+
+	public MACD(int shortPeriod, int longPeriod)
 	{
-		this.longPeriod = longPeriod;
-		this.shortPeriod = shortPeriod;
 		this.longEMA = new EMA(longPeriod);
 		this.shortEMA = new EMA(shortPeriod);
 	}
@@ -28,11 +26,11 @@ public class MACD extends Indicator
 	@Override
 	public void compute(Candle candle)
 	{
-		longEMA.compute(candle);
 		shortEMA.compute(candle);
-		double lema = longEMA.getValue();
-		double sema = shortEMA.getValue();
-		if(Double.isNaN(sema)|| Double.isNaN(lema))
+		longEMA.compute(candle);
+		double sema = shortEMA.value();
+		double lema = longEMA.value();
+		if(Double.isNaN(sema) || Double.isNaN(lema))
 			value = Double.NaN;
 		else
 			value = sema - lema;
@@ -44,27 +42,17 @@ public class MACD extends Indicator
 		return Arrays.asList(longEMA, shortEMA);
 	}
 
-	public int getShortPeriod()
-	{
-		return shortPeriod;
-	}
-
-	public int getLongPeriod()
-	{
-		return longPeriod;
-	}
-
-	public EMA getShortEMA()
+	public EMA shortEMA()
 	{
 		return shortEMA;
 	}
 
-	public EMA getLongEMA()
+	public EMA longEMA()
 	{
 		return longEMA;
 	}
 
-	public double getValue()
+	public double value()
 	{
 		return value;
 	}

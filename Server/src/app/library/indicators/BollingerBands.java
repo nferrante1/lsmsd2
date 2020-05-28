@@ -6,6 +6,7 @@ import java.util.List;
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
+// Bollinger's Bands
 public class BollingerBands extends Indicator
 {
 	private int period;
@@ -15,7 +16,7 @@ public class BollingerBands extends Indicator
 	private SMA ma;
 	private StdDev sigma;
 
-	public BollingerBands(int period, int distance) 
+	public BollingerBands(int period, int distance)
 	{
 		this.period = period;
 		this.distance = distance;
@@ -27,6 +28,7 @@ public class BollingerBands extends Indicator
 	{
 		this(20);
 	}
+
 	public BollingerBands(int period)
 	{
 		this(period, 2);
@@ -44,46 +46,44 @@ public class BollingerBands extends Indicator
 		ma.compute(candle);
 		sigma.compute(candle);
 
-		double mav = ma.getValue();
-		double sigmav = sigma.getValue();
+		double mav = ma.value();
+		double sigmav = sigma.value();
 
-		if(Double.isNaN(mav) || Double.isNaN(sigmav))
-		{
+		if(Double.isNaN(mav) || Double.isNaN(sigmav)) {
 			bolu = Double.NaN;
 			bold = Double.NaN;
-		}
-		else {
+		} else {
 			bolu = mav + distance*sigmav;
 			bold = mav - distance*sigmav;
 		}
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}
 
-	public double getBolu()
+	public double upperLine()
 	{
 		return bolu;
 	}
 
-	public double getBold()
+	public double lowerLine()
 	{
 		return bold;
 	}
 
-	public int getDistance()
+	public int distance()
 	{
 		return distance;
 	}
 
-	public SMA getMa()
+	public SMA ma()
 	{
 		return ma;
 	}
 
-	public StdDev getSigma()
+	public StdDev sigma()
 	{
 		return sigma;
 	}

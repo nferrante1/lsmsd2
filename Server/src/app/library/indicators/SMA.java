@@ -1,22 +1,19 @@
 package app.library.indicators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Projections;
 
 import app.library.Candle;
 import app.library.indicators.enums.InputPrice;
 
-public class SMA extends Indicator implements ComputableIndicator
+// Simple Moving Average
+public class SMA extends Indicator implements FacetPipeline
 {
 	private int period;
 	private InputPrice inputPrice;
@@ -26,10 +23,10 @@ public class SMA extends Indicator implements ComputableIndicator
 	public SMA(int period, InputPrice input)
 	{
 		if(period <= 0)
-			throw new IllegalArgumentException("Period must be a positive number");
+			throw new IllegalArgumentException("First argument to SMA constructor must be a positive integer (supplied: " + period + ").");
+		if (inputPrice == null)
+			inputPrice = InputPrice.CLOSE;
 		this.period = period;
-		if(input == null)
-			throw new IllegalArgumentException("Input price must not be null");
 		this.inputPrice = input;
 	}
 
@@ -49,99 +46,21 @@ public class SMA extends Indicator implements ComputableIndicator
 	}
 
 	@Override
-	public String getName()
+	public String name()
 	{
 		return "SMA" + inputPrice.getShortName() + period;
 	}
 
 	@Override
-	public List<Bson> getPipeline()
+	public List<Bson> pipeline()
 	{
-		List<Bson> projections = new ArrayList<Bson>();
-		Document push = new Document("c", "$c");
-		Document mapDoc = null;
-		projections.add(Projections.excludeId());
-
-		switch(inputPrice) {
-		case CLOSE:
-			projections.add(Projections.computed("v", "$c"));
-			break;
-		case INCREMENT:
-			projections.add(Projections.include("c", "o"));
-			push.append("o", "$o");
-			mapDoc = new Document ("$cond",
-					new Document("if",
-							new Document("$eq",
-								Arrays.asList(new Document("$max",
-								Arrays.asList(
-									new Document("$subtract",
-									Arrays.asList("$$candle.c", "$$candle.o"))
-									, 0L)
-								), 0L)))
-							.append("then", new BsonNull())
-							.append("else",new Document("$max", Arrays.asList(
-							new Document("$subtract",
-									Arrays.asList("$$candle.c", "$$candle.o")), 0L)))
-					);
-			break;
-		case DECREMENT:
-			projections.add(Projections.include("c", "o"));
-			push.append("o", "$o");
-			mapDoc = new Document ("$cond",
-					new Document("if",
-							new Document("$eq",
-								Arrays.asList(new Document("$max",
-								Arrays.asList(
-									new Document("$subtract",
-									Arrays.asList("$$candle.o", "$$candle.c"))
-									, 0L)
-								), 0L)))
-							.append("then", new BsonNull())
-							.append("else",new Document("$max", Arrays.asList(
-							new Document("$subtract",
-									Arrays.asList("$$candle.o", "$$candle.c")), 0L))));
-			break;
-		case TRUE_RANGE:
-			projections.add(Projections.include("h", "l", "c"));
-			push.append("l", "$l");
-			push.append("h", "$h");
-			mapDoc = new Document("$max", Arrays.asList(new Document("$subtract",
-					Arrays.asList("$h","$l")),
-					new Document("$abs",
-						new Document("$subtract",
-								Arrays.asList("$h", "$c")
-							)), new Document("$abs",
-						new Document("$subtract",
-							Arrays.asList("$l", "$c")
-							)
-						)
-					)
-				);
-			break;
-		case TYPICAL:
-			projections.add(Projections.include("h", "l", "c"));
-			push.append("l", "$l");
-			push.append("h", "$h");
-			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h","$l","$c")), 3));
-			break;
-		}
-
-		List<Bson> stages = new ArrayList<Bson>();
-		stages.add(Aggregates.project(Projections.fields(projections)));
-		stages.add(Aggregates.group(new BsonNull(),Accumulators.push("candles", push)));
-		if(inputPrice != InputPrice.CLOSE)
-			stages.add(Aggregates.addFields(new Field<Document>("candles", new Document("$map",
-					new Document("input", "$candles")
-					.append("as", "candle")
-					.append("in", new Document("v", mapDoc))))));
+		List<Bson> stages = getMappingStages(inputPrice);
 		stages.add(Aggregates.addFields(new Field<Document>("candles",
 				new Document("$map",
 					new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 				.append("as", "z")
-				.append("in",
-					new Document("value", new Document("$avg", new Document("$slice", Arrays.asList("$candles",
-						new Document("$max", Arrays.asList(0L,
-							new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
+				.append("in", new Document("value", new Document("$avg",
+					new Document("$slice", Arrays.asList("$candles", new Document("$max", Arrays.asList(0L, new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
 		return stages;
 	}
 
@@ -150,20 +69,20 @@ public class SMA extends Indicator implements ComputableIndicator
 	{
 		++elapsedPeriods;
 		if(elapsedPeriods > period)
-			value = candle.getTa(getName());
+			value = candle.getTa(name());
 	}
 
-	public double getValue()
+	public double value()
 	{
 		return value;
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}
 
-	public InputPrice getInputPrice()
+	public InputPrice inputPrice()
 	{
 		return inputPrice;
 	}

@@ -24,7 +24,7 @@ import app.library.Candle;
 import app.library.ExecutableStrategy;
 import app.library.Journal;
 import app.library.annotations.StrategyParameter;
-import app.library.indicators.ComputableIndicator;
+import app.library.indicators.FacetPipeline;
 import app.library.indicators.Indicator;
 import app.server.runner.exceptions.StrategyRunException;
 
@@ -173,9 +173,9 @@ public final class StrategyRunner extends Thread
 			List<Indicator> dependencies = indicator.depends();
 			HashMap<String, List<Bson>> deps = getPipelines(dependencies);
 			map.putAll(deps);
-			if(ComputableIndicator.class.isAssignableFrom(indicator.getClass())) {
-				List<Bson> pipeline = ((ComputableIndicator)indicator).getPipeline();
-				String name = ((ComputableIndicator)indicator).getName();
+			if(FacetPipeline.class.isAssignableFrom(indicator.getClass())) {
+				List<Bson> pipeline = ((FacetPipeline)indicator).pipeline();
+				String name = ((FacetPipeline)indicator).name();
 				map.putIfAbsent(name, pipeline);
 			}
 		}

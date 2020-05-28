@@ -26,7 +26,7 @@ public class RandomStrategy implements ExecutableStrategy
 	private double openProbability;
 	@StrategyParameter("Close Probability (0-1)")
 	private double closeProbability;
-	@StrategyParameter("Trade Amount (0-1)")
+	@StrategyParameter("Trade Amount (0-1]")
 	private double amount;
 
 	public RandomStrategy()
@@ -37,14 +37,6 @@ public class RandomStrategy implements ExecutableStrategy
 	public String name()
 	{
 		return "Random Strategy v2";
-	}
-
-	@Override
-	public List<Indicator> indicators()
-	{
-		List<Indicator> indicators = new ArrayList<Indicator>();
-		//TODO
-		return indicators;
 	}
 
 	@Override
@@ -62,12 +54,10 @@ public class RandomStrategy implements ExecutableStrategy
 	public void process(Journal journal, Candle candle)
 	{
 		Random rand = new Random();
-		if (rand.nextDouble() <= openProbability) {
+		if (rand.nextDouble() <= openProbability)
 			journal.openTrade(journal.availAmount() * amount);
-		}
-		if (rand.nextDouble() <= closeProbability && journal.openTradesCount() > 1) {
+		if (rand.nextDouble() <= closeProbability && journal.openTradesCount() > 1)
 			journal.closeTrade(journal.oldestTrade());
-		}
 	}
 
 	public void finish(Journal journal)

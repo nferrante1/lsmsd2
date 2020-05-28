@@ -2,6 +2,7 @@ package app.library.indicators;
 
 import app.library.indicators.enums.InputPrice;
 
+// Average True Range
 public class ATR extends SMA
 {
 	public ATR()

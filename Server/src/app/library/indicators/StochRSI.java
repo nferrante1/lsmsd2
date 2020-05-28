@@ -1,17 +1,17 @@
 package app.library.indicators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import app.library.Candle;
 
+// Stochastic Relative Strength Index
 public class StochRSI extends Indicator
 {
 	private RSI rsi;
-	private int index = 0;
-	private int stochIndex = 0;
-	private int kIndex = 0;
+	private int index;
+	private int stochIndex;
+	private int kIndex;
 	private int period;
 	private int stochPeriod;
 	private int kPeriod;
@@ -25,6 +25,14 @@ public class StochRSI extends Indicator
 
 	public StochRSI(int period, int stochPeriod, int kPeriod, RSI rsi)
 	{
+		if(period <= 0)
+			throw new IllegalArgumentException("'period' argument to StochRSI constructor must be a positive integer (supplied: " + period + ").");
+		if(stochPeriod <= 0)
+			throw new IllegalArgumentException("'stochPeriod' argument to StochRSI constructor must be a positive integer (supplied: " + stochPeriod + ").");
+		if(kPeriod <= 0)
+			throw new IllegalArgumentException("'kPeriod' argument to StochRSI constructor must be a positive integer (supplied: " + kPeriod + ").");
+		if (rsi == null)
+			rsi = new RSI();
 		this.period = period;
 		this.stochPeriod = stochPeriod;
 		this.rsi = rsi;
@@ -37,7 +45,12 @@ public class StochRSI extends Indicator
 		Arrays.fill(previousK, Double.NaN);
 	}
 
-	public StochRSI(int period, int stochPeriod,int rsiPeriod)
+	public StochRSI(RSI rsi, int period, int stochPeriod, int kPeriod)
+	{
+		this(period, stochPeriod, kPeriod, rsi);
+	}
+
+	public StochRSI(int period, int stochPeriod, int rsiPeriod)
 	{
 		this(period, stochPeriod, stochPeriod, new RSI(rsiPeriod));
 	}
@@ -60,27 +73,28 @@ public class StochRSI extends Indicator
 	@Override
 	public List<Indicator> depends()
 	{
-		List<Indicator> indicators = new ArrayList<Indicator>(1);
-		indicators.add(rsi);
-		return indicators;
+		return Arrays.asList(rsi);
 	}
 
 	@Override
 	public void compute(Candle candle)
 	{
 		rsi.compute(candle);
-		previousRSI[index] = rsi.getValue();
-		double minRSI = Double.NaN;
+		previousRSI[index] = rsi.value();
 
+		double minRSI = Double.NaN;
 		for (int i = 0; i < previousRSI.length; i++)
 			if (!Double.isNaN(previousRSI[i]) && (Double.isNaN(minRSI) || previousRSI[i] < minRSI))
 				minRSI = previousRSI[i];
-		double maxRSI = Double.NaN;
 
+		double maxRSI = Double.NaN;
 		for (int i = 0; i < previousRSI.length; i++)
 			if (!Double.isNaN(previousRSI[i]) && (Double.isNaN(minRSI) || previousRSI[i] > maxRSI))
 				maxRSI = previousRSI[i];
-		if(!Double.isNaN(minRSI) && !Double.isNaN(maxRSI))
+
+		if(Double.isNaN(minRSI) || Double.isNaN(maxRSI))
+			value = Double.NaN;
+		else
 			value = ((previousRSI[index] - minRSI) / (maxRSI - minRSI)) * 100;
 
 		index = (index + 1) % period;
@@ -88,60 +102,62 @@ public class StochRSI extends Indicator
 		if(Double.isNaN(value))
 			return;
 
-		previousStochRSI[stochIndex] = value;
-		stochIndex = (stochIndex + 1) % stochPeriod;
 		double sum = 0.0;
 		int count = 0;
-		for (int i = 0; i < previousStochRSI.length; i++)
-			if (!Double.isNaN(previousStochRSI[i])) {
-				sum += previousStochRSI[i];
-				count++;
-			}
+		previousStochRSI[stochIndex] = value;
+		stochIndex = (stochIndex + 1) % stochPeriod;
+		for (int i = 0; i < previousStochRSI.length; i++) {
+			if (Double.isNaN(previousStochRSI[i]))
+				continue;
+			sum += previousStochRSI[i];
+			count++;
+		}
 		KValue  = sum / count;
 
 		previousK[kIndex] = KValue;
 		kIndex = (kIndex + 1) % kPeriod;
 		sum = 0.0;
 		count = 0;
-		for (int i = 0; i < previousK.length; i++)
-			if (!Double.isNaN(previousK[i])) {
-				sum += previousK[i];
-				count++;
-			}
+		for (int i = 0; i < previousK.length; i++) {
+			if (Double.isNaN(previousK[i]))
+				continue;
+			sum += previousK[i];
+			count++;
+		}
 		DValue = sum / count;
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}
 
-	public double getValue()
+	public double value()
 	{
 		return value;
 	}
 
-	public RSI getRSI()
+	public RSI rsi()
 	{
 		return rsi;
 	}
 
-	public int getStochPeriod()
+	public int stochPeriod()
 	{
 		return stochPeriod;
 	}
 
-	public int getkPeriod()
+	public int kPeriod()
 	{
 		return kPeriod;
 	}
 
-	public double getKValue()
+	public double kValue()
 	{
 		return KValue;
 	}
 
-	public double getDValue()
+	public double dValue()
 	{
 		return DValue;
 	}

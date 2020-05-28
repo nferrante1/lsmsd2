@@ -29,20 +29,15 @@ public class WriteFileStrategy implements ExecutableStrategy
 	@StrategyParameter
 	private Instant endTime;
 
-	@StrategyParameter("Output file name (*.txt,*.csv,*.dat,*.json)")
+	@StrategyParameter("Output file name [*.txt,*.csv,*.dat,*.json]")
 	private String fileName;
 	@StrategyParameter("Indicator name (eg. SMAu14)")
 	private String indicatorName;
-	@StrategyParameter("Skip NaNs?")
-	private boolean skipNaN;
+	@StrategyParameter("Print header?")
+	private boolean printHeader;
 
 	private PrintWriter writer;
-
 	private Indicator indicator;
-
-	public WriteFileStrategy()
-	{
-	}
 
 	@Override
 	public String name()
@@ -51,10 +46,19 @@ public class WriteFileStrategy implements ExecutableStrategy
 	}
 
 	@Override
+	public boolean validate()
+	{
+		fileName = fileName.replace("/", File.separator);
+		return (fileName.endsWith(".txt") || fileName.endsWith(".csv")
+			|| fileName.endsWith(".dat") || fileName.endsWith(".json"))
+			&& indicatorName.matches("^SMA|EMA|MOM|StdDev(o|h|l|c|v|u|d|tp|tr)?([1-9][0-9]*)?$");
+	}
+
+	@Override
 	public List<Indicator> indicators()
 	{
 		List<Indicator> indicators = new ArrayList<Indicator>();
-		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)(u|d|tp|tr)?([1-9][0-9]*)?$");
+		Pattern regex = Pattern.compile("^(SMA|EMA|MOM|StdDev)(o|h|l|c|v|u|d|tp|tr)?([1-9][0-9]*)?$");
 		Matcher matcher = regex.matcher(indicatorName);
 		matcher.matches();
 		String name = matcher.group(1);
@@ -88,6 +92,8 @@ public class WriteFileStrategy implements ExecutableStrategy
 				indicator = new StdDev(ip);
 			else
 				indicator = new StdDev(Integer.parseInt(period), ip);
+		} else {
+			throw new RuntimeException("Invalid indicator: " + indicatorName + ".");
 		}
 
 		indicators.add(indicator);
@@ -95,18 +101,8 @@ public class WriteFileStrategy implements ExecutableStrategy
 	}
 
 	@Override
-	public boolean validate()
-	{
-		fileName = fileName.replace("/", File.separator);
-		return (fileName.endsWith(".txt") || fileName.endsWith(".csv")
-			|| fileName.endsWith(".dat") || fileName.endsWith(".json"))
-			&& indicatorName.matches("^(SMA(u|d|tp|tr)*|EMA|MOM|StdDev(tp|tr)*)([1-9][0-9]*)?$");
-	}
-
-	@Override
 	public void init(Journal journal)
 	{
-		System.out.println("Using indicator " + indicator.getClass().getName() + " with period " + getIndicatorPeriod() + " on " + getIndicatorInputPrice() + ".");
 		if (fileName.contains(File.separator)) {
 			String dirName = fileName.substring(0, fileName.lastIndexOf(File.separator));
 			File dir = new File(dirName);
@@ -117,41 +113,35 @@ public class WriteFileStrategy implements ExecutableStrategy
 		} catch (IOException e) {
 			throw new RuntimeException("Can not write file '" + fileName + "'.", e);
 		}
-	}
-
-	private int getIndicatorPeriod()
-	{
-		if (SMA.class.isAssignableFrom(indicator.getClass()))
-			return ((SMA)indicator).getPeriod();
-		if (EMA.class.isAssignableFrom(indicator.getClass()))
-			return ((EMA)indicator).getPeriod();
-		if (MOM.class.isAssignableFrom(indicator.getClass()))
-			return ((MOM)indicator).getPeriod();
-		if (StdDev.class.isAssignableFrom(indicator.getClass()))
-			return ((StdDev)indicator).getPeriod();
-		return -1;
-	}
-
-	private String getIndicatorInputPrice()
-	{
-		if (SMA.class.isAssignableFrom(indicator.getClass()))
-			return ((SMA)indicator).getInputPrice().name();
-		if (StdDev.class.isAssignableFrom(indicator.getClass()))
-			return ((StdDev)indicator).getInputPrice().name();
-		return InputPrice.CLOSE.name();
+		if (printHeader)
+			printHeader();
 	}
 
 	private double getIndicatorValue()
 	{
 		if (SMA.class.isAssignableFrom(indicator.getClass()))
-			return ((SMA)indicator).getValue();
+			return ((SMA)indicator).value();
 		if (EMA.class.isAssignableFrom(indicator.getClass()))
-			return ((EMA)indicator).getValue();
+			return ((EMA)indicator).value();
 		if (MOM.class.isAssignableFrom(indicator.getClass()))
-			return ((MOM)indicator).getValue();
+			return ((MOM)indicator).value();
 		if (StdDev.class.isAssignableFrom(indicator.getClass()))
-			return ((StdDev)indicator).getValue();
+			return ((StdDev)indicator).value();
 		return Double.NaN;
+	}
+
+	private void printHeader()
+	{
+		writer.println("Strategy: Write File Strategy");
+		writer.println("Market: " + market + (inverseCross ? " (inverted)" : ""));
+		writer.println("Granularity: " + granularity + " minutes");
+		writer.println("Start time: " + startTime);
+		writer.println("End time: " + endTime);
+		writer.println("Indicator: " + indicatorName);
+		if (fileName.endsWith(".csv"))
+			writer.println("t,o,h,l,c,v," + indicatorName);
+		else if (fileName.endsWith(".dat"))
+			writer.println("t\to\th\tl\tc\tv\t" + indicatorName);
 	}
 
 	private void print(Candle candle, double indValue)
@@ -175,26 +165,23 @@ public class WriteFileStrategy implements ExecutableStrategy
 				+ candle.getLow() + "\t" + candle.getClose() + "\t"
 				+ candle.getVolume() + "\t" + indValue);
 		} else if (fileName.endsWith(".json")) {
-			Document doc = new Document("time", candle.getTime().getEpochSecond());
-			doc.append("open", candle.getOpen());
-			doc.append("high", candle.getHigh());
-			doc.append("low", candle.getLow());
-			doc.append("close", candle.getClose());
-			doc.append("volume", candle.getVolume());
-			doc.append(indicatorName, indValue);
+			Document doc = new Document("time", candle.getTime().getEpochSecond())
+				.append("open", candle.getOpen())
+				.append("high", candle.getHigh())
+				.append("low", candle.getLow())
+				.append("close", candle.getClose())
+				.append("volume", candle.getVolume())
+				.append(indicatorName, indValue);
 			writer.println(doc.toJson());
 		} else {
-			writer.println("Unrecognized file format.");
+			throw new RuntimeException("Unrecognized output file format (allowed: txt,csv,dat,json).");
 		}
 	}
 
 	@Override
 	public void process(Journal journal, Candle candle)
 	{
-		double indValue = getIndicatorValue();
-		if (skipNaN && Double.isNaN(indValue))
-			return;
-		print(candle, indValue);
+		print(candle, getIndicatorValue());
 	}
 
 	@Override

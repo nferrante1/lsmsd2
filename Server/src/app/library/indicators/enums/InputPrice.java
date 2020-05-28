@@ -2,11 +2,15 @@ package app.library.indicators.enums;
 
 public enum InputPrice
 {
+	OPEN,
+	HIGH,
+	LOW,
 	CLOSE,
 	TYPICAL,
+	TRUE_RANGE,
 	INCREMENT,
 	DECREMENT,
-	TRUE_RANGE;
+	VOLUME;
 
 	public String getShortName()
 	{
@@ -19,6 +23,14 @@ public enum InputPrice
 			return "tr";
 		case TYPICAL:
 			return "tp";
+		case OPEN:
+			return "o";
+		case HIGH:
+			return "h";
+		case LOW:
+			return "l";
+		case VOLUME:
+			return "v";
 		case CLOSE:
 		default:
 			return "";
@@ -37,6 +49,14 @@ public enum InputPrice
 			return TRUE_RANGE;
 		if (name.equalsIgnoreCase("tp"))
 			return TYPICAL;
+		if (name.equalsIgnoreCase("o"))
+			return OPEN;
+		if (name.equalsIgnoreCase("h"))
+			return HIGH;
+		if (name.equalsIgnoreCase("l"))
+			return LOW;
+		if (name.equalsIgnoreCase("v"))
+			return VOLUME;
 		return CLOSE;
 	}
 }

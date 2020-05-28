@@ -1,10 +1,11 @@
 package app.library.indicators;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import app.library.Candle;
 
+// Relative Strength Index
 public class RSI extends Indicator
 {
 	private double value = Double.NaN;
@@ -17,34 +18,39 @@ public class RSI extends Indicator
 		this.rs = new RS(period);
 	}
 
+	public RSI()
+	{
+		this(14);
+	}
+
 	@Override
 	public List<Indicator> depends()
 	{
-		List<Indicator> indicators = new ArrayList<Indicator>();
-		indicators.add(rs);
-		return indicators;
+		return Arrays.asList(rs);
 	}
 
 	@Override
 	public void compute(Candle candle)
 	{
 		rs.compute(candle);
-		if(Double.isNaN(rs.getValue()))
-			return;
-		value = 100 - (100/(1+rs.getValue()));
+		double rsv = rs.value();
+		if(Double.isNaN(rsv))
+			value = Double.NaN;
+		else
+			value = 100 - (100/(1 + rsv));
 	}
 
-	public double getValue()
+	public double value()
 	{
-		return this.value;
+		return value;
 	}
 
-	public int getPeriod()
+	public int period()
 	{
 		return period;
 	}
 
-	public RS getRS()
+	public RS rs()
 	{
 		return rs;
 	}
