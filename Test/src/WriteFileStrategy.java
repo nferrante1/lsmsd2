@@ -51,7 +51,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 		fileName = fileName.replace("/", File.separator);
 		return (fileName.endsWith(".txt") || fileName.endsWith(".csv")
 			|| fileName.endsWith(".dat") || fileName.endsWith(".json"))
-			&& indicatorName.matches("^SMA|EMA|MOM|StdDev(o|h|l|c|v|u|d|tp|tr)?([1-9][0-9]*)?$");
+			&& indicatorName.matches("^(SMA|EMA|MOM|StdDev)(o|h|l|c|v|u|d|tp|tr)?([1-9][0-9]*)?$");
 	}
 
 	@Override
