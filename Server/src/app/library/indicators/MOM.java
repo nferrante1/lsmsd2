@@ -68,7 +68,7 @@ public class MOM extends Indicator implements FacetPipeline
 	public void compute(Candle candle)
 	{
 		++elapsedPeriods;
-		if(elapsedPeriods > period)
+		if(elapsedPeriods >= period)
 			value = candle.getTa(name());
 	}
 

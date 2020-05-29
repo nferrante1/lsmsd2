@@ -58,7 +58,7 @@ public class StdDev extends Indicator implements FacetPipeline
 		stages.add(Aggregates.addFields(new Field<Document>("candles", new Document("$map",
 			new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 			.append("as", "z")
-			.append("in", new Document("value", new Document("$stdDevPop",
+			.append("in", new Document("value", new Document("$stdDevSamp",
 				new Document("$slice", Arrays.asList("$candles.v", new Document("$max", Arrays.asList(0L, new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
 		return stages;
 	}
@@ -67,7 +67,7 @@ public class StdDev extends Indicator implements FacetPipeline
 	public void compute(Candle candle)
 	{
 		++elapsedPeriods;
-		if(elapsedPeriods > period)
+		if(elapsedPeriods >= period)
 			value = candle.getTa(name());
 	}
 
