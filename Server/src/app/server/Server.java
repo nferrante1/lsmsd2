@@ -222,11 +222,22 @@ public final class Server
 				DBManager.setDatabaseName(name);
 		}
 		if(cmd.hasOption("scraper-port")) {
-			int port = Integer.parseInt(cmd.getOptionValue("scraper-port"));
-			if(port <= 0 || port > 65535) {}
-			else {
-				ScraperController.setPort(port);
+			try {
+
+				int port = Integer.parseInt(cmd.getOptionValue("scraper-port"));
+				if (port < 0 || port > 65535) {
+					NumberFormatException ex = new NumberFormatException("The port must be a number between 0 and 65535.");
+					throw ex;
+				}
+				else {
+					ScraperController.setPort(port);
+				}
+				
+			} catch (NumberFormatException ex) {
+				Logger.getLogger(Server.class.getName()).warning("Invalid port specified. Using default: 5656.");
+				port = 5656;
 			}
+			
 		}
 		if(cmd.hasOption("scraper-host")) {
 			String name = cmd.getOptionValue("scraper-host");
