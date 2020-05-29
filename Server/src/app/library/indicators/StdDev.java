@@ -59,7 +59,7 @@ public class StdDev extends Indicator implements FacetPipeline
 			new Document("input", new Document("$range", Arrays.asList(0L, new Document("$subtract", Arrays.asList(new Document("$size", "$candles"), 1L)))))
 			.append("as", "z")
 			.append("in", new Document("value", new Document("$stdDevPop",
-				new Document("$slice", Arrays.asList("$candles", new Document("$max", Arrays.asList(0L, new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
+				new Document("$slice", Arrays.asList("$candles.v", new Document("$max", Arrays.asList(0L, new Document("$subtract", Arrays.asList("$$z", period)))), period)))))))));
 		return stages;
 	}
 
