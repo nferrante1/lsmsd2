@@ -8,7 +8,7 @@ fi
 
 # Delete db and log files
 rm -rf /var/lib/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}
-rm -f /var/log/mongodb/{mongos{0,1,2},cfg{0,1,2},rs{0,1}-{0,1,2}}.log
+rm -f /var/log/mongodb/{mongos{0,1,2},cfg{0,1,2},rs{0,1}-{0,1,2}}.log*
 
 # Recreate db directories
 mkdir -p /var/lib/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}
