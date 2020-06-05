@@ -68,7 +68,7 @@ public class BollingerBandsStrategy implements ExecutableStrategy
 		 * strategy is uploaded to the server in
 		 * order to get the name.
 		 */
-		return "Bollinger Bands Strategy";
+		return "Bollinger Bands Strategy v2";
 	}
 
 	@Override
@@ -134,6 +134,7 @@ public class BollingerBandsStrategy implements ExecutableStrategy
 			return;
 		}	
 			
+		System.out.println("upper: " +upper+ " lower "+lower+" close "+candle.getClose()+" previousClose: "+previousClose);
 		//Crossover
 		if (previousClose <= lower && candle.getClose() > lower)
 			journal.allIn();

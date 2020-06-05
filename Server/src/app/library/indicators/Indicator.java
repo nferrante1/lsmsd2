@@ -86,6 +86,7 @@ public abstract class Indicator
 		case TRUE_RANGE:
 		case TYPICAL:
 			pushDoc = new Document("c", "$c").append("l", "$l").append("h", "$h");
+			break;
 		default:
 			throw new IllegalArgumentException("Invalid input price.");
 		}
@@ -109,12 +110,12 @@ public abstract class Indicator
 				.append("else",new Document("$max", Arrays.asList(new Document("$subtract", Arrays.asList("$$candle.o", "$$candle.c")), 0L))));
 			break;
 		case TRUE_RANGE:
-			mapDoc = new Document("$max", Arrays.asList(new Document("$subtract", Arrays.asList("$h", "$l")),
-				new Document("$abs", new Document("$subtract", Arrays.asList("$h", "$c"))),
-				new Document("$abs", new Document("$subtract", Arrays.asList("$l", "$c")))));
+			mapDoc = new Document("$max", Arrays.asList(new Document("$subtract", Arrays.asList("$$candle.h", "$$candle.l")),
+				new Document("$abs", new Document("$subtract", Arrays.asList("$$candle.h", "$$candle.c"))),
+				new Document("$abs", new Document("$subtract", Arrays.asList("$$candle.l", "$$candle.c")))));
 			break;
 		case TYPICAL:
-			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$h", "$l", "$c")), 3));
+			mapDoc = new Document("$divide", Arrays.asList(new Document("$sum", Arrays.asList("$$candle.h", "$$candle.l", "$$candle.c")), 3.0));
 			break;
 		default:
 			return null;

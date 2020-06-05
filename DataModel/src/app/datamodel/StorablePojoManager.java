@@ -588,4 +588,6 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 		PojoCursor<T> cursor = super.aggregate(pipeline);
 		return new DetachedPojoCursor<T>(cursor);
 	}
+	
+	
 }

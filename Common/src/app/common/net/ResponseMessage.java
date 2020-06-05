@@ -9,6 +9,7 @@ import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BaseReportInfo;
 import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
+import app.common.net.entities.KVParameter;
 import app.common.net.entities.MarketInfo;
 import app.common.net.entities.ParameterInfo;
 import app.common.net.entities.ProgressInfo;
@@ -116,7 +117,10 @@ public final class ResponseMessage extends Message
 		case RUN_STRATEGY:
 			return getEntityCount() == 1 && (hasEntity(ReportInfo.class) || hasEntity(ProgressInfo.class));
 		case VIEW_REPORT:
-			return getEntityCount() == 1 && hasEntity(ReportInfo.class);
+			for (Entity entity: getEntities())
+				if (!KVParameter.class.isAssignableFrom(entity.getClass()) && !ReportInfo.class.isAssignableFrom(entity.getClass()))
+					return false;
+			return getEntities(ReportInfo.class).size() == 1;
 		default:
 			return false;
 		}
