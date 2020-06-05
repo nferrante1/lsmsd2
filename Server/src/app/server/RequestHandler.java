@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import app.common.net.ResponseMessage;
 import app.common.net.entities.AuthTokenInfo;
 import app.common.net.entities.BaseReportInfo;
 import app.common.net.entities.BrowseInfo;
+import app.common.net.entities.Entity;
 import app.common.net.entities.FileContent;
 import app.common.net.entities.KVParameter;
 import app.common.net.entities.LoginInfo;
@@ -547,14 +549,32 @@ final class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")),null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.include("name") ,Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))),null);
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
 
 		Strategy strategy = cursor.next();
 		StrategyRun run = strategy.getRun(reportId);
 		Report report = run.getReport();
-		return new ResponseMessage(new ReportInfo(
+		List<KVParameter> parameters = new ArrayList<KVParameter>();
+		Map<String, Object> paramMap = run.getParameters();
+		for(Map.Entry<String, Object> entry : paramMap.entrySet() )
+			if(Integer.class.isAssignableFrom(entry.getValue().getClass()))
+				parameters.add(new KVParameter(entry.getKey(), (int) entry.getValue()));
+			else if(Double.class.isAssignableFrom(entry.getValue().getClass()))
+				parameters.add(new KVParameter(entry.getKey(), (double) entry.getValue()));
+			else if(Instant.class.isAssignableFrom(entry.getValue().getClass()))
+				parameters.add(new KVParameter(entry.getKey(), (Instant) entry.getValue()));
+			else if(Date.class.isAssignableFrom(entry.getValue().getClass()))
+				parameters.add(new KVParameter(entry.getKey(), ((Date)entry.getValue()).toInstant()));
+			else if(Boolean.class.isAssignableFrom(entry.getValue().getClass()))
+				parameters.add(new KVParameter(entry.getKey(), (boolean) entry.getValue()));
+			else 
+				parameters.add(new KVParameter(entry.getKey(), (String)entry.getValue()));
+		
+		List<Entity> entities = new ArrayList<Entity>();
+		entities.addAll(parameters);
+		entities.add(new ReportInfo(
 				reportId, strategy.getName(), run.getParameter("market").toString(), 
 				report.getNetProfit(), run.getUser(), 
 				report.getGrossProfit(), report.getGrossLoss(), 
@@ -562,6 +582,9 @@ final class RequestHandler extends Thread
 				report.getOpenTrades(), report.getWinningTrades(), 
 				report.getMaxConsecutiveLosing(),report.getAvgAmount(), 
 				report.getAvgDuration(), report.getMaxDrawdown(), authToken.isAdmin() || authToken.getUsername().equals(run.getUser())));
+		
+			
+		return new ResponseMessage(entities); 
 	}
 
 	@RequestHandlerMethod
@@ -569,7 +592,7 @@ final class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(null, Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId))), Projections.include("name")), null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))),null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();

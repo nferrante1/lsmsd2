@@ -50,7 +50,7 @@ su -s /bin/bash -c 'mongos --quiet --fork --configdb cfgReplSet/localhost:27917,
 su -s /bin/bash -c 'mongos --quiet --fork --configdb cfgReplSet/localhost:27917,localhost:27918,localhost:27919 --port 27018 --logpath /var/log/mongodb/mongos1.log' mongodb
 su -s /bin/bash -c 'mongos --quiet --fork --configdb cfgReplSet/localhost:27917,localhost:27918,localhost:27919 --port 27019 --logpath /var/log/mongodb/mongos2.log' mongodb
 
-sleep 5
+sleep 10 
 
 # Add shards
 mongo --quiet mongodb://localhost:27017,localhost:27018,localhost:27019 --eval 'sh.addShard("rs0/localhost:27117,localhost:27118,localhost:27119")'

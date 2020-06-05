@@ -48,13 +48,13 @@ public class BollingerBands extends Indicator
 
 		double mav = ma.value();
 		double sigmav = sigma.value();
-
+		System.out.println("mav: "+mav+" sigma"+sigmav);
 		if(Double.isNaN(mav) || Double.isNaN(sigmav)) {
 			bolu = Double.NaN;
 			bold = Double.NaN;
 		} else {
-			bolu = mav + distance*sigmav;
-			bold = mav - distance*sigmav;
+			bolu = mav + (double)distance*sigmav;
+			bold = mav - (double)distance*sigmav;
 		}
 	}
 
