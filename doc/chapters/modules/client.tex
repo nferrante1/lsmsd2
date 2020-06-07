@@ -1,8 +1,17 @@
 \section{Client}\label{sec:client}
 
+The client application is substantially a collection of menus and forms. Each
+menus creates a list of entries and when the user selects an entry the
+corresponding handler (a method) is called. Forms validate every input that the
+user inserts.
+
+The crafting of the requests to submit to the server is made by the
+\code{Protocol} class. Beside that, the client only implements presentation
+logic.
+
 \begin{landscape}
 	\begin{figure}[!h]
-		%\includegraphics[width=\textwidth]{client}
+		\includegraphics[width=0.8\paperheight]{module-client}
 		\caption*{\textbf{Figure~\ref{fig:client}}}
 		\captionlistentry{}\label{fig:client}
 	\end{figure}
