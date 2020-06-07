@@ -23,7 +23,7 @@ import app.datamodel.PojoManager;
 import app.datamodel.pojos.DataRange;
 import app.library.Candle;
 
-public final class AggregationRunner extends PojoManager<Candle>
+final class AggregationRunner extends PojoManager<Candle>
 {
 	private final String marketId;
 	private final boolean inverseCross;
@@ -31,7 +31,7 @@ public final class AggregationRunner extends PojoManager<Candle>
 	private final Instant start;
 	private final Instant end;
 
-	public AggregationRunner(String marketId, boolean inverseCross, int granularity, DataRange range)
+	AggregationRunner(String marketId, boolean inverseCross, int granularity, DataRange range)
 	{
 		super(Candle.class, "MarketData");
 		this.marketId = marketId;
@@ -47,7 +47,7 @@ public final class AggregationRunner extends PojoManager<Candle>
 		return getCollection().aggregate(pipeline).allowDiskUse(true);
 	}
 
-	public PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
+	PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
 	{
 		List<Facet> facets = new ArrayList<Facet>();
 		facets.add(new Facet("candles", Aggregates.project(Projections.excludeId())));
@@ -102,9 +102,6 @@ public final class AggregationRunner extends PojoManager<Candle>
 			.append("in", document))))));
 		stages.add(Aggregates.unwind("$candles"));
 		stages.add(Aggregates.replaceRoot("$candles"));
-//		for(Bson stage : stages)
-//			System.out.println(stage.toString());
-//		return null;
 		return aggregate(stages);
 	}
 }
