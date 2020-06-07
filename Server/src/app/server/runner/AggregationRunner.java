@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Facet;
@@ -38,6 +39,12 @@ public final class AggregationRunner extends PojoManager<Candle>
 		this.granularity = granularity;
 		this.start = range.start;
 		this.end = range.end;
+	}
+
+	@Override
+	protected AggregateIterable<Candle> getAggregateIterable(List<Bson> pipeline)
+	{
+		return getCollection().aggregate(pipeline).allowDiskUse(true);
 	}
 
 	public PojoCursor<Candle> runAggregation(HashMap<String, List<Bson>> taFacets)
