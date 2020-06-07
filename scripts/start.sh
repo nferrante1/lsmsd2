@@ -7,7 +7,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Delete log files
-rm -f /var/log/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}.log
+rm -f /var/log/mongodb/{cfg{0,1,2},rs{0,1}-{0,1,2}}.log*
 
 # Start config servers
 su -s /bin/bash -c 'mongod --quiet --fork --configsvr --replSet cfgReplSet --port 27917 --logpath /var/log/mongodb/cfg0.log --dbpath /var/lib/mongodb/cfg0' mongodb

@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +41,7 @@ public class WriteFileStrategy implements ExecutableStrategy
 	@Override
 	public String name()
 	{
-		return "Write File Strategy (for debugging) [randId: " + (new Random()).nextInt(Integer.MAX_VALUE) + "]";
+		return "Write File Strategy (for debugging) [upload time: " + Instant.now() + "]";
 	}
 
 	@Override
