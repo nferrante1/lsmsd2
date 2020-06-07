@@ -27,11 +27,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<artifactSet>
-								<includes>
-									<include>org.mongodb:mongodb-driver-sync</include>
-								</includes>
-							</artifactSet>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>

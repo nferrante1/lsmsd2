@@ -27,11 +27,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<artifactSet>
-								<includes>
-									<include>com.thoughtworks.xstream:xstream</include>
-								</includes>
-							</artifactSet>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>

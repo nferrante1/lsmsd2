@@ -41,12 +41,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<artifactSet>
-								<includes>
-									<include>commons-cli:commons-cli</include>
-									<include>Lsmsd2:Common</include>
-								</includes>
-							</artifactSet>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>

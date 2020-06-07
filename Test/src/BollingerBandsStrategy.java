@@ -68,7 +68,7 @@ public class BollingerBandsStrategy implements ExecutableStrategy
 		 * strategy is uploaded to the server in
 		 * order to get the name.
 		 */
-		return "Bollinger Bands Strategy v2";
+		return "Bollinger Bands Strategy";
 	}
 
 	@Override
