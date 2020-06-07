@@ -1,4 +1,41 @@
 \chapter{Application setup}\label{appendix:setup}
 
+Server and Scraper have a set of command line options that allow to configure 
+some connection parameters, furthermore the Server has an option for the
+configuration of the directory where strategies will be saved. All the command
+line options can be visualized with the \code{-h} parameter when starting the
+application.
+
+\begin{verbatim}
+java -jar target/Server.jar -h
+usage: Server [-h | --help] [-d <DBNAME> | --dbname <DBNAME>] [-c
+              <CONNSTR> | --connection-string <CONNSTR>] [-D <DIR> |
+              --strategies-dir <DIR>] [-P <PORT> | --scraper-port <PORT>]
+              [-H <HOST> | --scraper-host <HOST>] [-p <PORT> | --port
+              <PORT>] [-l <LEVEL> | --log-level <LEVEL>]
+ -c,--connection-string <CONNSTR>   Set MongoDB connection string.
+ -d,--dbname <DBNAME>               Set MongoDB database name.
+ -D,--strategies-dir <DIR>          Set directory where strategies will be
+                                    saved.
+ -h,--help                          Print this message.
+ -H,--scraper-host <HOST>           Set scraper hostname or ip address.
+ -l,--log-level <LEVEL>             Set log level.
+ -p,--port <PORT>                   Set listening port (default: 8888).
+ -P,--scraper-port <PORT>           Set scraper connection port.
+ -s,--standalone                    Disable MongoDB sharding.
+
+LOG LEVELS:
+ALL: print all logs.
+FINEST: print all tracing logs.
+FINER: print most tracing logs.
+FINE: print some tracing logs.
+CONFIG: print all config logs.
+INFO: print all informational logs.
+WARNING: print all warnings and errors. (default)
+SEVERE: print only errors.
+OFF: disable all logs.
+\end{verbatim}
+
+
 TODO server and scraper command line options; server and scraper run; cluster
-run; standalone run; docker run
+run; standalone run; 

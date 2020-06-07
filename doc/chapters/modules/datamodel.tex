@@ -26,6 +26,13 @@ fields and the \code{manager.save()} method will take care to do the
 operation(s) needed to synchronize the document in the database with the POJO's
 state.
 
+This manager-based approach is inspired by the work done from famous tools such
+as Hibernate (for SQL databases) and Mongoose for JavaScript. Even if the design
+of this approach is far more tricky and complex than manually generate documents
+from Java classes, we have a valuable ease-of-use when dealing with the database
+from the application. In this way, the application can focus on its business
+logic avoiding mixing logic code with data access code.
+
 The main classes in the library are the following:
 \begin{itemize}
 	\item[DBManager] It handles the connection with the database. It has
@@ -57,7 +64,7 @@ its fields (also inside a list). When the parent POJO is saved also all the
 child POJOs are saved.
 
 \begin{landscape}
-	\begin{figure}[!h]
+	\begin{figure}[!ht]
 		\includegraphics[width=0.8\paperheight]{module-datamodel}
 		\caption*{\textbf{Figure~\ref{fig:datamodel}}}
 		\captionlistentry{}\label{fig:datamodel}

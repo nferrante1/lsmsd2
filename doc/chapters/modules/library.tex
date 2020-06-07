@@ -1,0 +1,19 @@
+\section{Strategy's library}\label{sec:library}
+
+The \code{app.library} package, placed inside the \code{Server} project,
+contains the library used by the strategy for the execution. It contains some
+technical indicators and the \code{Journal} and \code{Trade} classes used to
+register all the operations made by the strategy and to generate the final
+report. It also contains the \code{Candle} class used to represent a candle with
+technical analysis informations and the \code{ExecutableStrategy} interface that
+every strategy must implement.
+
+More informations on this library can be found in \appendixref{appendix:devman}.
+
+\begin{landscape}
+	\begin{figure}[!ht]
+		\includegraphics[width=0.8\paperheight]{module-library}
+		\caption*{\textbf{Figure~\ref{fig:library}}}
+		\captionlistentry{}\label{fig:library}
+	\end{figure}
+\end{landscape}

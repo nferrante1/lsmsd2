@@ -11,14 +11,6 @@ request handler is called. The request handler perform the requested operation
 save it back to the database) and generate the response that must be sent back
 to the client.
 
-The \code{app.library} package contains the library used by the strategy for the
-execution. It contains some technical indicators and the \code{Journal} and
-\code{Trade} classes used to register all the operations made by the strategy
-and to generate the final report. It also contains the \code{Candle} class used
-to represent a candle with technical analysis informations and the
-\code{ExecutableStrategy} interface that every strategy must implement. More
-informations on this library can be found in \appendixref{appendix:devman}.
-
 The most complex part is the one in the \code{app.server.runner} package. Here
 are contained the classes used to load/save the strategies from/to the file
 system and to run the strategies over the market data.
@@ -31,7 +23,7 @@ The pipeline stages needed by each indicator are returned by the
 \code{pipeline()} method of the indicators' classes.
 
 \begin{landscape}
-	\begin{figure}[!h]
+	\begin{figure}[!ht]
 		\includegraphics[width=0.8\paperheight]{module-server}
 		\caption*{\textbf{Figure~\ref{fig:server}}}
 		\captionlistentry{}\label{fig:server}
