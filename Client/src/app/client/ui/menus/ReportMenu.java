@@ -51,6 +51,8 @@ final class ReportMenu extends Menu
 		DecimalFormat pf = new DecimalFormat("0.##%");
 		pf.setRoundingMode(RoundingMode.HALF_EVEN);
 		pf.setPositivePrefix("+");
+		DecimalFormat upf = new DecimalFormat("0.##%");
+		upf.setRoundingMode(RoundingMode.HALF_EVEN);
 		DecimalFormat of = new DecimalFormat("#,##0.00");
 		of.setRoundingMode(RoundingMode.HALF_EVEN);
 		of.setGroupingSize(3);
@@ -69,10 +71,10 @@ final class ReportMenu extends Menu
 		Console.println("Gross Loss: " + df.format(report.getGrossLoss() * amount) + " (" + pf.format(report.getGrossLoss()) + ")");
 		Console.println("Hodl Profit: " + df.format(report.getHodlProfit() * amount) + " (" + pf.format(report.getHodlProfit()) + "; strategy relative performance: " + pf.format(report.getNetProfit() - report.getHodlProfit()) + ")");
 		Console.println("Total Trades: " + report.getTotalTrades());
-		Console.println("Total Completed Trades: " + report.getClosedTrades() + (report.getTotalTrades() > 0 ? "(" + pf.format(report.getClosedTrades() / report.getTotalTrades()) + ")" : ""));
-		Console.println("Open Trades At End: " + report.getOpenTrades() + (report.getTotalTrades() > 0 ? "(" + pf.format(report.getOpenTrades() / report.getTotalTrades()) + ")" : ""));
-		Console.println("Winning Trades: " + report.getWinningTrades() + (report.getClosedTrades() > 0 ? "(" + pf.format(report.getWinningTrades() / report.getClosedTrades()) + " of completed trades)" : ""));
-		Console.println("Losing Trades: " + report.getLosingTrades() + (report.getClosedTrades() > 0 ? "(" + pf.format(report.getLosingTrades() / report.getClosedTrades()) + " of completed trades)" : ""));
+		Console.println("Total Completed Trades: " + report.getClosedTrades() + (report.getTotalTrades() > 0 ? " (" + upf.format(report.getClosedTrades() / report.getTotalTrades()) + ")" : ""));
+		Console.println("Open Trades At End: " + report.getOpenTrades() + (report.getTotalTrades() > 0 ? " (" + upf.format(report.getOpenTrades() / report.getTotalTrades()) + ")" : ""));
+		Console.println("Winning Trades: " + report.getWinningTrades() + (report.getClosedTrades() > 0 ? " (" + upf.format(report.getWinningTrades() / report.getClosedTrades()) + " of completed trades)" : ""));
+		Console.println("Losing Trades: " + report.getLosingTrades() + (report.getClosedTrades() > 0 ? " (" + upf.format(report.getLosingTrades() / report.getClosedTrades()) + " of completed trades)" : ""));
 		Console.println("Max Consecutive Losing Trades: " + report.getMaxConsecutiveLosing());
 		Console.println("Average Traded Amount: " + of.format(report.getAvgAmount() * amount));
 		Console.println("Average Trade Duration: " + of.format(report.getAvgDuration()) + " trading days");
