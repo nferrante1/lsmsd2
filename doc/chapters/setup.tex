@@ -1,41 +1,40 @@
 \chapter{Application setup}\label{appendix:setup}
 
-Server and Scraper have a set of command line options that allow to configure 
-some connection parameters, furthermore the Server has an option for the
-configuration of the directory where strategies will be saved. All the command
-line options can be visualized with the \code{-h} parameter when starting the
-application.
+\figref{fig:setup} shows the setup that we have made on the \theinstitute's
+machines (not all connections between \code{mongos} and \code{mongod} instances
+are shown). Client, Server and Scraper use this configuration by default.
 
+\begin{figure}[htb]
+	\includegraphics[width=\textwidth]{setup}
+	\caption{Application setup on the \theinstitute's
+	machines.}\label{fig:setup}
+\end{figure}
+
+If using another configuration, each application has several command line
+options to change the connection parameters. You can see all the available
+parameters for an application by passing the \code{-h} (\code{--help}) option to
+it.
+
+The \code{-c} (\code{--connection-string}) option, available for server and
+scraper, allows to change the connection string used to connect to \mongodb.
+Here, an example with the default connection string:
 \begin{verbatim}
-java -jar target/Server.jar -h
-usage: Server [-h | --help] [-d <DBNAME> | --dbname <DBNAME>] [-c
-              <CONNSTR> | --connection-string <CONNSTR>] [-D <DIR> |
-              --strategies-dir <DIR>] [-P <PORT> | --scraper-port <PORT>]
-              [-H <HOST> | --scraper-host <HOST>] [-p <PORT> | --port
-              <PORT>] [-l <LEVEL> | --log-level <LEVEL>]
- -c,--connection-string <CONNSTR>   Set MongoDB connection string.
- -d,--dbname <DBNAME>               Set MongoDB database name.
- -D,--strategies-dir <DIR>          Set directory where strategies will be
-                                    saved.
- -h,--help                          Print this message.
- -H,--scraper-host <HOST>           Set scraper hostname or ip address.
- -l,--log-level <LEVEL>             Set log level.
- -p,--port <PORT>                   Set listening port (default: 8888).
- -P,--scraper-port <PORT>           Set scraper connection port.
- -s,--standalone                    Disable MongoDB sharding.
-
-LOG LEVELS:
-ALL: print all logs.
-FINEST: print all tracing logs.
-FINER: print most tracing logs.
-FINE: print some tracing logs.
-CONFIG: print all config logs.
-INFO: print all informational logs.
-WARNING: print all warnings and errors. (default)
-SEVERE: print only errors.
-OFF: disable all logs.
+$ java -jar Server.jar -c "mongodb://172.16.1.35:27017,
+        172.16.1.39:27017,172.16.1.43:27017"
 \end{verbatim}
 
+If \mongodb{} is running as a single standalone instance, you need to pass the
+\code{-s} (\code{--standalone}) option to the server and the scraper to disable
+the sharding. In this case, server and scraper expect by default to find the
+standalone \code{mongod} instance at \code{localhost:27017} (unless changed with
+the \code{-c} option).
 
-TODO server and scraper command line options; server and scraper run; cluster
-run; standalone run; 
+The server application expect to find the running scraper instance at
+\code{172.16.1.35:5656}. If the scraper is running somewhere else, you can use
+the server's \code{-H} (\code{--scraper-host}) and \code{-P}
+(\code{--scraper-port}) options in order to override the default value.
+
+The client's \code{-H} (\code{--hosts}) option can be used to set a different
+(list of) server(s) to connect to. See \secref{sec:clientrun} for details.
+
+On first start, the server will ask to create the administrator's account.

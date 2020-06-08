@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import app.common.net.RequestMessage;
 import app.common.net.ResponseMessage;
@@ -32,8 +33,9 @@ public final class Protocol implements AutoCloseable
 	private static Protocol instance;
 	private String authToken;
 	private LoginInfo loginInfo;
-	private String serverAddress = "localhost";
-	private int serverPort = 8888;
+	private List<String> serverAddress = new ArrayList<String>();
+	private List<Integer> serverPort = new ArrayList<Integer>();
+	private Random random = new Random();
 
 	private Protocol()
 	{
@@ -50,8 +52,15 @@ public final class Protocol implements AutoCloseable
 	{
 		if (connected)
 			return;
+		if (serverAddress.isEmpty())
+			serverAddress = Arrays.asList("172.16.1.35", "172.16.1.39", "172.16.1.43");
+		if (serverPort.isEmpty())
+			serverPort = Arrays.asList(8888, 8888, 8888);
+		int index = random.nextInt(serverAddress.size());
+		String addr = serverAddress.get(index);
+		int port = serverPort.get(index);
 		try {
-			socket = new Socket(serverAddress, serverPort);
+			socket = new Socket(addr, port);
 			inputStream = new DataInputStream(socket.getInputStream());
 			outputStream = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException ex) {
@@ -456,13 +465,11 @@ public final class Protocol implements AutoCloseable
 		connected = false;
 	}
 
-	public void setServerAddress(String serverAddress)
+	public void addServer(String address, int port)
 	{
-		this.serverAddress = serverAddress;
-	}
-
-	public void setServerPort(int serverPort)
-	{
-		this.serverPort = serverPort;
+		serverAddress.add(address);
+		if (port < 0 || port > 65535)
+			port = 8888;
+		serverPort.add(port);
 	}
 }

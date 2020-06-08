@@ -1,13 +1,13 @@
-\section{Run the client}
+\section{Run the client}\label{sec:clientrun}
 
 The client supports the following parameters:
 
 %TODO: complete help message in implementation
 \begin{verbatim}
 $ java -jar Client.jar --help
-usage: app [-h | --help] [-H <HOSTLIST> | --host <HOSTLIST>]
- -h,--help              Print this message.
- -H,--host <HOSTLIST>   List of server hostname:port.
+usage: app [-h | --help] [-H <HOSTLIST> | --hosts <HOSTLIST>]
+ -h,--help               Print this message.
+ -H,--hosts <HOSTLIST>   List of server hostname:port.
 \end{verbatim}
 
 To connect the client to the server application deployed on the machines of the
@@ -18,7 +18,7 @@ $ java -jar Client.jar
 \end{verbatim}
 
 If you want to connect to a different server (or a cluster of servers, if the
-server application is distributed with \standout{Docker Swarm}), run:
+server application is deployed on multiple servers) run:
 
 \begin{verbatim}
 $ java -jar Client.jar

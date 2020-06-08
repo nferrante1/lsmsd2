@@ -41,7 +41,9 @@ public final class DBManager implements Closeable
 	private DBManager()
 	{
 		if (connectionString == null)
-			connectionString = "mongodb://localhost:27017" + (standalone ? "" : ",localhost:27018,localhost:27019");
+			connectionString = "mongodb://" + (standalone
+				? "localhost:27017"
+				: "172.16.1.35:27017,172.16.1.39:27017,172.16.1.43:27017");
 		CodecRegistry pojoCodecRegistry = CodecRegistries
 			.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder()

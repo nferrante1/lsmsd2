@@ -36,13 +36,10 @@ public final class Client
 	{
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "print this message."));
-		Option serverAddress = new Option("H", "host", true, "Server host name or ip address");
+		Option serverAddress = new Option("H", "hosts", true, "List of server hostname:port.");
 		serverAddress.setType(String.class);
-		serverAddress.setArgName("HOST");
+		serverAddress.setArgName("HOSTLIST");
 		options.addOption(serverAddress);
-		Option serverPort = new Option("p", "port", true, "Server port");
-		serverPort.setType(Integer.class);
-		serverPort.setArgName("PORT");
 		return options;
 	}
 
@@ -50,27 +47,27 @@ public final class Client
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("app [-h | --help] [-H <HOST> | --host <HOST>] [-p <PORT> | --port <PORT>]", options);
+			formatter.printHelp("app [-h | --help] [-H <HOSTLIST> | --hosts <HOSTLIST>]", options);
 			close();
 		}
-		if (cmd.hasOption("host")) {
-			String host = cmd.getOptionValue("host");
-			if (!host.isBlank())
-				Protocol.getInstance().setServerAddress(host);
-		}
-		if (cmd.hasOption("port")) {
-			int port;
-			try {
-				port = Integer.parseInt(cmd.getOptionValue("port", "8888"));
-				if (port < 0 || port > 65535) {
-					NumberFormatException ex = new NumberFormatException("The port must be a number between 0 and 65535.");
-					throw ex;
-				}
-			} catch (NumberFormatException ex) {
-				System.err.println("Invalid port specified. Using default: 8888.");
-				port = 8888;
+		if (cmd.hasOption("hosts")) {
+			String str = cmd.getOptionValue("hosts").trim();
+			if (!str.matches("^[a-zA-z0-9._-]+(:[0-9]{1,5})?$")) {
+				System.err.println("Invalid host list specified. Connecting to default cluster 172.16.1.{35,39,43}:8888.");
+				launchCLI(cmd.getArgs());
 			}
-			Protocol.getInstance().setServerPort(port);
+			String[] servers = str.split(",");
+			for (int s = 0; s < servers.length; s++) {
+				String[] server = str.split(":", 2);
+				int port;
+				try {
+					port = server.length > 1 ? Integer.parseInt(server[1]) : 8888;
+				} catch (NumberFormatException ex) {
+					System.err.println("Invalid port specified for '" + server[0] + "'. Using default: 8888.");
+					port = 8888;
+				}
+				Protocol.getInstance().addServer(server[0], port);
+			}
 		}
 
 		launchCLI(cmd.getArgs());

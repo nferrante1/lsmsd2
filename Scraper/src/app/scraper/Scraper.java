@@ -79,8 +79,8 @@ public final class Scraper
 	private static Options createOptions()
 	{
 		Options options = new Options();
-		options.addOption(new Option("h", "help", false, "print this message."));
-		Option logLevelOpt = new Option("l", "log-level", true, "set log level.");
+		options.addOption(new Option("h", "help", false, "Print this message."));
+		Option logLevelOpt = new Option("l", "log-level", true, "Set log level.");
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
@@ -92,7 +92,7 @@ public final class Scraper
 		dbName.setArgName("DBNAME");
 		dbName.setType(String.class);
 		options.addOption(dbName);
-		Option serverPort = (new Option("p", "port", true, "Listening port."));
+		Option serverPort = (new Option("p", "port", true, "Listening port (for commands from server app)."));
 		serverPort.setType(Integer.class);
 		serverPort.setArgName("PORT");
 		Option standalone = new Option("s", "standalone", false, "Disable MongoDB sharding.");

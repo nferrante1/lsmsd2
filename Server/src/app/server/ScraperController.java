@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 final class ScraperController
 {
-	private static String address = "localhost";
+	private static String address = "172.16.1.35";
 	private static int port = 5656;
 
 	static void start()

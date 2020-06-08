@@ -169,6 +169,7 @@ public final class Server
 					+ "[-P <PORT> | --scraper-port <PORT>] "
 					+ "[-H <HOST> | --scraper-host <HOST>] "
 					+ "[-p <PORT> | --port <PORT>] "
+					+ "[-s | --standalone] "
 					+ "[-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
 				"ALL: print all logs.\n" +
@@ -221,7 +222,7 @@ public final class Server
 			if(!name.isBlank())
 				DBManager.setDatabaseName(name);
 		}
-		if(cmd.hasOption("scraper-port")) {
+		if(cmd.hasOption("scraper-port"))
 			try {
 
 				int port = Integer.parseInt(cmd.getOptionValue("scraper-port"));
@@ -232,13 +233,9 @@ public final class Server
 				else {
 					ScraperController.setPort(port);
 				}
-				
 			} catch (NumberFormatException ex) {
 				Logger.getLogger(Server.class.getName()).warning("Invalid port specified. Using default: 5656.");
-				port = 5656;
 			}
-			
-		}
 		if(cmd.hasOption("scraper-host")) {
 			String name = cmd.getOptionValue("scraper-host");
 			if(!name.isBlank())
