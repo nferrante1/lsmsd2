@@ -16,12 +16,7 @@ public class PojoCursor<T extends Object> implements AutoCloseable
 
 	PojoCursor(PojoCursor<T> cursor)
 	{
-		this.cursor = cursor.getCursor();
-	}
-
-	private MongoCursor<T> getCursor()
-	{
-		return cursor;
+		this.cursor = cursor.cursor;
 	}
 
 	public T next()
