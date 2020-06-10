@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -336,7 +337,7 @@ final class RequestHandler extends Thread
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
 		try {
 			strategyManager.save(strategy);
-		} catch(DuplicateKeyException e) {
+		} catch(DuplicateKeyException | MongoWriteException e) {
 			strategyFile.delete();
 			return new ResponseMessage("A strategy with this name already exists.");
 		}
@@ -571,7 +572,7 @@ final class RequestHandler extends Thread
 				parameters.add(new KVParameter(entry.getKey(), (boolean) entry.getValue()));
 			else 
 				parameters.add(new KVParameter(entry.getKey(), (String)entry.getValue()));
-		
+
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.addAll(parameters);
 		entities.add(new ReportInfo(
@@ -582,8 +583,7 @@ final class RequestHandler extends Thread
 				report.getOpenTrades(), report.getWinningTrades(), 
 				report.getMaxConsecutiveLosing(),report.getAvgAmount(), 
 				report.getAvgDuration(), report.getMaxDrawdown(), authToken.isAdmin() || authToken.getUsername().equals(run.getUser())));
-		
-			
+
 		return new ResponseMessage(entities); 
 	}
 
