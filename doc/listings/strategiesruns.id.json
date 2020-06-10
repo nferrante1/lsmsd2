@@ -1,0 +1,111 @@
+//EXECUTION STATS INDEX {runs.id : 1} on Strategies
+
+db.Strategies.find({"runs.id" : ObjectId("5ee0ab6ccc7e7831c1e08941")}).explain("executionStats");
+{
+	"queryPlanner" : {
+		"mongosPlannerVersion" : 1,
+		"winningPlan" : {
+			"stage" : "SINGLE_SHARD",
+			"shards" : [{
+					"winningPlan" : {
+						"stage" : "FETCH",
+						"inputStage" : {
+							"stage" : "IXSCAN",
+							"keyPattern" : {
+								"runs.id" : 1
+							},
+							"indexName" : "runIdIndex",
+							"isMultiKey" : true,
+							"multiKeyPaths" : {
+								"runs.id" : [
+									"runs"
+								]
+							},
+							"isUnique" : true,
+							"isSparse" : true,
+							"isPartial" : false,
+							"indexVersion" : 2,
+							"direction" : "forward",
+							"indexBounds" : {
+								"runs.id" : [
+									"[ObjectId('5ee0ab6ccc7e7831c1e08941'), ObjectId('5ee0ab6ccc7e7831c1e08941')]"
+								]
+							}
+						}
+					}
+				}
+			]
+		}
+	},
+	"executionStats" : {
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "SINGLE_SHARD",
+			"nReturned" : 1,
+			"executionTimeMillis" : 0,
+			"totalKeysExamined" : 1,
+			"totalDocsExamined" : 1,
+			"totalChildMillis" : NumberLong(0),
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"executionSuccess" : true,
+					"executionStages" : {
+						"stage" : "FETCH",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 2,
+						"advanced" : 1,
+						"needTime" : 0,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"docsExamined" : 1,
+						"alreadyHasObj" : 0,
+						"inputStage" : {
+							"stage" : "IXSCAN",
+							"nReturned" : 1,
+							"executionTimeMillisEstimate" : 0,
+							"works" : 2,
+							"advanced" : 1,
+							"needTime" : 0,
+							"needYield" : 0,
+							"saveState" : 0,
+							"restoreState" : 0,
+							"isEOF" : 1,
+							"keyPattern" : {
+								"runs.id" : 1
+							},
+							"indexName" : "runIdIndex",
+							"isMultiKey" : true,
+							"multiKeyPaths" : {
+								"runs.id" : [
+									"runs"
+								]
+							},
+							"isUnique" : true,
+							"isSparse" : true,
+							"isPartial" : false,
+							"indexVersion" : 2,
+							"direction" : "forward",
+							"indexBounds" : {
+								"runs.id" : [
+									"[ObjectId('5ee0ab6ccc7e7831c1e08941'), ObjectId('5ee0ab6ccc7e7831c1e08941')]"
+								]
+							},
+							"keysExamined" : 1,
+							"seeks" : 1,
+							"dupsTested" : 1,
+							"dupsDropped" : 0
+						}
+					}
+				}
+			]
+		}
+	}
+}
+

@@ -1,8 +1,9 @@
 \section{Validation of indicators' pipelines}\label{sec:indicatorsvalidation}
 
-In the following, we will show that the aggregation pipelines developed for the
-computation of the indicators (available in package
-\code{app.server.libra\-ry.indicators}) are valid. To do this, we aver used a
+To assess that the computation of the indicators (available in package
+\code{app.server.libra\-ry.indicators}) are valid, we have used a
 special strategy (\code{WriteFileStrategy.java}) to write the output of the
 pipeline in a file. Then, we have loaded the file in Matlab and compared the
-results in the file with those computed by Matlab.
+results in the file with those arising from Matlab computations on raw data. Results
+give us 0 error on the easier indicators, on more complex indicators such as EMA
+the error is negligible.

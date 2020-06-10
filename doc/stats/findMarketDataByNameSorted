@@ -1,0 +1,229 @@
+mongos> db.MarketData.find({market: "COINBASE:BTC-EUR"}).sort({start:1}).explain("executionStats");
+{
+	"queryPlanner" : {
+		"mongosPlannerVersion" : 1,
+		"winningPlan" : {
+			"stage" : "SINGLE_SHARD",
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"connectionString" : "rs1/localhost:27217,localhost:27218,localhost:27219",
+					"serverInfo" : {
+						"host" : "nicola-HP-Notebook",
+						"port" : 27217,
+						"version" : "3.6.8",
+						"gitVersion" : "8e540c0b6db93ce994cc548f000900bdc740f80a"
+					},
+					"plannerVersion" : 1,
+					"namespace" : "lsmsd2.MarketData",
+					"indexFilterSet" : false,
+					"parsedQuery" : {
+						"market" : {
+							"$eq" : "COINBASE:BTC-EUR"
+						}
+					},
+					"winningPlan" : {
+						"stage" : "SORT",
+						"sortPattern" : {
+							"start" : 1
+						},
+						"inputStage" : {
+							"stage" : "SORT_KEY_GENERATOR",
+							"inputStage" : {
+								"stage" : "SHARDING_FILTER",
+								"inputStage" : {
+									"stage" : "FETCH",
+									"filter" : {
+										"market" : {
+											"$eq" : "COINBASE:BTC-EUR"
+										}
+									},
+									"inputStage" : {
+										"stage" : "IXSCAN",
+										"keyPattern" : {
+											"market" : "hashed"
+										},
+										"indexName" : "marketHashed",
+										"isMultiKey" : false,
+										"isUnique" : false,
+										"isSparse" : false,
+										"isPartial" : false,
+										"indexVersion" : 2,
+										"direction" : "forward",
+										"indexBounds" : {
+											"market" : [
+												"[2053511032787733651, 2053511032787733651]"
+											]
+										}
+									}
+								}
+							}
+						}
+					},
+					"rejectedPlans" : [
+						{
+							"stage" : "SHARDING_FILTER",
+							"inputStage" : {
+								"stage" : "FETCH",
+								"filter" : {
+									"market" : {
+										"$eq" : "COINBASE:BTC-EUR"
+									}
+								},
+								"inputStage" : {
+									"stage" : "IXSCAN",
+									"keyPattern" : {
+										"start" : 1
+									},
+									"indexName" : "startIndex",
+									"isMultiKey" : false,
+									"multiKeyPaths" : {
+										"start" : [ ]
+									},
+									"isUnique" : false,
+									"isSparse" : false,
+									"isPartial" : false,
+									"indexVersion" : 2,
+									"direction" : "forward",
+									"indexBounds" : {
+										"start" : [
+											"[MinKey, MaxKey]"
+										]
+									}
+								}
+							}
+						}
+					]
+				}
+			]
+		}
+	},
+	"executionStats" : {
+		"nReturned" : 17,
+		"executionTimeMillis" : 5,
+		"totalKeysExamined" : 17,
+		"totalDocsExamined" : 17,
+		"executionStages" : {
+			"stage" : "SINGLE_SHARD",
+			"nReturned" : 17,
+			"executionTimeMillis" : 5,
+			"totalKeysExamined" : 17,
+			"totalDocsExamined" : 17,
+			"totalChildMillis" : NumberLong(3),
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"executionSuccess" : true,
+					"executionStages" : {
+						"stage" : "SORT",
+						"nReturned" : 17,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 38,
+						"advanced" : 17,
+						"needTime" : 19,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"invalidates" : 0,
+						"sortPattern" : {
+							"start" : 1
+						},
+						"memUsage" : 1234940,
+						"memLimit" : 33554432,
+						"inputStage" : {
+							"stage" : "SORT_KEY_GENERATOR",
+							"nReturned" : 17,
+							"executionTimeMillisEstimate" : 0,
+							"works" : 19,
+							"advanced" : 17,
+							"needTime" : 1,
+							"needYield" : 0,
+							"saveState" : 0,
+							"restoreState" : 0,
+							"isEOF" : 1,
+							"invalidates" : 0,
+							"inputStage" : {
+								"stage" : "SHARDING_FILTER",
+								"nReturned" : 17,
+								"executionTimeMillisEstimate" : 0,
+								"works" : 18,
+								"advanced" : 17,
+								"needTime" : 0,
+								"needYield" : 0,
+								"saveState" : 0,
+								"restoreState" : 0,
+								"isEOF" : 1,
+								"invalidates" : 0,
+								"chunkSkips" : 0,
+								"inputStage" : {
+									"stage" : "FETCH",
+									"filter" : {
+										"market" : {
+											"$eq" : "COINBASE:BTC-EUR"
+										}
+									},
+									"nReturned" : 17,
+									"executionTimeMillisEstimate" : 0,
+									"works" : 18,
+									"advanced" : 17,
+									"needTime" : 0,
+									"needYield" : 0,
+									"saveState" : 0,
+									"restoreState" : 0,
+									"isEOF" : 1,
+									"invalidates" : 0,
+									"docsExamined" : 17,
+									"alreadyHasObj" : 0,
+									"inputStage" : {
+										"stage" : "IXSCAN",
+										"nReturned" : 17,
+										"executionTimeMillisEstimate" : 0,
+										"works" : 18,
+										"advanced" : 17,
+										"needTime" : 0,
+										"needYield" : 0,
+										"saveState" : 0,
+										"restoreState" : 0,
+										"isEOF" : 1,
+										"invalidates" : 0,
+										"keyPattern" : {
+											"market" : "hashed"
+										},
+										"indexName" : "marketHashed",
+										"isMultiKey" : false,
+										"isUnique" : false,
+										"isSparse" : false,
+										"isPartial" : false,
+										"indexVersion" : 2,
+										"direction" : "forward",
+										"indexBounds" : {
+											"market" : [
+												"[2053511032787733651, 2053511032787733651]"
+											]
+										},
+										"keysExamined" : 17,
+										"seeks" : 1,
+										"dupsTested" : 0,
+										"dupsDropped" : 0,
+										"seenInvalidated" : 0
+									}
+								}
+							}
+						}
+					}
+				}
+			]
+		}
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1590833022, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1590833023, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+

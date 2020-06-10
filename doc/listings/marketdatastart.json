@@ -1,0 +1,164 @@
+ //EXECUTION STATS INDEX {start: 1} of MarketData
+ 
+ db.MarketData.find({market: "BINANCE:ADABNB"}).sort({start:1}).explain("executionStats");
+{
+	"queryPlanner" : {
+		"winningPlan" : {
+			"stage" : "SINGLE_SHARD",
+			"shards" : [{
+					"winningPlan" : {
+						"stage" : "SORT",
+						"sortPattern" : {
+							"start" : 1
+						},
+						"inputStage" : {
+							"stage" : "SORT_KEY_GENERATOR",
+							"inputStage" : {
+								"stage" : "SHARDING_FILTER",
+								"inputStage" : {
+									"stage" : "FETCH",
+									"filter" : {
+										"market" : {
+											"$eq" : "BINANCE:ADABNB"
+										}
+									},
+									"inputStage" : {
+										"stage" : "IXSCAN",
+										"keyPattern" : {
+											"market" : "hashed"
+										},
+										"indexName" : "marketHashed",
+										"isMultiKey" : false,
+										"isUnique" : false,
+										"isSparse" : false,
+										"isPartial" : false,
+										"indexVersion" : 2,
+										"direction" : "forward",
+										"indexBounds" : {
+											"market" : [
+												"[7285712672971555557, 7285712672971555557]"
+											]
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			]
+		}
+	},
+	"executionStats" : {
+		"nReturned" : 19,
+		"executionTimeMillis" : 3,
+		"totalKeysExamined" : 19,
+		"totalDocsExamined" : 19,
+		"executionStages" : {
+			"stage" : "SINGLE_SHARD",
+			"nReturned" : 19,
+			"executionTimeMillis" : 3,
+			"totalKeysExamined" : 19,
+			"totalDocsExamined" : 19,
+			"totalChildMillis" : NumberLong(2),
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"executionSuccess" : true,
+					"executionStages" : {
+						"stage" : "SORT",
+						"nReturned" : 19,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 42,
+						"advanced" : 19,
+						"needTime" : 21,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"sortPattern" : {
+							"start" : 1
+						},
+						"memUsage" : 1426558,
+						"memLimit" : 33554432,
+						"inputStage" : {
+							"stage" : "SORT_KEY_GENERATOR",
+							"nReturned" : 19,
+							"executionTimeMillisEstimate" : 0,
+							"works" : 21,
+							"advanced" : 19,
+							"needTime" : 1,
+							"needYield" : 0,
+							"saveState" : 0,
+							"restoreState" : 0,
+							"isEOF" : 1,
+							"inputStage" : {
+								"stage" : "SHARDING_FILTER",
+								"nReturned" : 19,
+								"executionTimeMillisEstimate" : 0,
+								"works" : 20,
+								"advanced" : 19,
+								"needTime" : 0,
+								"needYield" : 0,
+								"saveState" : 0,
+								"restoreState" : 0,
+								"isEOF" : 1,
+								"chunkSkips" : 0,
+								"inputStage" : {
+									"stage" : "FETCH",
+									"filter" : {
+										"market" : {
+											"$eq" : "BINANCE:ADABNB"
+										}
+									},
+									"nReturned" : 19,
+									"executionTimeMillisEstimate" : 0,
+									"works" : 20,
+									"advanced" : 19,
+									"needTime" : 0,
+									"needYield" : 0,
+									"saveState" : 0,
+									"restoreState" : 0,
+									"isEOF" : 1,
+									"docsExamined" : 19,
+									"alreadyHasObj" : 0,
+									"inputStage" : {
+										"stage" : "IXSCAN",
+										"nReturned" : 19,
+										"executionTimeMillisEstimate" : 0,
+										"works" : 20,
+										"advanced" : 19,
+										"needTime" : 0,
+										"needYield" : 0,
+										"saveState" : 0,
+										"restoreState" : 0,
+										"isEOF" : 1,
+										"keyPattern" : {
+											"market" : "hashed"
+										},
+										"indexName" : "marketHashed",
+										"isMultiKey" : false,
+										"isUnique" : false,
+										"isSparse" : false,
+										"isPartial" : false,
+										"indexVersion" : 2,
+										"direction" : "forward",
+										"indexBounds" : {
+											"market" : [
+												"[7285712672971555557, 7285712672971555557]"
+											]
+										},
+										"keysExamined" : 19,
+										"seeks" : 1,
+										"dupsTested" : 0,
+										"dupsDropped" : 0
+									}
+								}
+							}
+						}
+					}
+				}
+			]
+		}
+	}
+}
+

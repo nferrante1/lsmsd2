@@ -1,0 +1,81 @@
+// EXECUTION STATS FOR INDEX {market.id : 1} of Source 
+
+db.Sources.find({_id: "COINBASE"}, {markets: {$elemMatch: {id: "BTC-EUR"}}}).explain("executionStats");
+{
+	"queryPlanner" : {
+		"mongosPlannerVersion" : 1,
+		"winningPlan" : {
+			"stage" : "SINGLE_SHARD",
+			"shards" : [
+				{
+					"winningPlan" : {
+						"stage" : "PROJECTION_DEFAULT",
+						"transformBy" : {
+							"markets" : {
+								"$elemMatch" : {
+									"id" : "BTC-EUR"
+								}
+							}
+						},
+						"inputStage" : {
+							"stage" : "IDHACK"
+						}
+					}
+				}
+			]
+		}
+	},
+	"executionStats" : {
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "SINGLE_SHARD",
+			"nReturned" : 1,
+			"executionTimeMillis" : 0,
+			"totalKeysExamined" : 1,
+			"totalDocsExamined" : 1,
+			"totalChildMillis" : NumberLong(0),
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"executionSuccess" : true,
+					"executionStages" : {
+						"stage" : "PROJECTION_DEFAULT",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 2,
+						"advanced" : 1,
+						"needTime" : 0,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"transformBy" : {
+							"markets" : {
+								"$elemMatch" : {
+									"id" : "BTC-EUR"
+								}
+							}
+						},
+						"inputStage" : {
+							"stage" : "IDHACK",
+							"nReturned" : 1,
+							"executionTimeMillisEstimate" : 0,
+							"works" : 2,
+							"advanced" : 1,
+							"needTime" : 0,
+							"needYield" : 0,
+							"saveState" : 0,
+							"restoreState" : 0,
+							"isEOF" : 1,
+							"keysExamined" : 1,
+							"docsExamined" : 1
+						}
+					}
+				}
+			]
+		}
+	}
+}

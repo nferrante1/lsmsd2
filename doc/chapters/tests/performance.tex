@@ -1,1 +1,50 @@
 \section{Performance tests}\label{sec:performancetests}
+To asses if the indexes designed effectively improve the performance of the
+database we run some queries with the .explain("executionStats") method provided
+by mongo shell. Results are the following:
+
+\subsection{Sources}
+On the collection Sources an index is present on the market.id field. In this
+way the retrieval of informations on that market can be done using only this
+field. This operation is widely used when retrieving the list of markets from a
+given data source.
+
+\lstinputlisting[language=json, label={lst:perfsourcesmarketid},
+caption={Result execution stats on Sources.}]{sourcesmarket.id.json}
+
+\subsection{MarketData}
+
+The collection MarketData have two indexes, one is an hashed index on the market
+field and another and is used to evenly balance documents among the cluster
+members, the other is on the start field that can be useful when retrieving
+strategies in order, for example during the execution of strategies.
+Results of the effectiveness of our indexes are the following.
+
+\lstinputlisting[language=json, label={lst:perfmarketdatamarket},
+caption={Result execution stats on MarketData (market).}]{marketdatamarket.json}
+
+\lstinputlisting[language=json, label={lst:perfmarketdatastart},
+caption={Result execution stats on MarketData (market).}]{marketdatastart.json}
+
+
+\subsection{Strategies}
+
+The strategies collection has an index on the name field and other two on
+runs.id and runs.report.netProfit field. The first index is useful when retrieving strategies
+(i.e. Find Strategy use case), the others are useful when we want to retrieve a
+report gven the id of that report. Last index is used when we want to sort the
+strategies runs by netProfit. At the moment the application uses only the first
+two
+index, but the other has be mantained since future improvements may lead to an
+implementation of a use case for this index, or can be used directly from the
+shell to perform some analysis from the administrator.
+
+\lstinputlisting[language=json, label={lst:perfstrategiesname},
+caption={Result execution stats on Strategies (name).}]{strategiesname.json}
+
+
+\lstinputlisting[language=json, label={lst:perfstrategiesrunsid},
+caption={Result execution stats on Strategies (runs.id).}]{strategiesruns.id.json}
+
+
+

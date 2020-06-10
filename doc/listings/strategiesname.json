@@ -1,0 +1,107 @@
+
+//EXECUTION STATS INDEX {name: 1} of Strategies
+db.Strategies.find({name: "Bollinger Bands Strategy"}).explain("executionStats");
+{
+	"queryPlanner" : {
+		"winningPlan" : {
+			"stage" : "SINGLE_SHARD",
+			"shards" : [
+				{
+					"winningPlan" : {
+						"stage" : "FETCH",
+						"inputStage" : {
+							"stage" : "IXSCAN",
+							"keyPattern" : {
+								"name" : 1
+							},
+							"indexName" : "nameIndex",
+							"isMultiKey" : false,
+							"multiKeyPaths" : {
+								"name" : [ ]
+							},
+							"isUnique" : true,
+							"isSparse" : false,
+							"isPartial" : false,
+							"indexVersion" : 2,
+							"direction" : "forward",
+							"indexBounds" : {
+								"name" : [
+									"[\"Bollinger Bands Strategy\", \"Bollinger Bands Strategy\"]"
+								]
+							}
+						}
+					}
+				}
+			]
+		}
+	},
+	"executionStats" : {
+		"nReturned" : 1,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 1,
+		"totalDocsExamined" : 1,
+		"executionStages" : {
+			"stage" : "SINGLE_SHARD",
+			"nReturned" : 1,
+			"executionTimeMillis" : 0,
+			"totalKeysExamined" : 1,
+			"totalDocsExamined" : 1,
+			"totalChildMillis" : NumberLong(0),
+			"shards" : [
+				{
+					"shardName" : "rs1",
+					"executionSuccess" : true,
+					"executionStages" : {
+						"stage" : "FETCH",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 2,
+						"advanced" : 1,
+						"needTime" : 0,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"docsExamined" : 1,
+						"alreadyHasObj" : 0,
+						"inputStage" : {
+							"stage" : "IXSCAN",
+							"nReturned" : 1,
+							"executionTimeMillisEstimate" : 0,
+							"works" : 2,
+							"advanced" : 1,
+							"needTime" : 0,
+							"needYield" : 0,
+							"saveState" : 0,
+							"restoreState" : 0,
+							"isEOF" : 1,
+							"keyPattern" : {
+								"name" : 1
+							},
+							"indexName" : "nameIndex",
+							"isMultiKey" : false,
+							"multiKeyPaths" : {
+								"name" : [ ]
+							},
+							"isUnique" : true,
+							"isSparse" : false,
+							"isPartial" : false,
+							"indexVersion" : 2,
+							"direction" : "forward",
+							"indexBounds" : {
+								"name" : [
+									"[\"Bollinger Bands Strategy\", \"Bollinger Bands Strategy\"]"
+								]
+							},
+							"keysExamined" : 1,
+							"seeks" : 1,
+							"dupsTested" : 0,
+							"dupsDropped" : 0
+						}
+					}
+				}
+			]
+		}
+	}
+}
+
