@@ -57,7 +57,7 @@ public final class AuthToken extends StorablePojo
 			int i = 0;
 			while (hexChars[i] == '0')
 				i++;
-			hexChars[0] = hexChars[i] == 0 ? '1' : hexChars[i];
+			hexChars[0] = i < hexChars.length ? hexChars[i] : '1';
 		}
 
 		return new String(hexChars);
