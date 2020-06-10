@@ -10,6 +10,10 @@ are shown). Client, Server and Scraper use this configuration by default.
 	machines.}\label{fig:setup}
 \end{figure}
 
+The \code{/root/strategies} folder is an NFS\footnote{Network File System.}
+shared folder. It is shared by \code{172.16.1.35} and mounted on the other two
+machines.
+
 If using another configuration, each application has several command line
 options to change the connection parameters. You can see all the available
 parameters for an application by passing the \code{-h} (\code{--help}) option to
@@ -33,6 +37,12 @@ The server application expect to find the running scraper instance at
 \code{172.16.1.35:5656}. If the scraper is running somewhere else, you can use
 the server's \code{-H} (\code{--scraper-host}) and \code{-P}
 (\code{--scraper-port}) options in order to override the default value.
+
+If multiple instance of the server are running, these must share the directory
+where containing the Java classes for the uploaded strategies. This can be done
+with NFS if the server instances are running on different hosts. The server's
+\code{-D} (\code{--strategies-dir}) option allows to change the directory where
+the uploaded strategies will be saved.
 
 The client's \code{-H} (\code{--hosts}) option can be used to set a different
 (list of) server(s) to connect to. See \secref{sec:clientrun} for details.
