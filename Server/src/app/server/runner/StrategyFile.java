@@ -30,13 +30,15 @@ public final class StrategyFile
 	{
 		this.hash = hash;
 		File dir = new File(getDirectoryPath());
-		for (File file: dir.listFiles()) {
-			String fileName = file.getName();
-			if (fileName.endsWith(".java")) {
-				className = fileName.substring(0, fileName.length() - 5);
-				break;
+		File[] files = dir.listFiles();
+		if (files != null)
+			for (File file: files) {
+				String fileName = file.getName();
+				if (fileName.endsWith(".java")) {
+					className = fileName.substring(0, fileName.length() - 5);
+					break;
+				}
 			}
-		}
 		if (className == null)
 			throw new FileNotFoundException("Can not find a strategy for hash '" + hash + "'.");
 	}
