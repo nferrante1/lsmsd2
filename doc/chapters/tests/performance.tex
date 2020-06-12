@@ -5,9 +5,14 @@ by mongo shell. Results are the following:
 
 \subsection{Sources}
 On the collection Sources an index is present on the market.id field. In this
-way the retrieval of informations on that market can be done using only this
-field. This operation is widely used when retrieving the list of markets from a
-given data source.
+way the retrieval of informations on that market can be done withou the need of
+the client to know other then that field.
+field. This operation is frequently used when retrieving the list of markets from a
+given data source. The benefits of having an index on that field are clear,
+since each DataSource can have thousand of Markets inside with this index we can
+retrieve informations on that market without searching throut searching through
+the whole list as we can see from the \code{executionStats.totalKeysExamined}
+field and \code{executionStats.totalDocsExamined} field (equal to 1).
 
 \lstinputlisting[language=json, label={lst:perfsourcesmarketid},
 caption={Result execution stats on Sources.}]{sourcesmarket.id.json}
@@ -15,11 +20,17 @@ caption={Result execution stats on Sources.}]{sourcesmarket.id.json}
 \subsection{MarketData}
 
 The collection MarketData have two indexes, one is an hashed index on the market
-field and another and is used to evenly balance documents among the cluster
-members, the other is on the start field that can be useful when retrieving
-strategies in order, for example during the execution of strategies.
+field, used to evenly balance documents among the cluster
+members, the other is on the start field that can be useful during the execution
+of strategies, to retrieve data in order.
 Results of the effectiveness of our indexes are the following.
-
+Since the hashed index is on the Market field, we can retrieve all the data for
+a given market searching in a single shard. In this way, sorting can be done
+directly in the shard, without the need to wait for all the data to arrive in a
+single point to be reordered. In this way we can achieve filtering and sorting
+operation, eploiting two indexes instead of one, with the advantage of having a
+reduced communication overhead (one shard involved in the communication) and the
+data arrive to the mongo router already sorted.
 \lstinputlisting[language=json, label={lst:perfmarketdatamarket},
 caption={Result execution stats on MarketData (market).}]{marketdatamarket.json}
 
@@ -35,9 +46,21 @@ runs.id and runs.report.netProfit field. The first index is useful when retrievi
 report gven the id of that report. Last index is used when we want to sort the
 strategies runs by netProfit. At the moment the application uses only the first
 two
-index, but the other has be mantained since future improvements may lead to an
+indexes, but the other has be mantained since future improvements may lead to an
 implementation of a use case for this index, or can be used directly from the
 shell to perform some analysis from the administrator.
+The index on the strategy name has a clear impact on the Browse Strategies use
+case, where users can set the name of the strategies. In this way the user can 
+retrieve a Strategy without waiting for the database to look at every document
+in the Strategies collection, as for the index on Market.id on MarketData
+results can be asssessed looking at the \code{executionStats.totalKeysExamined}
+field and \code{executionStats.totalDocsExamined} field.
+The second index is similar but is on a nested array of documents, and is used when we
+want to retrieve a report, after the View Strategy use case. In this way since a
+Strategy may have thousands of runs, and so thousands of reports, we can achieve
+a direct lookup instead of looking to all the reports for a given strategy.
+Another advantage is that just one field is needed from the client to retrieve
+the report, since the id field on runs is unique.
 
 \lstinputlisting[language=json, label={lst:perfstrategiesname},
 caption={Result execution stats on Strategies (name).}]{strategiesname.json}
