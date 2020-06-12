@@ -57,17 +57,22 @@ public final class Protocol implements AutoCloseable
 		if (serverPort.isEmpty())
 			serverPort = Arrays.asList(8888, 8888, 8888);
 		int index = random.nextInt(serverAddress.size());
-		String addr = serverAddress.get(index);
-		int port = serverPort.get(index);
-		try {
-			socket = new Socket(addr, port);
-			inputStream = new DataInputStream(socket.getInputStream());
-			outputStream = new DataOutputStream(socket.getOutputStream());
-		} catch (IOException ex) {
-			System.err.println("ERROR: error while trying to connect to the server: " + ex.getMessage());
+		for (int i = 0; i < serverAddress.size() && !connected; i++) {
+			String addr = serverAddress.get((index + i) % serverAddress.size());
+			int port = serverPort.get((index + i) % serverAddress.size());
+			try {
+				socket = new Socket(addr, port);
+				inputStream = new DataInputStream(socket.getInputStream());
+				outputStream = new DataOutputStream(socket.getOutputStream());
+			} catch (IOException ex) {
+				continue;
+			}
+			connected = true;
+		}
+		if (!connected) {
+			System.err.println("ERROR: error while trying to connect to the server.");
 			System.exit(1);
 		}
-		connected = true;
 	}
 
 	public ResponseMessage performLogin(String username, String password)
