@@ -1,16 +1,16 @@
 \section{Performance tests}\label{sec:performancetests}
 To asses if the indexes designed effectively improve the performance of the
-database we run some queries with the .explain("executionStats") method provided
+database we run some queries with the \code{.explain("executionStats")} method provided
 by mongo shell. Results are the following:
 
 \subsection{Sources}
-On the collection Sources an index is present on the market.id field. In this
-way the retrieval of informations on that market can be done withou the need of
+On the collection \code{Sources} an index is present on the \code{market.id} field. In this
+way the retrieval of informations on that market can be done without the need of
 the client to know other then that field.
-field. This operation is frequently used when retrieving the list of markets from a
+This operation is frequently used when retrieving the list of markets from a
 given data source. The benefits of having an index on that field are clear,
-since each DataSource can have thousand of Markets inside with this index we can
-retrieve informations on that market without searching throut searching through
+since each data source can have thousand of markets inside with this index we can
+retrieve informations on that market without searching through
 the whole list as we can see from the \code{executionStats.totalKeysExamined}
 field and \code{executionStats.totalDocsExamined} field (equal to 1).
 
@@ -19,12 +19,12 @@ caption={Result execution stats on Sources.}]{sourcesmarket.id.json}
 
 \subsection{MarketData}
 
-The collection MarketData have two indexes, one is an hashed index on the market
+The collection \code{MarketData} have two indexes, one is an hashed index on the market
 field, used to evenly balance documents among the cluster
 members, the other is on the start field that can be useful during the execution
 of strategies, to retrieve data in order.
 Results of the effectiveness of our indexes are the following.
-Since the hashed index is on the Market field, we can retrieve all the data for
+Since the hashed index is on the \code{market} field, we can retrieve all the data for
 a given market searching in a single shard. In this way, sorting can be done
 directly in the shard, without the need to wait for all the data to arrive in a
 single point to be reordered. In this way we can achieve filtering and sorting
@@ -40,19 +40,19 @@ caption={Result execution stats on MarketData (market).}]{marketdatastart.json}
 
 \subsection{Strategies}
 
-The strategies collection has an index on the name field and other two on
-runs.id and runs.report.netProfit field. The first index is useful when retrieving strategies
+The \code{Strategies} collection has an index on the \code{name} field and other two on
+\code{runs.id} and \code{runs.report.netProfit} field. The first index is useful when retrieving strategies
 (i.e. Find Strategy use case), the others are useful when we want to retrieve a
-report gven the id of that report. Last index is used when we want to sort the
-strategies runs by netProfit. At the moment the application uses only the first
-two
-indexes, but the other has be mantained since future improvements may lead to an
+report gven the id of the run which generated that report. 
+Last index is used when we want to sort the strategies runs by net profit. 
+At the moment the application uses only the first
+two indexes, but the other has be mantained since future improvements may lead to an
 implementation of a use case for this index, or can be used directly from the
 shell to perform some analysis from the administrator.
 The index on the strategy name has a clear impact on the Browse Strategies use
 case, where users can set the name of the strategies. In this way the user can 
 retrieve a Strategy without waiting for the database to look at every document
-in the Strategies collection, as for the index on Market.id on MarketData
+in the Strategies collection, as for the index on \code{market.id} on \code{MarketData}
 results can be asssessed looking at the \code{executionStats.totalKeysExamined}
 field and \code{executionStats.totalDocsExamined} field.
 The second index is similar but is on a nested array of documents, and is used when we
@@ -68,6 +68,3 @@ caption={Result execution stats on Strategies (name).}]{strategiesname.json}
 
 \lstinputlisting[language=json, label={lst:perfstrategiesrunsid},
 caption={Result execution stats on Strategies (runs.id).}]{strategiesruns.id.json}
-
-
-
