@@ -1,4 +1,0 @@
-title Enable/Disable Data Source
-
-Client->Server:message_code, ID_dataSource, EN/DIS
-Client<-Server:OK

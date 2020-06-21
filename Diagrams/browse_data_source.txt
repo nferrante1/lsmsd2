@@ -1,4 +1,0 @@
-title Browse Data Source
-
-Client->Server:MSG_CODE
-Client<-Server:List<DataSource>

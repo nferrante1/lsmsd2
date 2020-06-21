@@ -1,4 +1,0 @@
-title View Strategy
-
-Client->Server:message_code, ID_strategy
-Client<-Server:author, canDelete, parameters

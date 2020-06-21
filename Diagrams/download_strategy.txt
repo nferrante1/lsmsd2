@@ -1,4 +1,0 @@
-title Download Strategy
-
-Client->Server:message_code, ID_strategy
-Client<-Server:file (base 64)

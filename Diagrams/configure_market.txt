@@ -1,4 +1,0 @@
-title Configure Market
-
-Client->Server:MSG_CODE, marketName, granularity, dataSync, selectable
-Client<-Server:OK

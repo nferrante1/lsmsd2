@@ -1,4 +1,0 @@
-title View Report
-
-Client->Server:message_code, ID_report
-Client<-Server:report (canDelete)

@@ -1,4 +1,0 @@
-title Delete Data
-
-Client->Server:MSG_CODE, [rangeDate], [partial_name]
-Client<-Server:OK

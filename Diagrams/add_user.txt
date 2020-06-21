@@ -1,4 +1,0 @@
-title Add User
-
-Client->Server:MSG_CODE, username, password
-Client<-Server:OK

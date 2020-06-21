@@ -1,4 +1,0 @@
-title Delete Report
-
-Client->Server:MSG_CODE, reportId
-Client<-Server:OK

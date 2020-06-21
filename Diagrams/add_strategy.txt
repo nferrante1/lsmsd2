@@ -1,4 +1,0 @@
-title Add Strategy
-
-Client->Server:MSG_CODE, strategy_name, file(base 64)
-Client<-Server:OK

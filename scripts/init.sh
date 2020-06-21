@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Initializes a new cluster (run only once)
+
 # Check root
 if [ "$EUID" -ne 0 ]; then
 	echo "This script must be run as root!"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Stop cluster
+
 # Root not needed
 
 # Stop balancer
