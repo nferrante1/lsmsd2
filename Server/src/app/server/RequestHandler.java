@@ -377,6 +377,8 @@ final class RequestHandler extends Thread
 		if(!cursor.hasNext())
 			return new ResponseMessage("Strategy '" + strategyName + "' not found.");
 		Strategy strategy = cursor.next();
+		if (!authToken.isAdmin() && !authToken.getUsername().equals(strategy.getAuthor()))
+			return new ResponseMessage("You do not have the rights to delete this strategy.");
 		StrategyFile strategyFile;
 		try {
 			strategyFile = new StrategyFile(strategy.getId());
@@ -384,7 +386,6 @@ final class RequestHandler extends Thread
 		} catch (FileNotFoundException e) {
 			Logger.getLogger(RequestHandler.class.getName()).info("Strategy file already deleted.");
 		}
-
 		strategy.delete();
 		manager.save(strategy);
 		return new ResponseMessage();
@@ -550,7 +551,7 @@ final class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> strategyManager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.include("name") ,Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))),null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)strategyManager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.include("name"), Projections.include("author"), Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))), null);
 		if (!cursor.hasNext())
 			return new ResponseMessage("Details of report '" + reportId + "' not found.");
 
@@ -578,15 +579,16 @@ final class RequestHandler extends Thread
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.addAll(parameters);
 		entities.add(new ReportInfo(
-				reportId, strategy.getName(), run.getParameter("market").toString(), 
-				report.getNetProfit(), run.getUser(), 
-				report.getGrossProfit(), report.getGrossLoss(), 
-				report.getHodlProfit(),report.getTotalTrades(), 
-				report.getOpenTrades(), report.getWinningTrades(), 
-				report.getMaxConsecutiveLosing(),report.getAvgAmount(), 
-				report.getAvgDuration(), report.getMaxDrawdown(), authToken.isAdmin() || authToken.getUsername().equals(run.getUser())));
+				reportId, strategy.getName(), run.getParameter("market").toString(),
+				report.getNetProfit(), run.getUser(),
+				report.getGrossProfit(), report.getGrossLoss(),
+				report.getHodlProfit(),report.getTotalTrades(),
+				report.getOpenTrades(), report.getWinningTrades(),
+				report.getMaxConsecutiveLosing(),report.getAvgAmount(),
+				report.getAvgDuration(), report.getMaxDrawdown(),
+				authToken.isAdmin() || authToken.getUsername().equals(run.getUser()) || authToken.getUsername().equals(strategy.getAuthor())));
 
-		return new ResponseMessage(entities); 
+		return new ResponseMessage(entities);
 	}
 
 	@RequestHandlerMethod
@@ -594,13 +596,17 @@ final class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))), null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.include("author"), Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))), null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();
 		StrategyRun run = strategy.getRun(reportId);
 		if (run == null)
 			return new ResponseMessage("Report '" + reportId + "' not found.");
+		if (!authToken.isAdmin()
+			&& !authToken.getUsername().equals(run.getUser())
+			&& !authToken.getUsername().equals(strategy.getAuthor()))
+			return new ResponseMessage("You do not have the rights to delete this report.");
 		run.delete();
 		manager.save(strategy);
 		return new ResponseMessage();

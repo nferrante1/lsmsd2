@@ -402,9 +402,14 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
+			if (field.isAnnotationPresent(BsonProperty.class)
+				&& field.getAnnotation(BsonProperty.class).value() != null
+				&& !field.getAnnotation(BsonProperty.class).value().isEmpty()) {
+				fieldName = field.getAnnotation(BsonProperty.class).value();
+			}
 			return Filters.eq(field.isAnnotationPresent(BsonId.class) ? "_id" : fieldName, value);
 		}
-		throw new UnsupportedOperationException("Specified Pojo does not define a BsonId.");
+		throw new UnsupportedOperationException("Specified Pojo does not define a BsonId/PojoId.");
 	}
 
 	protected long delete(Bson filter)
