@@ -203,7 +203,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 				list.addAll(pullList);
 				UpdateInfo ui;
 				if (list.size() == 1)
-					ui = new UpdateInfo(Updates.pull(getFieldName(), list.get(0)));
+					ui = new UpdateInfo(Updates.pull(getFieldName(), getIdFilter(list.get(0))));
 				else
 					ui = new UpdateInfo(Updates.pullAll(getFieldName(), list));
 				pullList.clear();
@@ -390,7 +390,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 			field.setAccessible(true);
 			if (Modifier.isTransient(field.getModifiers()))
 				continue;
-			if (!field.isAnnotationPresent(BsonId.class))
+			if (!field.isAnnotationPresent(BsonId.class) && !field.isAnnotationPresent(PojoId.class))
 				continue;
 			String fieldName = field.getName();
 			Object value;
@@ -402,7 +402,7 @@ public class StorablePojoManager<T extends StorablePojo> extends PojoManager<T>
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
-			return Filters.eq("_id", value);
+			return Filters.eq(field.isAnnotationPresent(BsonId.class) ? "_id" : fieldName, value);
 		}
 		throw new UnsupportedOperationException("Specified Pojo does not define a BsonId.");
 	}
