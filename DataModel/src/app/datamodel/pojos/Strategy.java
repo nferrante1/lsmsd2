@@ -36,11 +36,6 @@ public final class Strategy extends StorablePojo
 		runs.add(run);
 	}
 
-	public void deleteRun(String id)
-	{
-		getRun(id).delete();
-	}
-
 	public void setName(String name)
 	{
 		updateField("name", name);

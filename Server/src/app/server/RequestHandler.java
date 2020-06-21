@@ -556,6 +556,8 @@ final class RequestHandler extends Thread
 
 		Strategy strategy = cursor.next();
 		StrategyRun run = strategy.getRun(reportId);
+		if (run == null)
+			return new ResponseMessage("Can not find the specified report.");
 		Report report = run.getReport();
 		List<KVParameter> parameters = new ArrayList<KVParameter>();
 		Map<String, Object> paramMap = run.getParameters();
@@ -596,7 +598,10 @@ final class RequestHandler extends Thread
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();
-		strategy.deleteRun(reportId);
+		StrategyRun run = strategy.getRun(reportId);
+		if (run == null)
+			return new ResponseMessage("Report '" + reportId + "' not found.");
+		run.delete();
 		manager.save(strategy);
 		return new ResponseMessage();
 	}
