@@ -592,7 +592,7 @@ final class RequestHandler extends Thread
 	{
 		String reportId = reqMsg.getEntity(KVParameter.class).getValue();
 		StorablePojoManager<Strategy> manager = new StorablePojoManager<Strategy>(Strategy.class);
-		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))),null);
+		StorablePojoCursor<Strategy> cursor = (StorablePojoCursor<Strategy>)manager.find(Filters.eq("runs.id", new ObjectId(reportId)), Projections.fields(Projections.elemMatch("runs", Filters.eq("id", new ObjectId(reportId)))), null);
 		if(!cursor.hasNext())
 			return new ResponseMessage("Report '" + reportId + "' not found.");
 		Strategy strategy = cursor.next();
