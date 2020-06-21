@@ -60,9 +60,9 @@ public class RSIStrategy implements ExecutableStrategy
 			previousRSI = value;
 			return;
 		}
-		if (previousRSI >= overbought && value < overbought) // crossunder
+		if (previousRSI >= overbought && value < overbought) // Crossunder
 			journal.closeAll();
-		if (previousRSI <= oversold && value > oversold) // crossover
+		if (previousRSI <= oversold && value > oversold) // Crossover
 			journal.openTrade(amount * journal.availAmount());
 		previousRSI = value;
 	}

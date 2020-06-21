@@ -1,13 +1,8 @@
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import app.library.annotations.*;
-import app.library.indicators.*;
 import app.library.*;
-
-// Strategy Template
 
 public class RandomStrategy implements ExecutableStrategy
 {
@@ -29,25 +24,16 @@ public class RandomStrategy implements ExecutableStrategy
 	@StrategyParameter("Trade Amount (0-1]")
 	private double amount;
 
-	public RandomStrategy()
-	{
-	}
-
 	@Override
 	public String name()
 	{
-		return "Random Strategy v2";
+		return "Random Strategy";
 	}
 
 	@Override
 	public boolean validate()
 	{
 		return openProbability > 0 && openProbability < 1 && closeProbability > 0 && closeProbability < 1 && amount > 0 && amount <= 1;
-	}
-
-	@Override
-	public void init(Journal journal)
-	{
 	}
 
 	@Override
