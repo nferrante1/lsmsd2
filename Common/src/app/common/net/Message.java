@@ -71,7 +71,6 @@ class Message implements Serializable
 			xml = input.readUTF();
 			return fromXML(xml);
 		} catch (IOException ex) {
-			ex.printStackTrace();
 			return null;
 		}
 	}
